@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Button } from '../../../components/ui/Button/Button';
+import { Modal } from '../../../components/ui/Modal/Modal';
+import { Input } from '../../../components/ui/Input/Input';
 import { Search, Loader2 } from 'lucide-react';
 import { DEFAULT_ROLES } from '../../../rbac/roles';
 import { useUsersStore } from '../../../stores/usersStore';
 
 export function AdminUsersPage() {
-  const { users, isLoading, fetchUsers, updateUser, deleteUser } = useUsersStore();
+  const { users, isLoading, fetchUsers, updateUser, deleteUser, addUser } = useUsersStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState('All Roles');
 
@@ -13,6 +15,13 @@ export function AdminUsersPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingRole, setEditingRole] = useState<'customer' | 'admin'>('customer');
   const [isSaving, setIsSaving] = useState(false);
+
+  // Add state
+  const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
+  const [newUserName, setNewUserName] = useState('');
+  const [newUserEmail, setNewUserEmail] = useState('');
+  const [newUserRole, setNewUserRole] = useState<'customer' | 'admin'>('customer');
+  const [isAddingUser, setIsAddingUser] = useState(false);
 
   useEffect(() => {
     fetchUsers();
@@ -58,11 +67,29 @@ export function AdminUsersPage() {
     }
   };
 
+  const handleAddUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newUserName.trim() || !newUserEmail.trim()) return;
+
+    setIsAddingUser(true);
+    await addUser({
+      name: newUserName,
+      email: newUserEmail,
+      role: newUserRole,
+    });
+    
+    setIsAddingUser(false);
+    setIsAddUserModalOpen(false);
+    setNewUserName('');
+    setNewUserEmail('');
+    setNewUserRole('customer');
+  };
+
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
         <h1 className="heading-3xl">Users Management</h1>
-        <Button>Add User</Button>
+        <Button onClick={() => setIsAddUserModalOpen(true)}>Add User</Button>
       </div>
 
       <div className="bg-surface rounded-lg border border-border overflow-hidden">
@@ -184,6 +211,71 @@ export function AdminUsersPage() {
           </table>
         </div>
       </div>
+
+      <Modal
+        isOpen={isAddUserModalOpen}
+        onClose={() => setIsAddUserModalOpen(false)}
+        title="Add New User"
+      >
+        <form onSubmit={handleAddUser} className="space-y-4">
+          <Input
+            label="Name"
+            value={newUserName}
+            onChange={(e) => setNewUserName(e.target.value)}
+            placeholder="Enter full name"
+            required
+          />
+          
+          <Input
+            label="Email Address"
+            type="email"
+            value={newUserEmail}
+            onChange={(e) => setNewUserEmail(e.target.value)}
+            placeholder="Enter email address"
+            required
+          />
+          
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-primary">
+              Role
+            </label>
+            <select
+              value={newUserRole}
+              onChange={(e) => setNewUserRole(e.target.value as 'customer' | 'admin')}
+              className="w-full bg-bg-secondary border border-border rounded-md px-4 py-2 text-primary focus:outline-none focus:border-accent"
+              required
+            >
+              <option value="customer">Customer</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          
+          <div className="flex justify-end gap-3 pt-4 border-t border-border mt-6">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsAddUserModalOpen(false)}
+              disabled={isAddingUser}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="primary"
+              disabled={isAddingUser || !newUserName.trim() || !newUserEmail.trim()}
+            >
+              {isAddingUser ? (
+                <>
+                  <Loader2 className="animate-spin mr-2" size={18} />
+                  Saving...
+                </>
+              ) : (
+                'Add User'
+              )}
+            </Button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }

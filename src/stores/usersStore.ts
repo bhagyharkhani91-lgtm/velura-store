@@ -16,6 +16,7 @@ interface UsersStore {
   isLoading: boolean;
   error: string | null;
   fetchUsers: () => Promise<void>;
+  addUser: (data: Omit<AdminUser, 'id' | 'created_at'>) => Promise<{ error: any }>;
   updateUser: (id: string, data: Partial<AdminUser>) => Promise<{ error: any }>;
   deleteUser: (id: string) => Promise<{ error: any }>;
 }
@@ -47,6 +48,35 @@ export const useUsersStore = create<UsersStore>()((set, get) => ({
         isLoading: false 
       });
     }
+  },
+
+  addUser: async (data) => {
+    // Generate a new UUID since this is a manual insert without auth sign-up
+    const newId = crypto.randomUUID();
+    
+    const { data: newUser, error } = await supabase
+      .from('profiles')
+      .insert([
+        {
+          id: newId,
+          ...data
+        }
+      ])
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error adding user:', error);
+      return { error };
+    }
+
+    // Update local state
+    const { users } = get();
+    set({
+      users: [newUser as AdminUser, ...users]
+    });
+
+    return { error: null };
   },
 
   updateUser: async (id, data) => {
