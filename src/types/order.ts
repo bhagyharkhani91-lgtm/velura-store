@@ -60,6 +60,8 @@ export interface Order {
     phone: string;
   };
   paymentMethod: string;
+  razorpayOrderId?: string;
+  razorpayPaymentId?: string;
   couponCode?: string;
   notes?: string;
   createdAt: string;

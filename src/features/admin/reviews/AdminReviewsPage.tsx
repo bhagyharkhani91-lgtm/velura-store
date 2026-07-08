@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Star, Trash2, Edit2, X, Check } from 'lucide-react';
+import { Star, Trash2, Edit2 } from 'lucide-react';
 import { useReviewsStore } from '../../../stores/reviewsStore';
 import { Button } from '../../../components/ui/Button/Button';
 
