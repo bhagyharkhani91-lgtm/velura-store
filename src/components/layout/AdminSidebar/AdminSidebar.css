@@ -1,0 +1,123 @@
+.admin-sidebar {
+  width: 260px;
+  background-color: var(--color-bg-secondary);
+  border-right: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  transition: transform var(--duration-normal) var(--ease-out);
+  z-index: var(--z-drawer);
+}
+
+.admin-sidebar-header {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-6);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.admin-sidebar-logo {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-widest);
+  color: var(--color-text-primary);
+  text-decoration: none;
+}
+
+.admin-sidebar-close {
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  padding: var(--space-1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-sidebar-nav {
+  flex: 1;
+  padding: var(--space-6) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.admin-nav-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.admin-nav-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  font-weight: var(--weight-medium);
+  transition: all var(--duration-fast);
+}
+
+.admin-nav-link:hover {
+  background-color: var(--color-bg-hover);
+  color: var(--color-text-primary);
+}
+
+.admin-nav-link.active {
+  background-color: var(--color-accent-subtle);
+  color: #ffffff;
+}
+
+.admin-nav-link.active .admin-nav-icon {
+  color: #ffffff;
+}
+
+.admin-nav-icon {
+  color: var(--color-text-tertiary);
+  transition: color var(--duration-fast);
+}
+
+.admin-nav-link:hover .admin-nav-icon {
+  color: var(--color-text-primary);
+}
+
+.admin-sidebar-divider {
+  height: 1px;
+  background-color: var(--color-border);
+  margin: var(--space-6) var(--space-2);
+}
+
+.text-muted {
+  color: var(--color-text-tertiary);
+}
+
+@media (max-width: 768px) {
+  .admin-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    transform: translateX(-100%);
+  }
+
+  .admin-sidebar.open {
+    transform: translateX(0);
+  }
+}
+
+.admin-sidebar-footer {
+  padding: 0 var(--space-4) var(--space-6) var(--space-4);
+  background-color: var(--color-bg-secondary);
+}
+
+.admin-sidebar-footer .admin-sidebar-divider {
+  margin: 0 0 var(--space-4) 0;
+}

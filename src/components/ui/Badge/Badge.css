@@ -1,0 +1,32 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-family: var(--font-body);
+  font-weight: var(--weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+.badge--sm { padding: var(--space-0-5) var(--space-2); font-size: 0.625rem; }
+.badge--md { padding: var(--space-1) var(--space-2-5); font-size: var(--text-xs); }
+.badge--lg { padding: var(--space-1-5) var(--space-3); font-size: var(--text-sm); }
+
+.badge--default { background-color: var(--color-bg-tertiary); color: var(--color-text-secondary); }
+.badge--accent { background-color: var(--color-accent-muted); color: var(--color-accent); }
+.badge--success { background-color: var(--color-success-muted); color: var(--color-success); }
+.badge--error { background-color: var(--color-error-muted); color: var(--color-error); }
+.badge--warning { background-color: var(--color-warning-muted); color: var(--color-warning); }
+.badge--info { background-color: var(--color-info-muted); color: var(--color-info); }
+.badge--gold { background-color: var(--color-gold-muted); color: var(--color-gold); }
+.badge--new { background-color: var(--color-accent); color: white; }
+.badge--sale { background-color: var(--color-error); color: white; }
+
+.badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background-color: currentColor;
+}

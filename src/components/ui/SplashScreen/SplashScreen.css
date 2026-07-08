@@ -1,0 +1,72 @@
+.splash-container {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background-color: var(--color-bg-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  transition: opacity 1s ease-in-out;
+  opacity: 1;
+}
+
+.splash-container.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.splash-logo {
+  font-family: var(--font-display);
+  font-size: 5rem;
+  font-weight: 300;
+  color: var(--color-gold);
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  animation: splash-scale-in 4s cubic-bezier(0.25, 1, 0.5, 1) forwards, splash-pulse 3s infinite alternate ease-in-out;
+  opacity: 0;
+}
+
+.splash-subtitle {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  margin-top: var(--space-4);
+  opacity: 0;
+  animation: splash-fade-in 1.5s ease-out 1.5s forwards;
+}
+
+@keyframes splash-scale-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.85);
+    filter: blur(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0px);
+  }
+}
+
+@keyframes splash-fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes splash-pulse {
+  0% {
+    text-shadow: 0 0 10px rgba(197, 139, 107, 0);
+  }
+  100% {
+    text-shadow: 0 0 35px rgba(197, 139, 107, 0.5);
+  }
+}

@@ -1,0 +1,191 @@
+/* ============================================
+   Design Tokens — Velura Design System
+   ============================================ */
+
+:root {
+  /* ---- Color Palette (Dark Theme) ---- */
+
+  /* Backgrounds */
+  --color-bg-primary:       #0D0D0D;
+  --color-bg-secondary:     #1A1A1A;
+  --color-bg-tertiary:      #242424;
+  --color-bg-hover:         #2B2B2B;
+  --color-bg-active:        #333333;
+  --color-bg-overlay:       rgba(13, 13, 13, 0.85);
+
+  /* Text */
+  --color-text-primary:     #F5F0E8;
+  --color-text-secondary:   #A8A8A8;
+  --color-text-tertiary:    #737373;
+  --color-text-inverse:     #0D0D0D;
+
+  /* Accent — Burgundy / Wine Red */
+  --color-accent:           #7A1624;
+  --color-accent-hover:     #8B1E2F;
+  --color-accent-active:    #65121D;
+  --color-accent-muted:     #4A0C14;
+  --color-accent-subtle:    #2F080D;
+
+  /* Secondary Accent — Warm Gold/Champagne */
+  --color-gold:             #C9A45C;
+  --color-gold-hover:       #D9B46C;
+  --color-gold-muted:       #8A703E;
+
+  /* Semantic Colors */
+  --color-success:          hsl(155, 40%, 50%);
+  --color-success-muted:    hsl(155, 25%, 16%);
+  --color-error:            hsl(0, 55%, 55%);
+  --color-error-muted:      hsl(0, 30%, 16%);
+  --color-warning:          hsl(38, 70%, 55%);
+  --color-warning-muted:    hsl(38, 35%, 16%);
+  --color-info:             hsl(210, 50%, 55%);
+  --color-info-muted:       hsl(210, 30%, 16%);
+
+  /* Borders */
+  --color-border:           #2B2B2B;
+  --color-border-hover:     #404040;
+  --color-border-focus:     var(--color-accent);
+
+  /* ---- Typography ---- */
+  --font-display:           'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --font-body:              'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:              'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Font Sizes */
+  --text-xs:                0.75rem;
+  --text-sm:                0.875rem;
+  --text-base:              1rem;
+  --text-lg:                1.125rem;
+  --text-xl:                1.25rem;
+  --text-2xl:               1.5rem;
+  --text-3xl:               1.875rem;
+  --text-4xl:               2.25rem;
+  --text-5xl:               3rem;
+  --text-6xl:               3.75rem;
+  --text-7xl:               4.5rem;
+
+  /* Line Heights */
+  --leading-none:           1;
+  --leading-tight:          1.15;
+  --leading-snug:           1.3;
+  --leading-normal:         1.5;
+  --leading-relaxed:        1.65;
+  --leading-loose:          2;
+
+  /* Font Weights */
+  --weight-light:           300;
+  --weight-regular:         400;
+  --weight-medium:          500;
+  --weight-semibold:        600;
+  --weight-bold:            700;
+
+  /* Letter Spacing */
+  --tracking-tighter:       -0.03em;
+  --tracking-tight:         -0.015em;
+  --tracking-normal:        0;
+  --tracking-wide:          0.025em;
+  --tracking-wider:         0.05em;
+  --tracking-widest:        0.1em;
+
+  /* ---- Spacing (8px base) ---- */
+  --space-0:                0;
+  --space-px:               1px;
+  --space-0-5:              0.125rem;   /* 2px */
+  --space-1:                0.25rem;    /* 4px */
+  --space-1-5:              0.375rem;   /* 6px */
+  --space-2:                0.5rem;     /* 8px */
+  --space-2-5:              0.625rem;   /* 10px */
+  --space-3:                0.75rem;    /* 12px */
+  --space-3-5:              0.875rem;   /* 14px */
+  --space-4:                1rem;       /* 16px */
+  --space-5:                1.25rem;    /* 20px */
+  --space-6:                1.5rem;     /* 24px */
+  --space-7:                1.75rem;    /* 28px */
+  --space-8:                2rem;       /* 32px */
+  --space-9:                2.25rem;    /* 36px */
+  --space-10:               2.5rem;     /* 40px */
+  --space-12:               3rem;       /* 48px */
+  --space-14:               3.5rem;     /* 56px */
+  --space-16:               4rem;       /* 64px */
+  --space-20:               5rem;       /* 80px */
+  --space-24:               6rem;       /* 96px */
+  --space-32:               8rem;       /* 128px */
+  --space-40:               10rem;      /* 160px */
+  --space-48:               12rem;      /* 192px */
+
+  /* ---- Border Radius ---- */
+  --radius-none:            0;
+  --radius-sm:              0.25rem;    /* 4px */
+  --radius-md:              0.5rem;     /* 8px */
+  --radius-lg:              0.75rem;    /* 12px */
+  --radius-xl:              1rem;       /* 16px */
+  --radius-2xl:             1.5rem;     /* 24px */
+  --radius-full:            9999px;
+
+  /* ---- Shadows ---- */
+  --shadow-xs:              0 1px 2px hsl(0 0% 0% / 0.12);
+  --shadow-sm:              0 1px 3px hsl(0 0% 0% / 0.15), 0 1px 2px hsl(0 0% 0% / 0.1);
+  --shadow-md:              0 4px 6px hsl(0 0% 0% / 0.2), 0 2px 4px hsl(0 0% 0% / 0.1);
+  --shadow-lg:              0 10px 15px hsl(0 0% 0% / 0.25), 0 4px 6px hsl(0 0% 0% / 0.1);
+  --shadow-xl:              0 20px 25px hsl(0 0% 0% / 0.3), 0 8px 10px hsl(0 0% 0% / 0.1);
+  --shadow-2xl:             0 25px 50px hsl(0 0% 0% / 0.4);
+  --shadow-inner:           inset 0 2px 4px hsl(0 0% 0% / 0.15);
+  --shadow-glow:            0 0 20px hsl(340, 35%, 55% / 0.15);
+  --shadow-glow-lg:         0 0 40px hsl(340, 35%, 55% / 0.2);
+
+  /* ---- Transitions ---- */
+  --ease-out:               cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out:            cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring:            cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-bounce:            cubic-bezier(0.68, -0.6, 0.32, 1.6);
+
+  --duration-instant:       50ms;
+  --duration-fast:          150ms;
+  --duration-normal:        250ms;
+  --duration-slow:          400ms;
+  --duration-slower:        600ms;
+  --duration-slowest:       1000ms;
+
+  /* ---- Z-Index Scale ---- */
+  --z-base:                 0;
+  --z-above:                10;
+  --z-dropdown:             100;
+  --z-sticky:               200;
+  --z-overlay:              250;
+  --z-drawer:               300;
+  --z-modal:                400;
+  --z-toast:                500;
+  --z-tooltip:              600;
+  --z-max:                  9999;
+
+  /* ---- Layout ---- */
+  --container-sm:           640px;
+  --container-md:           768px;
+  --container-lg:           1024px;
+  --container-xl:           1280px;
+  --container-2xl:          1440px;
+  --container-padding:      var(--space-5);
+
+  /* ---- Component Sizes ---- */
+  --input-height-sm:        2rem;       /* 32px */
+  --input-height-md:        2.5rem;     /* 40px */
+  --input-height-lg:        3rem;       /* 48px */
+
+  --btn-height-sm:          2rem;       /* 32px */
+  --btn-height-md:          2.5rem;     /* 40px */
+  --btn-height-lg:          3rem;       /* 48px */
+  --btn-height-xl:          3.5rem;     /* 56px */
+
+  --navbar-height:          4rem;       /* 64px */
+  --admin-sidebar-width:    16.5rem;    /* 264px */
+  --admin-sidebar-collapsed: 4.5rem;   /* 72px */
+}
+
+/* ---- Breakpoint Mixins (via media queries) ---- */
+/* 
+  --bp-sm:   640px
+  --bp-md:   768px
+  --bp-lg:   1024px
+  --bp-xl:   1280px
+  --bp-2xl:  1536px
+*/

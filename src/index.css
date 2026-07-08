@@ -1,0 +1,26 @@
+/* ============================================
+   Velura — Root Stylesheet
+   ============================================ */
+
+@import './styles/reset.css';
+@import './styles/tokens.css';
+@import './styles/typography.css';
+@import './styles/animations.css';
+@import './styles/utilities.css';
+
+/* ---- Global Base Styles ---- */
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-normal);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-primary);
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}

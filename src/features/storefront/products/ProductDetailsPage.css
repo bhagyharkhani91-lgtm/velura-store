@@ -1,0 +1,310 @@
+.pdp-page {
+  padding: var(--space-8) 0 var(--space-16);
+}
+
+.pdp-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-12);
+}
+
+@media (min-width: 768px) {
+  .pdp-grid {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+}
+
+/* Image Gallery */
+.pdp-gallery {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.pdp-main-image-container {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  position: relative;
+}
+
+.pdp-main-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--duration-normal);
+}
+
+.pdp-main-image:hover {
+  transform: scale(1.05);
+}
+
+.pdp-thumbnails {
+  display: flex;
+  gap: var(--space-4);
+  overflow-x: auto;
+  padding-bottom: var(--space-2);
+}
+
+.pdp-thumbnail-btn {
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 2px solid transparent;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  transition: all var(--duration-fast);
+}
+
+.pdp-thumbnail-btn.active {
+  border-color: var(--color-accent);
+}
+
+.pdp-thumbnail-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Product Info */
+.pdp-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.pdp-title {
+  font-family: var(--font-display);
+  font-size: var(--text-4xl);
+  font-weight: var(--weight-bold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.pdp-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+}
+
+.pdp-rating {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--color-warning); /* Gold star color */
+}
+
+.pdp-price-container {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+.pdp-price {
+  font-size: var(--text-3xl);
+  font-weight: var(--weight-bold);
+  color: var(--color-accent);
+}
+
+.pdp-compare-price {
+  font-size: var(--text-xl);
+  color: var(--color-text-tertiary);
+  text-decoration: line-through;
+}
+
+.pdp-short-desc {
+  font-size: var(--text-lg);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+/* Options */
+.pdp-section-title {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-primary);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  margin-bottom: var(--space-3);
+}
+
+.pdp-variants {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.pdp-variant-btn {
+  padding: var(--space-2) var(--space-4);
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  color: var(--color-text-primary);
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+  transition: all var(--duration-fast);
+}
+
+.pdp-variant-btn:hover {
+  border-color: var(--color-accent);
+}
+
+.pdp-variant-btn.active {
+  background-color: var(--color-accent);
+  color: white;
+  border-color: var(--color-accent);
+}
+
+.pdp-quantity-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.pdp-quantity-control {
+  display: flex;
+  align-items: center;
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  height: 48px;
+}
+
+.pdp-qty-btn {
+  width: 40px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: background-color var(--duration-fast);
+}
+
+.pdp-qty-btn:hover:not(:disabled) {
+  background-color: var(--color-border);
+}
+
+.pdp-qty-btn:disabled {
+  color: var(--color-text-tertiary);
+  cursor: not-allowed;
+}
+
+.pdp-qty-display {
+  width: 40px;
+  text-align: center;
+  font-weight: var(--weight-medium);
+}
+
+.pdp-add-btn {
+  flex-grow: 1;
+  height: 48px;
+  font-size: var(--text-lg);
+}
+
+/* Accordion Info */
+.pdp-accordion-group {
+  margin-top: var(--space-8);
+  border-top: 1px solid var(--color-border);
+}
+
+.pdp-accordion-item {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.pdp-accordion-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-4) 0;
+  background: none;
+  border: none;
+  color: var(--color-text-primary);
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-semibold);
+  cursor: pointer;
+}
+
+.pdp-accordion-content {
+  padding-bottom: var(--space-4);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+.pdp-accordion-list {
+  list-style: disc;
+  padding-left: var(--space-6);
+  margin-top: var(--space-2);
+}
+
+.pdp-features-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+.pdp-feature-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.pdp-feature-bullet {
+  width: 6px;
+  height: 6px;
+  background-color: var(--color-gold);
+  border-radius: var(--radius-full);
+  margin-top: 8px;
+  flex-shrink: 0;
+  box-shadow: 0 0 8px var(--color-gold);
+}
+
+.pdp-feature-label {
+  font-weight: var(--weight-semibold);
+  margin-right: var(--space-1);
+}
+
+.pdp-feature-desc {
+  color: var(--color-text-secondary);
+}
+
+.pdp-tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.pdp-tag-pill {
+  font-size: var(--text-xs);
+  color: var(--color-gold);
+  background-color: rgba(201, 164, 92, 0.1);
+  border: 1px solid rgba(201, 164, 92, 0.2);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  text-transform: capitalize;
+  letter-spacing: var(--tracking-wide);
+  transition: all var(--duration-fast);
+}
+
+.pdp-tag-pill:hover {
+  background-color: rgba(201, 164, 92, 0.2);
+  border-color: var(--color-gold);
+}

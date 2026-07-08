@@ -1,0 +1,23 @@
+.mobile-nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  color: var(--color-text-secondary);
+  font-weight: var(--weight-medium);
+  font-size: var(--text-sm);
+  border-radius: var(--radius-md);
+  transition: var(--transition-colors);
+  margin: 0 var(--space-2);
+}
+
+.mobile-nav-item:hover,
+.mobile-nav-item:active {
+  background-color: var(--color-bg-hover);
+  color: var(--color-text-primary);
+}
+
+.mobile-nav-item.active {
+  background-color: var(--color-surface-hover);
+  color: var(--color-accent);
+}

@@ -1,0 +1,167 @@
+.empty-state-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 5rem 2rem;
+  margin-top: 2rem;
+  width: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* Subtle background radial glow behind the card */
+.empty-state-backdrop-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, rgba(122, 22, 36, 0.15) 0%, rgba(201, 164, 92, 0.05) 50%, transparent 100%);
+  filter: blur(40px);
+  z-index: -1;
+  pointer-events: none;
+  animation: pulse-glow 8s infinite alternate ease-in-out;
+}
+
+.empty-state-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 480px;
+  width: 100%;
+  padding: 3rem 2.5rem;
+  border-radius: 20px;
+  background: rgba(18, 18, 18, 0.4);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 
+    0 10px 30px -10px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.empty-state-card:hover {
+  border-color: rgba(122, 22, 36, 0.25);
+  box-shadow: 
+    0 15px 40px -10px rgba(122, 22, 36, 0.1),
+    0 10px 30px -10px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* Icon Container with radial glows and thin borders */
+.empty-state-icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  margin-bottom: 2rem;
+}
+
+.empty-state-icon-glow {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--color-accent), var(--color-gold));
+  opacity: 0.3;
+  filter: blur(14px);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: float-icon 4s infinite alternate ease-in-out;
+}
+
+.empty-state-icon-inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(25, 25, 25, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 2px 5px rgba(255, 255, 255, 0.05);
+  color: var(--color-gold); /* Gold theme */
+  animation: float-icon 4s infinite alternate ease-in-out;
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.empty-state-card:hover .empty-state-icon-inner {
+  border-color: rgba(201, 164, 92, 0.4);
+  transform: scale(1.05);
+}
+
+.empty-state-default-icon {
+  background: linear-gradient(135deg, var(--color-gold), var(--color-accent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: var(--color-gold);
+}
+
+/* Typography styles */
+.empty-state-title {
+  font-family: var(--font-primary, 'Outfit', 'Inter', sans-serif);
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  margin-bottom: 0.75rem;
+}
+
+.empty-state-description {
+  font-family: var(--font-primary, 'Inter', sans-serif);
+  font-size: 0.925rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 2.25rem;
+}
+
+/* Custom styles for action button to feel premium */
+.empty-state-action-btn {
+  background: transparent !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  color: #ffffff !important;
+  transition: all 0.3s ease !important;
+  padding: 0.75rem 2rem !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.03em !important;
+  text-transform: uppercase !important;
+  font-size: 0.75rem !important;
+}
+
+.empty-state-action-btn:hover {
+  background: linear-gradient(135deg, rgba(122, 22, 36, 0.2), rgba(201, 164, 92, 0.2)) !important;
+  border-color: rgba(201, 164, 92, 0.5) !important;
+  box-shadow: 0 0 15px rgba(201, 164, 92, 0.25) !important;
+  transform: translateY(-2px);
+}
+
+/* Keyframes animations */
+@keyframes pulse-glow {
+  0% {
+    width: 200px;
+    height: 200px;
+    opacity: 0.8;
+  }
+  100% {
+    width: 300px;
+    height: 300px;
+    opacity: 1.2;
+  }
+}
+
+@keyframes float-icon {
+  0% {
+    transform: translateY(0px);
+  }
+  100% {
+    transform: translateY(-6px);
+  }
+}
