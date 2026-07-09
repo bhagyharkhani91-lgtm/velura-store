@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Container } from '../../../components/layout/Container/Container';
 import { useAuthStore } from '../../../stores/authStore';
 import { Input } from '../../../components/ui/Input/Input';
 import { Button } from '../../../components/ui/Button/Button';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '../../../lib/supabase';
 import './ProfilePage.css';
 
 export function ProfilePage() {
@@ -18,6 +19,9 @@ export function ProfilePage() {
   });
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   // Initialize form data when user is loaded
   if (user && formData.name === '' && !isEditing) {
@@ -65,6 +69,42 @@ export function ProfilePage() {
     }
   };
 
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    setError(null);
+
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user?.id}-${Math.random()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      const { data } = supabase.storage.from('avatars').getPublicUrl(filePath);
+      
+      const result = await updateProfile({ avatarUrl: data.publicUrl });
+      if (result.error) throw result.error;
+      
+    } catch (err: any) {
+      setError(err.message || 'Error uploading avatar. Make sure the "avatars" storage bucket exists.');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const triggerFileInput = () => {
+    fileInputRef.current?.click();
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -72,18 +112,38 @@ export function ProfilePage() {
 
   return (
     <Container className="py-16">
-      <div className="profile-page-header mb-12 hidden">
-        {/* Hiding header if we want to match exactly, but let's just leave it out from the layout and maybe keep it for accessibility, or just remove the visible header to match wireframe. */}
+      <div className="profile-page-header mb-12">
+        <h1 className="heading-4xl">Hi, {user.name || 'User'}</h1>
       </div>
 
-      <div className="profile-content grid grid-cols-1 md:grid-cols-3 gap-12 max-w-6xl mx-auto mt-8">
+      <div className="profile-content grid grid-cols-1 md:grid-cols-3 gap-16 md:gap-24 max-w-6xl mx-auto mt-8">
         <div className="md:col-span-1">
           <div className="profile-card h-full justify-start pt-16 pb-16">
-            <div className="profile-avatar-large">
-              {/* Empty avatar as per wireframe */}
+            <div className="profile-avatar-large relative">
+              {user.avatarUrl ? (
+                <img src={user.avatarUrl} alt={user.name} className="w-full h-full object-cover rounded-full" />
+              ) : null}
             </div>
-            <p className="text-secondary text-base mt-12">{user.email}</p>
-            <p className="text-secondary text-base mt-6 capitalize">{user.role === 'admin' ? 'administrator' : 'customer'}</p>
+            
+            <input 
+              type="file" 
+              ref={fileInputRef} 
+              className="hidden" 
+              accept="image/*" 
+              onChange={handleFileChange} 
+            />
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="mt-8" 
+              onClick={triggerFileInput}
+              disabled={isUploading}
+            >
+              {isUploading ? 'Uploading...' : 'Change Photo'}
+            </Button>
+
+            <p className="text-secondary text-base mt-8">{user.email}</p>
+            <p className="text-secondary text-base mt-4 capitalize">{user.role === 'admin' ? 'administrator' : 'customer'}</p>
           </div>
         </div>
 

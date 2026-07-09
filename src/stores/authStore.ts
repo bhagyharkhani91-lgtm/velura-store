@@ -5,6 +5,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
+  avatarUrl?: string;
   phone?: string;
   dateOfBirth?: string;
   role: 'customer' | 'admin';
@@ -42,7 +43,8 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
       .update({
         name: data.name,
         phone: data.phone,
-        date_of_birth: data.dateOfBirth
+        date_of_birth: data.dateOfBirth,
+        avatar_url: data.avatarUrl
       })
       .eq('id', user.id);
 
@@ -83,6 +85,7 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
             id: session.user.id,
             email: session.user.email || '',
             name: profile.name || '',
+            avatarUrl: profile.avatar_url || '',
             phone: profile.phone || '',
             dateOfBirth: profile.date_of_birth || '',
             role: profile.role || 'customer'
@@ -125,6 +128,7 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
                id: session.user.id,
                email: session.user.email || '',
                name: profile.name || '',
+               avatarUrl: profile.avatar_url || '',
                phone: profile.phone || '',
                dateOfBirth: profile.date_of_birth || '',
                role: profile.role || 'customer'
