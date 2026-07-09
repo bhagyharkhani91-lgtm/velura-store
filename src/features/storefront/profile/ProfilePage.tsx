@@ -112,11 +112,11 @@ export function ProfilePage() {
 
   return (
     <Container className="py-16">
-      <div className="profile-page-header mb-12">
+      <div className="profile-page-header mb-16">
         <h1 className="heading-4xl">Hi, {user.name || 'User'}</h1>
       </div>
 
-      <div className="profile-content grid grid-cols-1 md:grid-cols-3 gap-16 md:gap-24 max-w-6xl mx-auto mt-8">
+      <div className="profile-content grid grid-cols-1 md:grid-cols-3 gap-24 md:gap-32 max-w-6xl mx-auto mt-8">
         <div className="md:col-span-1">
           <div className="profile-card h-full justify-start pt-16 pb-16">
             <div className="profile-avatar-large relative">
@@ -197,7 +197,7 @@ export function ProfilePage() {
                 />
               </div>
 
-              <div className="pt-8 flex justify-center">
+              <div className="pt-12 mt-8 flex justify-center">
                 {isEditing ? (
                   <div className="flex gap-4">
                     <Button 
