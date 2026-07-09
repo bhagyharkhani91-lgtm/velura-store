@@ -72,28 +72,24 @@ export function ProfilePage() {
 
   return (
     <Container className="py-16">
-      <div className="profile-page-header mb-12">
-        <h1 className="heading-4xl">My Profile</h1>
-        <p className="text-secondary text-lg mt-3">Manage your personal information and preferences.</p>
+      <div className="profile-page-header mb-12 hidden">
+        {/* Hiding header if we want to match exactly, but let's just leave it out from the layout and maybe keep it for accessibility, or just remove the visible header to match wireframe. */}
       </div>
 
-      <div className="profile-content grid grid-cols-1 md:grid-cols-3 gap-12">
+      <div className="profile-content grid grid-cols-1 md:grid-cols-3 gap-12 max-w-6xl mx-auto mt-8">
         <div className="md:col-span-1">
-          <div className="profile-card">
+          <div className="profile-card h-full justify-start pt-16 pb-16">
             <div className="profile-avatar-large">
-              {user.name?.charAt(0) || 'U'}
+              {/* Empty avatar as per wireframe */}
             </div>
-            <h3 className="text-2xl font-bold mt-6">{user.name}</h3>
-            <p className="text-secondary text-base mt-2">{user.email}</p>
-            <span className="badge mt-5" style={{ background: 'var(--color-accent-subtle)', color: '#fff', padding: '6px 16px', borderRadius: '6px', fontSize: '14px' }}>
-              {user.role === 'admin' ? 'Administrator' : 'Customer'}
-            </span>
+            <p className="text-secondary text-base mt-12">{user.email}</p>
+            <p className="text-secondary text-base mt-6 capitalize">{user.role === 'admin' ? 'administrator' : 'customer'}</p>
           </div>
         </div>
 
         <div className="md:col-span-2">
           <div className="profile-details-card">
-            <h3 className="text-2xl font-semibold mb-8 border-b border-border pb-4">Personal Details</h3>
+            <h3 className="text-lg font-medium text-secondary mb-8">Personal Details</h3>
             
             {error && (
               <div className="mb-8 p-4 bg-red-500/10 border border-red-500/20 text-red-500 rounded-md text-lg">
@@ -101,8 +97,8 @@ export function ProfilePage() {
               </div>
             )}
 
-            <form className="space-y-8" onSubmit={(e) => e.preventDefault()}>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <form className="space-y-8 max-w-xl" onSubmit={(e) => e.preventDefault()}>
+              <div className="space-y-6">
                 <Input 
                   label="Full Name" 
                   name="name"
@@ -112,17 +108,14 @@ export function ProfilePage() {
                   disabled={!isEditing} 
                 />
                 <Input 
-                  label="Email Address" 
+                  label="Email" 
                   type="email" 
                   inputSize="lg"
                   value={user.email} 
                   disabled 
                 />
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <Input 
-                  label="Phone Number" 
+                  label="Phone" 
                   name="phone"
                   inputSize="lg"
                   value={isEditing ? formData.phone : (user.phone || 'Not provided')} 
@@ -140,9 +133,9 @@ export function ProfilePage() {
                 />
               </div>
 
-              <div className="pt-6 mt-8 border-t border-border flex gap-4">
+              <div className="pt-8 flex justify-center">
                 {isEditing ? (
-                  <>
+                  <div className="flex gap-4">
                     <Button 
                       variant="primary" 
                       size="lg"
@@ -159,10 +152,10 @@ export function ProfilePage() {
                     >
                       Cancel
                     </Button>
-                  </>
+                  </div>
                 ) : (
                   <Button variant="outline" size="lg" onClick={handleEditClick}>
-                    Edit Profile
+                    Edit Details
                   </Button>
                 )}
               </div>
