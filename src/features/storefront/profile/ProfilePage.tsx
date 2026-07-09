@@ -122,7 +122,11 @@ export function ProfilePage() {
             <div className="profile-avatar-large relative">
               {user.avatarUrl ? (
                 <img src={user.avatarUrl} alt={user.name} className="w-full h-full object-cover rounded-full" />
-              ) : null}
+              ) : (
+                <span className="uppercase select-none">
+                  {user.name ? user.name.charAt(0) : user.email?.charAt(0) || 'U'}
+                </span>
+              )}
             </div>
             
             <input 
