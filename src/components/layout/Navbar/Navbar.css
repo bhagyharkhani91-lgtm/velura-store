@@ -381,10 +381,6 @@
     inset 0 0 8px rgba(255, 255, 255, 0.15);
 }
 
-.category-all {
-  color: var(--color-info);
-}
-
 .category-all:hover {
   color: var(--color-info);
   background: rgba(71, 145, 219, 0.12);
