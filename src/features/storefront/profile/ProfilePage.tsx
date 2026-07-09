@@ -152,8 +152,8 @@ export function ProfilePage() {
         </div>
 
         <div className="md:col-span-2">
-          <div className="profile-details-card">
-            <h3 className="text-lg font-medium text-secondary mb-8">Personal Details</h3>
+          <div className="profile-details-card h-full">
+            <h3 className="text-2xl font-semibold mb-8 text-primary">Personal Details</h3>
             
             {error && (
               <div className="mb-8 p-4 bg-red-500/10 border border-red-500/20 text-red-500 rounded-md text-lg">
