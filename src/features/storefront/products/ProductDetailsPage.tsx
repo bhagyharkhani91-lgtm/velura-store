@@ -8,6 +8,7 @@ import { useProductStore } from '../../../stores/productStore';
 import { formatPrice } from '../../../utils';
 import type { Product, ProductVariant } from '../../../types/product';
 import { ProductReviewsSection } from './ProductReviewsSection';
+import { useReviewsStore } from '../../../stores/reviewsStore';
 import './ProductDetailsPage.css';
 
 export function ProductDetailsPage() {
@@ -26,6 +27,12 @@ export function ProductDetailsPage() {
   });
 
   const { getProductBySlug } = useProductStore();
+  const { reviews, isLoading: isReviewsLoading } = useReviewsStore();
+
+  const dynamicReviewCount = reviews.length;
+  const dynamicRating = dynamicReviewCount > 0 
+    ? Number((reviews.reduce((acc, r) => acc + r.rating, 0) / dynamicReviewCount).toFixed(1))
+    : 0;
 
   useEffect(() => {
     // Find product by slug from the store
@@ -78,6 +85,9 @@ export function ProductDetailsPage() {
   const activeImage = product.images.find(img => img.id === activeImageId);
   const displayPrice = selectedVariant ? selectedVariant.price : product.price;
 
+  const displayRating = dynamicReviewCount > 0 ? dynamicRating : (isReviewsLoading ? product.rating : 0);
+  const displayReviewCount = dynamicReviewCount > 0 ? dynamicReviewCount : (isReviewsLoading ? product.reviewCount : 0);
+
   return (
     <div className="pdp-page">
       <Container>
@@ -117,10 +127,10 @@ export function ProductDetailsPage() {
               <h1 className="pdp-title">{product.name}</h1>
               <div className="pdp-meta">
                 <div className="pdp-rating">
-                  <Star size={16} fill="currentColor" />
-                  <span className="font-medium text-white">{product.rating}</span>
+                  <Star size={16} fill="#FACC15" color="#FACC15" />
+                  <span className="font-medium text-white">{displayRating}</span>
                 </div>
-                <span>({product.reviewCount} Reviews)</span>
+                <span>({displayReviewCount} Reviews)</span>
                 <span>•</span>
                 <span className={product.inStock ? 'text-success' : 'text-error'}>
                   {product.inStock ? 'In Stock' : 'Out of Stock'}
