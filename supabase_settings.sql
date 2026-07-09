@@ -1,6 +1,7 @@
 create table if not exists public.site_settings (
   id integer primary key default 1 check (id = 1),
   promo_messages jsonb default '["50% DISCOUNT ON ALL PRODUCTS", "CASH ON DELIVERY AVAILABLE", "100% DISCREET PACKAGING"]'::jsonb,
+  hero_banners jsonb default '[]'::jsonb,
   contact_title text default 'CONTACT OUR CONCIERGE',
   contact_description text default 'Have a question about our premium collections or require discreet guidance? Our dedicated wellness consultants are available to assist you.',
   contact_email text default 'support@velura.com',

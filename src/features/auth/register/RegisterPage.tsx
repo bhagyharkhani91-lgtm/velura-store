@@ -16,6 +16,20 @@ export function RegisterPage() {
   
   const navigate = useNavigate();
 
+  const handleGoogleAuth = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin
+        }
+      });
+      if (error) throw error;
+    } catch (err: any) {
+      setError(err.message || 'An error occurred with Google authentication.');
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -131,6 +145,7 @@ export function RegisterPage() {
           size="lg" 
           className="w-full"
           type="button"
+          onClick={handleGoogleAuth}
         >
           Sign up with Google
         </Button>

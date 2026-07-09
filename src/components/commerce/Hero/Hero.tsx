@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Lock, Package, Star } from 'lucide-react';
 import { Container } from '../../layout/Container/Container';
+import { useSettingsStore } from '../../../stores/settingsStore';
 import './Hero.css';
 
 import heroVibe from '../../../assets/hero_luxury_vibe.png';
@@ -9,7 +10,7 @@ import heroCouplesRing from '../../../assets/hero_couples_ring.png';
 import heroMassageOil from '../../../assets/hero_massage_oil.png';
 import heroLuxuryDildo from '../../../assets/hero_luxury_dildo.png';
 
-const backgrounds = [
+const defaultBackgrounds = [
   heroVibe,
   heroCouplesRing,
   heroMassageOil,
@@ -17,7 +18,19 @@ const backgrounds = [
 ];
 
 export function Hero() {
+  const { heroBanners } = useSettingsStore();
+  
+  const activeBanners = (heroBanners || [])
+    .filter(banner => banner?.isActive)
+    .map(banner => banner?.url);
+
+  const backgrounds = activeBanners.length > 0 ? activeBanners : defaultBackgrounds;
+
   const [currentBg, setCurrentBg] = useState(0);
+
+  useEffect(() => {
+    setCurrentBg(0);
+  }, [backgrounds.length]);
 
   useEffect(() => {
     const timer = setInterval(() => {

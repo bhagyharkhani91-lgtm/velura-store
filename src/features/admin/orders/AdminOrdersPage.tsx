@@ -41,7 +41,7 @@ export function AdminOrdersPage() {
       order.orderNumber,
       new Date(order.createdAt).toLocaleDateString('en-IN'),
       `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}`,
-      order.shippingAddress.email || '',
+      (order.shippingAddress as any).email || '',
       order.shippingAddress.phone || '',
       order.shippingAddress.city || '',
       order.shippingAddress.state || '',
