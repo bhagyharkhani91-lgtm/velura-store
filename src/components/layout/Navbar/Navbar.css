@@ -381,3 +381,28 @@
     inset 0 0 8px rgba(255, 255, 255, 0.15);
 }
 
+.category-all {
+  color: var(--color-info);
+}
+
+.category-all:hover {
+  color: var(--color-info);
+  background: rgba(71, 145, 219, 0.12);
+  border-color: rgba(71, 145, 219, 0.45);
+  box-shadow:
+    0 0 10px rgba(71, 145, 219, 0.35),
+    0 0 22px rgba(71, 145, 219, 0.2),
+    inset 0 0 8px rgba(71, 145, 219, 0.08);
+  transform: translateY(-1px);
+}
+
+.category-link.active.category-all {
+  color: white;
+  background: var(--color-info);
+  border-color: var(--color-info);
+  box-shadow:
+    0 0 15px rgba(71, 145, 219, 0.4),
+    0 0 25px rgba(71, 145, 219, 0.25),
+    inset 0 0 8px rgba(255, 255, 255, 0.15);
+}
+

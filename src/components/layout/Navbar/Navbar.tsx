@@ -44,19 +44,19 @@ export function Navbar() {
   const otherCats = filteredCats.filter(c => c.slug !== 'fresh-picks');
 
   const navCategories = [
-    { name: 'Home', path: '/', highlight: false },
-    { name: 'All', path: '/products', highlight: false },
+    { name: 'Home', path: '/', type: 'normal' },
+    { name: 'All', path: '/products', type: 'all' },
     ...(freshPicks
       ? [{
           name: freshPicks.name,
           path: `/categories/${freshPicks.slug}`,
-          highlight: true
+          type: 'highlight'
         }]
       : []),
     ...otherCats.map(c => ({
       name: c.name,
       path: `/categories/${c.slug}`,
-      highlight: false
+      type: 'normal'
     }))
   ];
 
@@ -187,7 +187,7 @@ export function Navbar() {
                       to={category.path} 
                       end={category.path === '/'}
                       className={({ isActive }) => 
-                        `category-link ${isActive ? 'active' : ''} ${category.highlight ? 'category-highlight' : ''}`
+                        `category-link ${isActive ? 'active' : ''} ${category.type === 'highlight' ? 'category-highlight' : ''} ${category.type === 'all' ? 'category-all' : ''}`
                       }
                     >
                       {category.name}
