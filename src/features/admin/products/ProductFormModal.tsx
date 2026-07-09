@@ -174,7 +174,6 @@ export function ProductFormModal({ isOpen, onClose, editingProduct, initialCateg
                 value={formData.compareAtPrice}
                 onChange={e => setFormData({...formData, compareAtPrice: e.target.value})}
               />
-              <p className="text-xs text-secondary mt-1">Shown with strikethrough if higher than selling price</p>
             </div>
             <div className="flex-1">
               <label className="block text-sm font-medium text-secondary mb-1">Selling Price (₹)</label>
