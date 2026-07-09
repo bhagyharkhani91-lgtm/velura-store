@@ -45,6 +45,7 @@ export function Navbar() {
 
   const navCategories = [
     { name: 'Home', path: '/', highlight: false },
+    { name: 'All', path: '/products', highlight: false },
     ...(freshPicks
       ? [{
           name: freshPicks.name,
