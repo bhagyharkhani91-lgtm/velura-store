@@ -161,8 +161,8 @@ export function ProfilePage() {
               </div>
             )}
 
-            <form className="space-y-12 max-w-xl" onSubmit={(e) => e.preventDefault()}>
-              <div className="space-y-10">
+            <form className="flex flex-col gap-8 max-w-xl" onSubmit={(e) => e.preventDefault()}>
+              <div className="flex flex-col gap-6">
                 <Input 
                   label="Full Name" 
                   name="name"
