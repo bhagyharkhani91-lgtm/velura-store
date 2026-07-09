@@ -1,11 +1,14 @@
+import { useState } from 'react';
 import { ShoppingCart, Users, DollarSign, Package } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useOrdersStore } from '../../../stores/ordersStore';
 import { useProductStore } from '../../../stores/productStore';
 import { formatPrice } from '../../../utils';
 import { RecentSalesChart } from './RecentSalesChart';
+import { Modal } from '../../../components/ui/Modal/Modal';
 
 export function AdminDashboard() {
+  const [isOrdersModalOpen, setIsOrdersModalOpen] = useState(false);
   const { orders, getTotalRevenue, getTotalOrdersCount } = useOrdersStore();
   const { products } = useProductStore();
   const navigate = useNavigate();
@@ -106,8 +109,69 @@ export function AdminDashboard() {
               ))
             )}
           </div>
+          {orders.length > 0 && (
+            <div className="mt-8 flex justify-end pt-4 border-t border-border">
+              <button 
+                onClick={() => setIsOrdersModalOpen(true)}
+                className="text-sm font-medium text-gold transition-colors flex items-center gap-1"
+                style={{ cursor: 'pointer' }}
+              >
+                View All
+              </button>
+            </div>
+          )}
         </div>
       </div>
+
+      <Modal 
+        isOpen={isOrdersModalOpen} 
+        onClose={() => setIsOrdersModalOpen(false)}
+        title="All Orders"
+        size="lg"
+      >
+        <div className="space-y-6 max-h-[70vh] overflow-y-auto pr-2">
+          {orders.map(order => (
+            <div key={order.id} className="bg-surface p-4 rounded-lg border border-border">
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <h4 className="font-semibold text-primary">#{order.orderNumber}</h4>
+                  <p className="text-sm text-secondary">
+                    {new Date(order.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="font-bold text-primary">{formatPrice(order.total)}</p>
+                  <span className="text-xs bg-success-muted text-success px-2 py-1 rounded capitalize mt-1 inline-block">
+                    {order.status}
+                  </span>
+                </div>
+              </div>
+              
+              <div className="border-t border-border pt-4">
+                <h5 className="text-sm font-medium mb-2 text-primary">Items</h5>
+                <div className="space-y-2">
+                  {order.items.map((item, idx) => (
+                    <div key={idx} className="flex justify-between text-sm">
+                      <span className="text-secondary">{item.quantity}x {item.name}</span>
+                      <span className="text-primary">{formatPrice(item.price * item.quantity)}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {order.shippingAddress && (
+                <div className="border-t border-border pt-4 mt-4">
+                  <h5 className="text-sm font-medium mb-2 text-primary">Shipping To</h5>
+                  <p className="text-sm text-secondary">
+                    {order.shippingAddress.firstName} {order.shippingAddress.lastName}<br />
+                    {order.shippingAddress.city}, {order.shippingAddress.state}
+                  </p>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </Modal>
     </div>
   );
 }

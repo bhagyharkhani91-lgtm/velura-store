@@ -1,22 +1,45 @@
 import { useState } from 'react';
 import { Button } from '../../../components/ui/Button/Button';
-import { Search, Eye, Download, Package } from 'lucide-react';
+import { Search, Download, Package } from 'lucide-react';
 import { useOrdersStore } from '../../../stores/ordersStore';
 import { formatPrice } from '../../../utils';
+import type { Order } from '../../../types/order';
+import { useProductStore } from '../../../stores/productStore';
+import { OrderDetailsModal } from './components/OrderDetailsModal';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import { Modal } from '../../../components/ui/Modal/Modal';
 
 const TABS = [
-  { id: 'on-hold', label: 'On Hold', statuses: ['processing'] },
+  { id: 'today', label: 'Today', statuses: ['processing'] },
   { id: 'pending', label: 'Pending', statuses: ['pending'] },
   { id: 'ready-to-ship', label: 'Ready to Ship', statuses: ['confirmed'] },
   { id: 'shipped', label: 'Shipped', statuses: ['shipped', 'delivered'] },
   { id: 'cancelled', label: 'Cancelled', statuses: ['cancelled', 'refunded', 'returned'] }
 ];
 
+const isToday = (dateString: string) => {
+  const date = new Date(dateString);
+  const today = new Date();
+  return date.getDate() === today.getDate() &&
+    date.getMonth() === today.getMonth() &&
+    date.getFullYear() === today.getFullYear();
+};
+
 export function AdminOrdersPage() {
   const { orders, updateOrderStatus } = useOrdersStore();
-  const [activeTab, setActiveTab] = useState('on-hold');
+  const { products } = useProductStore();
+  const [activeTab, setActiveTab] = useState('today');
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
+  const [exportStartDate, setExportStartDate] = useState(new Date().toISOString().split('T')[0]);
+  const [exportEndDate, setExportEndDate] = useState(new Date().toISOString().split('T')[0]);
+  const [exportAllTime, setExportAllTime] = useState(false);
 
   const filteredOrders = orders.filter(order => {
+    if (activeTab === 'today') {
+      return isToday(order.createdAt);
+    }
     const tab = TABS.find(t => t.id === activeTab);
     return tab ? tab.statuses.includes(order.status) : true;
   });
@@ -65,6 +88,113 @@ export function AdminOrdersPage() {
     document.body.removeChild(link);
   };
 
+  const generateOrdersPDF = () => {
+    let pdfOrders = orders;
+    
+    if (!exportAllTime) {
+      const start = new Date(exportStartDate);
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(exportEndDate);
+      end.setHours(23, 59, 59, 999);
+      
+      pdfOrders = orders.filter(order => {
+        const orderDate = new Date(order.createdAt);
+        return orderDate >= start && orderDate <= end;
+      });
+    }
+
+    if (pdfOrders.length === 0) {
+      return;
+    }
+
+    const aggregatedData: Record<string, { sku: string; color: string; size: string; quantity: number }> = {};
+    
+    pdfOrders.forEach(order => {
+      order.items.forEach(item => {
+        const product = products.find((p: any) => p.id === item.productId);
+        let sku = item.name;
+        let color = 'NA';
+        let size = 'Free Size';
+        
+        if (product) {
+          if (item.variantId) {
+            const variant = product.variants.find((v: any) => v.id === item.variantId);
+            if (variant) {
+              sku = variant.sku || variant.name || sku;
+              color = variant.color || 'NA';
+              size = variant.size || 'Free Size';
+            }
+          } else {
+             if (product.variants.length > 0) {
+                 sku = product.variants[0].sku || product.slug;
+             } else {
+                 sku = product.slug || item.productId;
+             }
+          }
+        }
+
+        if (color === 'NA' && size === 'Free Size' && item.variant) {
+           const parts = item.variant.split('/').map(s => s.trim());
+           if (parts.length === 2) {
+             color = parts[0];
+             size = parts[1];
+           } else if (parts.length === 1) {
+             color = parts[0];
+           }
+        }
+
+        const key = `${sku}_${color}_${size}`;
+        if (!aggregatedData[key]) {
+          aggregatedData[key] = { sku, color, size, quantity: 0 };
+        }
+        aggregatedData[key].quantity += item.quantity;
+      });
+    });
+
+    const doc = new jsPDF();
+    let titleDateStr = 'All Time';
+    if (!exportAllTime) {
+      const startStr = new Date(exportStartDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).replace(/ /g, ' ');
+      const endStr = new Date(exportEndDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).replace(/ /g, ' ');
+      titleDateStr = startStr === endStr ? startStr : `${startStr} - ${endStr}`;
+    }
+    
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.text(`Date : ${titleDateStr}`, 14, 20);
+
+    const tableBody = Object.values(aggregatedData).map(row => [
+      row.sku, row.color, row.size, row.quantity.toString()
+    ]);
+
+    autoTable(doc, {
+      startY: 28,
+      head: [['SKU', 'Color', 'Size', 'Total Quantity']],
+      body: tableBody,
+      theme: 'grid',
+      headStyles: {
+        fillColor: [255, 255, 255],
+        textColor: [0, 0, 0],
+        lineColor: [0, 0, 0],
+        lineWidth: 0.1,
+        fontStyle: 'bold',
+        halign: 'center',
+      },
+      bodyStyles: {
+        lineColor: [0, 0, 0],
+        lineWidth: 0.1,
+        halign: 'center',
+      },
+      styles: {
+        font: 'helvetica',
+        fontSize: 10,
+        cellPadding: 4,
+      }
+    });
+
+    doc.save(`today_orders_${new Date().toISOString().split('T')[0]}.pdf`);
+  };
+
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
@@ -76,7 +206,9 @@ export function AdminOrdersPage() {
         {/* Tabs */}
         <div className="flex border-b border-border">
           {TABS.map(tab => {
-            const count = orders.filter(o => tab.statuses.includes(o.status)).length;
+            const count = tab.id === 'today' 
+              ? orders.filter(o => isToday(o.createdAt)).length 
+              : orders.filter(o => tab.statuses.includes(o.status)).length;
             const isActive = activeTab === tab.id;
             return (
               <button
@@ -89,7 +221,7 @@ export function AdminOrdersPage() {
                 }`}
               >
                 {tab.label}
-                {['on-hold', 'pending', 'ready-to-ship'].includes(tab.id) && (
+                {['today', 'pending', 'ready-to-ship'].includes(tab.id) && (
                   <span>({count})</span>
                 )}
               </button>
@@ -100,32 +232,14 @@ export function AdminOrdersPage() {
         {/* Filters */}
         <div className="p-4 border-b border-border flex justify-between items-center bg-bg-secondary/20">
           <div className="flex items-center gap-3">
-            <span className="text-sm text-secondary whitespace-nowrap">Filter by :</span>
-            <div className="relative">
-              <select 
-                className="bg-surface border border-border rounded-md text-sm text-primary focus:outline-none focus:border-accent cursor-pointer"
-                style={{ 
-                  appearance: 'none',
-                  WebkitAppearance: 'none',
-                  paddingLeft: '1rem',
-                  paddingRight: '2.5rem',
-                  paddingTop: '0.625rem',
-                  paddingBottom: '0.625rem',
-                  minWidth: '160px',
-                  height: '42px'
-                }}
-              >
-                <option>Order Date</option>
-                <option>Total Amount</option>
-                <option>Customer Name</option>
-              </select>
-              <div 
-                className="absolute top-1/2 -translate-y-1/2 pointer-events-none"
-                style={{ right: '0.75rem' }}
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-secondary"><path d="m6 9 6 6 6-6"/></svg>
-              </div>
-            </div>
+            <Button 
+              variant="outline" 
+              leftIcon={<Download size={18} />}
+              onClick={() => setIsPdfModalOpen(true)}
+              style={{ color: 'var(--color-error)', borderColor: 'var(--color-error)' }}
+            >
+              EXPORT PDF
+            </Button>
           </div>
           
           <div className="flex items-center gap-4">
@@ -220,7 +334,11 @@ export function AdminOrdersPage() {
                     <span className="text-xs bg-success-muted text-success px-2 py-1 rounded">{order.paymentMethod}</span>
                   </td>
                   <td className="p-4">
-                    {order.status === 'pending' ? (
+                    {activeTab === 'today' ? (
+                      <span className={`inline-block text-xs px-2.5 py-1 rounded-md font-semibold capitalize ${getStatusColor(order.status)}`}>
+                        {order.status}
+                      </span>
+                    ) : order.status === 'pending' ? (
                       <div className="flex items-center gap-2">
                         <Button size="sm" onClick={() => updateOrderStatus(order.id, 'confirmed' as any)}>
                           Accept
@@ -244,9 +362,13 @@ export function AdminOrdersPage() {
                     )}
                   </td>
                   <td className="p-4 text-right">
-                    <button className="text-secondary hover:text-accent transition-colors">
-                      <Eye size={18} />
-                    </button>
+                    <Button 
+                      size="sm" 
+                      onClick={() => setSelectedOrder(order)}
+                      style={{ backgroundColor: '#D4AF37', color: 'black', border: 'none' }}
+                    >
+                      View Details
+                    </Button>
                   </td>
                 </tr>
               ))}
@@ -254,6 +376,68 @@ export function AdminOrdersPage() {
           </table>
         )}
       </div>
+
+      <OrderDetailsModal 
+        order={selectedOrder} 
+        onClose={() => setSelectedOrder(null)} 
+      />
+
+      <Modal
+        isOpen={isPdfModalOpen}
+        onClose={() => setIsPdfModalOpen(false)}
+        title="Export Orders to PDF"
+        size="sm"
+      >
+        <div className="space-y-6">
+          <div className="flex items-center gap-2">
+            <input 
+              type="checkbox" 
+              id="exportAllTime"
+              checked={exportAllTime}
+              onChange={(e) => setExportAllTime(e.target.checked)}
+              className="w-4 h-4 rounded border-border bg-bg-secondary text-accent focus:ring-accent cursor-pointer"
+            />
+            <label htmlFor="exportAllTime" className="text-sm font-medium text-primary cursor-pointer">
+              Export All Time (Whole)
+            </label>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm text-secondary mb-1">From Date</label>
+              <input 
+                type="date" 
+                value={exportStartDate}
+                onChange={(e) => setExportStartDate(e.target.value)}
+                disabled={exportAllTime}
+                className="w-full bg-surface border border-border rounded-md px-3 py-2 text-primary focus:outline-none focus:border-accent disabled:opacity-50"
+              />
+            </div>
+            <div>
+              <label className="block text-sm text-secondary mb-1">To Date</label>
+              <input 
+                type="date" 
+                value={exportEndDate}
+                onChange={(e) => setExportEndDate(e.target.value)}
+                disabled={exportAllTime}
+                className="w-full bg-surface border border-border rounded-md px-3 py-2 text-primary focus:outline-none focus:border-accent disabled:opacity-50"
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-3 pt-4 border-t border-border">
+            <Button variant="ghost" onClick={() => setIsPdfModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={() => {
+              generateOrdersPDF();
+              setIsPdfModalOpen(false);
+            }}>
+              Download PDF
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }
