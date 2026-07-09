@@ -93,8 +93,8 @@ export const router = createBrowserRouter([
         element: <ShippingPage />,
       },
       {
-        path: 'track-order',
-        element: <GenericInfoPage title="Track Order" />,
+        path: 'return',
+        element: <GenericInfoPage title="Return and Exchange Policy" />,
       },
       {
         path: 'privacy',

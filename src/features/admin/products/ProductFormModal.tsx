@@ -165,7 +165,7 @@ export function ProductFormModal({ isOpen, onClose, editingProduct, initialCateg
           
           <div className="flex gap-4">
             <div className="flex-1">
-              <label className="block text-sm font-medium text-secondary mb-1">Original Price / MRP (₹)</label>
+              <label className="block text-sm font-medium text-secondary mb-1">High Price (₹)</label>
               <input 
                 type="number" 
                 step="0.01"

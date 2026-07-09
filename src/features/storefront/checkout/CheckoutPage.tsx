@@ -241,14 +241,14 @@ export function CheckoutPage() {
             
             <div className="space-y-4 mb-6 max-h-[400px] overflow-y-auto pr-2">
               {items.map((item) => (
-                <div key={`${item.productId}-${item.variantId}`} className="flex gap-4">
-                  <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded" />
-                  <div className="flex-1">
-                    <h4 className="text-sm font-medium text-primary line-clamp-1">{item.name}</h4>
-                    {item.variant && <p className="text-xs text-secondary">{item.variant}</p>}
-                    <div className="flex justify-between mt-1">
-                      <span className="text-xs text-secondary">Qty: {item.quantity}</span>
-                      <span className="text-sm font-medium text-primary">{formatPrice(item.price * item.quantity)}</span>
+                <div key={`${item.productId}-${item.variantId}`} className="flex flex-col gap-3 pb-4 border-b border-border last:border-0 last:pb-0">
+                  <img src={item.image} alt={item.name} className="w-full h-48 object-cover rounded-md" />
+                  <div className="flex flex-col">
+                    <h4 className="text-base font-medium text-primary">{item.name}</h4>
+                    {item.variant && <p className="text-sm text-secondary">{item.variant}</p>}
+                    <div className="flex justify-between items-center mt-2">
+                      <span className="text-sm text-secondary">Qty: {item.quantity}</span>
+                      <span className="text-base font-medium text-primary">{formatPrice(item.price * item.quantity)}</span>
                     </div>
                   </div>
                 </div>

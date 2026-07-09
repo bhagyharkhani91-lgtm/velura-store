@@ -15,7 +15,9 @@ export function AdminSettingsPage() {
     contactPhone,
     contactAddress,
     contactHours,
-    setContactInfo
+    setContactInfo,
+    returnPolicy,
+    setReturnPolicy
   } = useSettingsStore();
   const { addToast } = useUIStore();
   
@@ -26,6 +28,7 @@ export function AdminSettingsPage() {
   const [phoneText, setPhoneText] = useState(contactPhone);
   const [addressText, setAddressText] = useState(contactAddress);
   const [hoursText, setHoursText] = useState(contactHours);
+  const [returnPolicyText, setReturnPolicyText] = useState(returnPolicy);
 
   const handleSave = () => {
     const newMessages = messagesText
@@ -42,6 +45,7 @@ export function AdminSettingsPage() {
       contactAddress: addressText,
       contactHours: hoursText
     });
+    setReturnPolicy(returnPolicyText);
 
     addToast({ 
       type: 'success', 
@@ -128,6 +132,22 @@ export function AdminSettingsPage() {
                   value={messagesText}
                   onChange={(e) => setMessagesText(e.target.value)}
                   placeholder="e.g. 50% DISCOUNT ON ALL PRODUCTS&#10;CASH ON DELIVERY AVAILABLE"
+                />
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-surface rounded-lg p-6 border border-border">
+            <h2 className="text-xl font-semibold mb-4 text-primary">Return and Exchange Policy</h2>
+            <p className="text-sm text-secondary mb-4">Update the return and exchange policy displayed to customers on the site.</p>
+            <div className="flex flex-col gap-4">
+              <div>
+                <textarea 
+                  className="w-full bg-bg-secondary border border-border rounded-md px-4 py-2 text-primary focus:outline-none focus:border-accent"
+                  rows={8}
+                  value={returnPolicyText}
+                  onChange={(e) => setReturnPolicyText(e.target.value)}
+                  placeholder="Enter the complete return and exchange policy here..."
                 />
               </div>
             </div>

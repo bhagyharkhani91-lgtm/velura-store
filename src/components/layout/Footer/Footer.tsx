@@ -60,7 +60,7 @@ export function Footer() {
                 <li><Link to="/contact">Contact Us</Link></li>
                 <li><Link to="/faq">FAQ</Link></li>
                 <li><Link to="/shipping">Shipping &amp; Returns</Link></li>
-                <li><Link to="/track-order">Track Order</Link></li>
+                <li><Link to="/return">Return and Exchange Policy</Link></li>
               </ul>
             </div>
 

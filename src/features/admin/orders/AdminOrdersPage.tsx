@@ -32,11 +32,44 @@ export function AdminOrdersPage() {
     }
   };
 
+  const exportCSV = () => {
+    if (filteredOrders.length === 0) return;
+    
+    const headers = ['Order ID', 'Date', 'Customer Name', 'Customer Email', 'Phone', 'City', 'State', 'Status', 'Total', 'Payment Method'];
+    
+    const csvData = filteredOrders.map(order => [
+      order.orderNumber,
+      new Date(order.createdAt).toLocaleDateString('en-IN'),
+      `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}`,
+      order.shippingAddress.email || '',
+      order.shippingAddress.phone || '',
+      order.shippingAddress.city || '',
+      order.shippingAddress.state || '',
+      order.status,
+      order.total,
+      order.paymentMethod
+    ]);
+    
+    const csvContent = [headers, ...csvData]
+      .map(row => row.map(item => `"${String(item).replace(/"/g, '""')}"`).join(","))
+      .join("\n");
+      
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `velura_orders_${activeTab}_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
         <h1 className="heading-3xl">Orders Management</h1>
-        <Button variant="outline" leftIcon={<Download size={18} />}>Export CSV</Button>
+        <Button variant="outline" leftIcon={<Download size={18} />} onClick={exportCSV} disabled={filteredOrders.length === 0}>Export CSV</Button>
       </div>
 
       <div className="bg-surface rounded-lg border border-border overflow-hidden">

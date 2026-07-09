@@ -9,9 +9,11 @@ interface SettingsState {
   contactPhone: string;
   contactAddress: string;
   contactHours: string;
+  returnPolicy: string;
   isLoading: boolean;
   fetchSettings: () => Promise<void>;
   setPromoMessages: (messages: string[]) => Promise<void>;
+  setReturnPolicy: (policy: string) => Promise<void>;
   setContactInfo: (info: {
     contactTitle: string;
     contactDescription: string;
@@ -34,6 +36,7 @@ export const useSettingsStore = create<SettingsState>()((set) => ({
   contactPhone: '+91 9914869069',
   contactAddress: 'Velura Luxury HQ, Suite 500, Mumbai, India',
   contactHours: 'Mon - Sat: 10:00 AM - 8:00 PM (IST)',
+  returnPolicy: 'At Velura, we strive to ensure your complete satisfaction. If you are not entirely satisfied with your purchase, we offer a hassle-free return and exchange process. You may return unworn, unwashed, and undamaged items within 30 days of delivery for a full refund or exchange. Please ensure that all original tags are attached and the items are returned in their original packaging. For health and hygiene reasons, certain intimate items are non-returnable. Please contact our concierge team at support@velura.com to initiate a return request.',
   isLoading: false,
 
   fetchSettings: async () => {
@@ -54,7 +57,8 @@ export const useSettingsStore = create<SettingsState>()((set) => ({
           contactEmail: data.contact_email || '',
           contactPhone: data.contact_phone || '',
           contactAddress: data.contact_address || '',
-          contactHours: data.contact_hours || ''
+          contactHours: data.contact_hours || '',
+          returnPolicy: data.return_policy || ''
         });
       }
     } catch (err) {
@@ -71,6 +75,16 @@ export const useSettingsStore = create<SettingsState>()((set) => ({
       set({ promoMessages: messages });
     } catch (err) {
       console.error('Error updating promo messages:', err);
+    }
+  },
+
+  setReturnPolicy: async (policy) => {
+    try {
+      const { error } = await supabase.from('site_settings').update({ return_policy: policy }).eq('id', 1);
+      if (error) throw error;
+      set({ returnPolicy: policy });
+    } catch (err) {
+      console.error('Error updating return policy:', err);
     }
   },
 
