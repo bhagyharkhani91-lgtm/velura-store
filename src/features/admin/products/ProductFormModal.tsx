@@ -27,7 +27,8 @@ export function ProductFormModal({ isOpen, onClose, editingProduct, initialCateg
     stockCount: '10',
     imageUrls: [] as string[],
     hasDiscreetShipping: true,
-    warrantyText: '1 Year Warranty'
+    warrantyText: '1 Year Warranty',
+    shippingCharge: '0'
   });
 
   useEffect(() => {
@@ -43,7 +44,8 @@ export function ProductFormModal({ isOpen, onClose, editingProduct, initialCateg
         stockCount: editingProduct.stockCount.toString(),
         imageUrls: editingProduct.images ? editingProduct.images.map(img => img.url) : [],
         hasDiscreetShipping: editingProduct.hasDiscreetShipping ?? true,
-        warrantyText: editingProduct.warrantyText ?? '1 Year Warranty'
+        warrantyText: editingProduct.warrantyText ?? '1 Year Warranty',
+        shippingCharge: editingProduct.shippingCharge ? editingProduct.shippingCharge.toString() : '0'
       });
     } else {
       setFormData({
@@ -57,7 +59,8 @@ export function ProductFormModal({ isOpen, onClose, editingProduct, initialCateg
         stockCount: '10',
         imageUrls: [],
         hasDiscreetShipping: true,
-        warrantyText: '1 Year Warranty'
+        warrantyText: '1 Year Warranty',
+        shippingCharge: '0'
       });
     }
   }, [editingProduct, initialCategoryId, isOpen]);
@@ -98,7 +101,8 @@ export function ProductFormModal({ isOpen, onClose, editingProduct, initialCateg
           isPrimary: idx === 0
         })),
         hasDiscreetShipping: formData.hasDiscreetShipping,
-        warrantyText: formData.warrantyText
+        warrantyText: formData.warrantyText,
+        shippingCharge: parseFloat(formData.shippingCharge) || 0
       });
     } else {
       addProduct({
@@ -131,7 +135,8 @@ export function ProductFormModal({ isOpen, onClose, editingProduct, initialCateg
         status: 'published',
         publishedAt: new Date().toISOString(),
         hasDiscreetShipping: formData.hasDiscreetShipping,
-        warrantyText: formData.warrantyText
+        warrantyText: formData.warrantyText,
+        shippingCharge: parseFloat(formData.shippingCharge) || 0
       });
     }
     
@@ -180,6 +185,17 @@ export function ProductFormModal({ isOpen, onClose, editingProduct, initialCateg
                 className="w-full bg-bg-secondary border border-border rounded-md px-4 py-2 text-primary focus:outline-none focus:border-accent"
                 value={formData.price}
                 onChange={e => setFormData({...formData, price: e.target.value})}
+              />
+            </div>
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-secondary mb-1">Shipping Charge (₹)</label>
+              <input 
+                type="number" 
+                required
+                step="0.01"
+                className="w-full bg-bg-secondary border border-border rounded-md px-4 py-2 text-primary focus:outline-none focus:border-accent"
+                value={formData.shippingCharge}
+                onChange={e => setFormData({...formData, shippingCharge: e.target.value})}
               />
             </div>
           </div>

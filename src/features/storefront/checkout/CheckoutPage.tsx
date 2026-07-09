@@ -30,7 +30,7 @@ export function CheckoutPage() {
   });
 
   const subtotal = getSubtotal();
-  const shipping = 100; // Flat ₹100 shipping
+  const shipping = items.reduce((total, item) => total + ((item.shippingCharge || 0) * item.quantity), 0);
   const total = subtotal + shipping;
 
   if (items.length === 0 && !isSuccess) {

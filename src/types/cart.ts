@@ -12,6 +12,7 @@ export interface CartItem {
   quantity: number;
   maxQuantity: number;
   variant?: string;
+  shippingCharge?: number;
 }
 
 export interface CartState {

@@ -11,18 +11,16 @@ export function HomePage() {
   const { products } = useProductStore();
 
   // Filter men's products strictly by category assignment
-  const allMenProducts = products.filter(p => p.categoryId === 'men-toys' || p.categoryId === 'top-men');
+  const allMenProducts = products.filter(p => p.categoryId === 'top-men');
 
   // Filter women's products strictly by category assignment
-  const allWomenProducts = products.filter(p => p.categoryId === 'women-toys' || p.categoryId === 'top-women');
+  const allWomenProducts = products.filter(p => p.categoryId === 'top-women');
 
   // Slice first 4 for display
   const displayMenProducts = allMenProducts.slice(0, 4);
   const displayWomenProducts = allWomenProducts.slice(0, 4);
 
-  // Check if we have more products than displayed
-  const hasMoreMen = allMenProducts.length > 4;
-  const hasMoreWomen = allWomenProducts.length > 4;
+
 
   // Category Links
   const menLink = '/categories/men-toys';
@@ -45,26 +43,20 @@ export function HomePage() {
                 <ProductCard key={`men-${product.id}`} product={product} />
               ))}
               
-              {hasMoreMen ? (
-                <div className="discover-more-card men">
-                  <div className="discover-more-overlay" />
-                  <div className="discover-more-content">
-                    <div className="discover-more-icon-container">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" width="28" height="28">
-                        <path d="M5 12h14M12 5l7 7-7 7" />
-                      </svg>
-                    </div>
-                    <p className="discover-more-text">Discover our premium collection for him.</p>
-                    <Link to={menLink} className="discover-more-link">
-                      <Button variant="outline" className="discover-more-btn">SEE MORE</Button>
-                    </Link>
+              <div className="discover-more-card men">
+                <div className="discover-more-overlay" />
+                <div className="discover-more-content">
+                  <div className="discover-more-icon-container">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" width="28" height="28">
+                      <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
                   </div>
+                  <p className="discover-more-text">Discover our premium collection for him.</p>
+                  <Link to={menLink} className="discover-more-link">
+                    <Button variant="outline" className="discover-more-btn">SEE MORE</Button>
+                  </Link>
                 </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center bg-bg-secondary/50 border border-border text-secondary rounded-lg p-6 text-center h-full">
-                  <p className="text-sm font-medium">No more products</p>
-                </div>
-              )}
+              </div>
             </div>
           ) : (
             <div className="py-12 text-center border border-border rounded-lg bg-bg-secondary/30">
@@ -89,26 +81,20 @@ export function HomePage() {
                 <ProductCard key={`women-${product.id}`} product={product} />
               ))}
               
-              {hasMoreWomen ? (
-                <div className="discover-more-card women">
-                  <div className="discover-more-overlay" />
-                  <div className="discover-more-content">
-                    <div className="discover-more-icon-container">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" width="28" height="28">
-                        <path d="M5 12h14M12 5l7 7-7 7" />
-                      </svg>
-                    </div>
-                    <p className="discover-more-text">Discover our premium collection for her.</p>
-                    <Link to={womenLink} className="discover-more-link">
-                      <Button variant="outline" className="discover-more-btn">SEE MORE</Button>
-                    </Link>
+              <div className="discover-more-card women">
+                <div className="discover-more-overlay" />
+                <div className="discover-more-content">
+                  <div className="discover-more-icon-container">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" width="28" height="28">
+                      <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
                   </div>
+                  <p className="discover-more-text">Discover our premium collection for her.</p>
+                  <Link to={womenLink} className="discover-more-link">
+                    <Button variant="outline" className="discover-more-btn">SEE MORE</Button>
+                  </Link>
                 </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center bg-bg-secondary/50 border border-border text-secondary rounded-lg p-6 text-center h-full">
-                  <p className="text-sm font-medium">No more products</p>
-                </div>
-              )}
+              </div>
             </div>
           ) : (
             <div className="py-12 text-center border border-border rounded-lg bg-bg-secondary/30">

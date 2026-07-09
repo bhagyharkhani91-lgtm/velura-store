@@ -59,4 +59,5 @@ export interface Product {
   status: 'published' | 'draft' | 'archived';
   hasDiscreetShipping?: boolean;
   warrantyText?: string;
+  shippingCharge?: number;
 }

@@ -32,6 +32,7 @@ export function ProductCard({ product }: ProductCardProps) {
       quantity: 1,
       maxQuantity: product.stockCount,
       variant: product.variants[0]?.name,
+      shippingCharge: product.shippingCharge || 0,
     });
     addToast({
       type: 'success',

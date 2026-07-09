@@ -70,7 +70,8 @@ export function ProductDetailsPage() {
       image: product.images[0]?.url || '',
       maxQuantity: selectedVariant?.stockCount || product.stockCount || 10,
       variantId: selectedVariant?.id,
-      variant: selectedVariant?.name
+      variant: selectedVariant?.name,
+      shippingCharge: product.shippingCharge || 0
     });
     openCart();
   };

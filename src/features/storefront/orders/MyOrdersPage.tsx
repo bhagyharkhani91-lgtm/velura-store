@@ -85,19 +85,20 @@ export function MyOrdersPage() {
                         {item.variant && <p className="text-xs text-secondary">Variant: {item.variant}</p>}
                         <p className="text-xs text-secondary">Qty: {item.quantity}</p>
                       </div>
-                      <div className="order-item-price ml-auto">
-                        {formatPrice(item.price * item.quantity)}
+                      <div className="order-item-price ml-auto flex flex-col items-end gap-2">
+                        <span>{formatPrice(item.price * item.quantity)}</span>
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedOrder(order);
+                          }}
+                          className="flex items-center gap-1 text-xs font-semibold uppercase text-gold hover:text-gold-hover transition-colors tracking-widest"
+                        >
+                          <Eye size={12} /> View Details
+                        </button>
                       </div>
                     </div>
                   ))}
-                </div>
-                <div className="order-card-footer">
-                  <button 
-                    onClick={() => setSelectedOrder(order)}
-                    className="flex items-center gap-2 text-xs font-semibold uppercase text-gold hover:text-gold-hover transition-colors tracking-widest"
-                  >
-                    <Eye size={16} /> VIEW DETAILS
-                  </button>
                 </div>
               </div>
             </div>

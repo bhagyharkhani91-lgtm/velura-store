@@ -12,6 +12,7 @@ interface ProductState {
   updateProduct: (id: string, updates: Partial<Product>) => Promise<void>;
   deleteProduct: (id: string) => Promise<void>;
   getProductBySlug: (slug: string) => Product | undefined;
+  getProductById: (id: string) => Product | undefined;
   getProductsByCategory: (categoryId: string) => Product[];
 }
 
@@ -54,6 +55,7 @@ export const useProductStore = create<ProductState>()((set, get) => ({
         seoDescription: d.seo_description || '',
         hasDiscreetShipping: d.has_discreet_shipping,
         warrantyText: d.warranty_text || '',
+        shippingCharge: d.shipping_charge ? Number(d.shipping_charge) : 0,
         status: d.status,
         createdAt: d.created_at,
         updatedAt: d.updated_at,
@@ -90,6 +92,7 @@ export const useProductStore = create<ProductState>()((set, get) => ({
         is_best_seller: productData.isBestSeller,
         is_featured: productData.isFeatured,
         is_on_sale: productData.isOnSale,
+        shipping_charge: productData.shippingCharge || 0,
         status: productData.status || 'draft'
       };
 
@@ -123,6 +126,7 @@ export const useProductStore = create<ProductState>()((set, get) => ({
       if (updates.isBestSeller !== undefined) dbUpdates.is_best_seller = updates.isBestSeller;
       if (updates.isFeatured !== undefined) dbUpdates.is_featured = updates.isFeatured;
       if (updates.isOnSale !== undefined) dbUpdates.is_on_sale = updates.isOnSale;
+      if (updates.shippingCharge !== undefined) dbUpdates.shipping_charge = updates.shippingCharge;
 
       const { error } = await supabase.from('products').update(dbUpdates).eq('id', id);
       if (error) throw error;
@@ -150,6 +154,10 @@ export const useProductStore = create<ProductState>()((set, get) => ({
 
   getProductBySlug: (slug) => {
     return get().products.find((p) => p.slug === slug);
+  },
+
+  getProductById: (id) => {
+    return get().products.find((p) => p.id === id);
   },
 
   getProductsByCategory: (categoryId) => {
