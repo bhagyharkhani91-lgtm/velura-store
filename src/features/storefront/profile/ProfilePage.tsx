@@ -161,8 +161,8 @@ export function ProfilePage() {
               </div>
             )}
 
-            <form className="space-y-8 max-w-xl" onSubmit={(e) => e.preventDefault()}>
-              <div className="space-y-6">
+            <form className="space-y-12 max-w-xl" onSubmit={(e) => e.preventDefault()}>
+              <div className="space-y-10">
                 <Input 
                   label="Full Name" 
                   name="name"
