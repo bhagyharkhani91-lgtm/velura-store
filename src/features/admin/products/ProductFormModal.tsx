@@ -28,7 +28,10 @@ export function ProductFormModal({ isOpen, onClose, editingProduct, initialCateg
     imageUrls: [] as string[],
     hasDiscreetShipping: true,
     warrantyText: '1 Year Warranty',
-    shippingCharge: '0'
+    shippingCharge: '0',
+    deliveryTime: '',
+    sizes: '',
+    colors: ''
   });
 
   useEffect(() => {
@@ -45,7 +48,10 @@ export function ProductFormModal({ isOpen, onClose, editingProduct, initialCateg
         imageUrls: editingProduct.images ? editingProduct.images.map(img => img.url) : [],
         hasDiscreetShipping: editingProduct.hasDiscreetShipping ?? true,
         warrantyText: editingProduct.warrantyText ?? '1 Year Warranty',
-        shippingCharge: editingProduct.shippingCharge ? editingProduct.shippingCharge.toString() : '0'
+        shippingCharge: editingProduct.shippingCharge ? editingProduct.shippingCharge.toString() : '0',
+        deliveryTime: editingProduct.deliveryTime || '',
+        sizes: editingProduct.sizes?.join(', ') || '',
+        colors: editingProduct.colors?.join(', ') || ''
       });
     } else {
       setFormData({
@@ -60,7 +66,10 @@ export function ProductFormModal({ isOpen, onClose, editingProduct, initialCateg
         imageUrls: [],
         hasDiscreetShipping: true,
         warrantyText: '1 Year Warranty',
-        shippingCharge: '0'
+        shippingCharge: '0',
+        deliveryTime: '',
+        sizes: '',
+        colors: ''
       });
     }
   }, [editingProduct, initialCategoryId, isOpen]);
@@ -102,7 +111,10 @@ export function ProductFormModal({ isOpen, onClose, editingProduct, initialCateg
         })),
         hasDiscreetShipping: formData.hasDiscreetShipping,
         warrantyText: formData.warrantyText,
-        shippingCharge: parseFloat(formData.shippingCharge) || 0
+        shippingCharge: parseFloat(formData.shippingCharge) || 0,
+        deliveryTime: formData.deliveryTime,
+        sizes: formData.sizes.split(',').map(s => s.trim()).filter(Boolean),
+        colors: formData.colors.split(',').map(c => c.trim()).filter(Boolean)
       });
     } else {
       addProduct({
@@ -136,7 +148,10 @@ export function ProductFormModal({ isOpen, onClose, editingProduct, initialCateg
         publishedAt: new Date().toISOString(),
         hasDiscreetShipping: formData.hasDiscreetShipping,
         warrantyText: formData.warrantyText,
-        shippingCharge: parseFloat(formData.shippingCharge) || 0
+        shippingCharge: parseFloat(formData.shippingCharge) || 0,
+        deliveryTime: formData.deliveryTime,
+        sizes: formData.sizes.split(',').map(s => s.trim()).filter(Boolean),
+        colors: formData.colors.split(',').map(c => c.trim()).filter(Boolean)
       });
     }
     
@@ -241,6 +256,40 @@ export function ProductFormModal({ isOpen, onClose, editingProduct, initialCateg
                 value={formData.warrantyText}
                 placeholder="e.g. 1 Year Warranty (leave blank if none)"
                 onChange={e => setFormData({...formData, warrantyText: e.target.value})}
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-secondary mb-1">Delivery Time</label>
+            <input 
+              type="text" 
+              className="w-full bg-bg-secondary border border-border rounded-md px-4 py-2 text-primary focus:outline-none focus:border-accent"
+              value={formData.deliveryTime}
+              placeholder="e.g. 2 day delivery, 3-5 days"
+              onChange={e => setFormData({...formData, deliveryTime: e.target.value})}
+            />
+          </div>
+
+          <div className="flex gap-4">
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-secondary mb-1">Available Sizes</label>
+              <input 
+                type="text" 
+                className="w-full bg-bg-secondary border border-border rounded-md px-4 py-2 text-primary focus:outline-none focus:border-accent"
+                value={formData.sizes}
+                placeholder="e.g. S, M, L, XL"
+                onChange={e => setFormData({...formData, sizes: e.target.value})}
+              />
+            </div>
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-secondary mb-1">Available Colors</label>
+              <input 
+                type="text" 
+                className="w-full bg-bg-secondary border border-border rounded-md px-4 py-2 text-primary focus:outline-none focus:border-accent"
+                value={formData.colors}
+                placeholder="e.g. Red, Blue, Black"
+                onChange={e => setFormData({...formData, colors: e.target.value})}
               />
             </div>
           </div>

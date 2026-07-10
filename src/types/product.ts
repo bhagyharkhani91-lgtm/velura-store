@@ -60,4 +60,7 @@ export interface Product {
   hasDiscreetShipping?: boolean;
   warrantyText?: string;
   shippingCharge?: number;
+  deliveryTime?: string;
+  sizes?: string[];
+  colors?: string[];
 }

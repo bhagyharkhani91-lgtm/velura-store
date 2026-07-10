@@ -20,6 +20,8 @@ export function ProductDetailsPage() {
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
   const [activeImageId, setActiveImageId] = useState<string>('');
   const [quantity, setQuantity] = useState(1);
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [selectedColor, setSelectedColor] = useState<string | null>(null);
   
   // Accordion state
   const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>({
@@ -46,6 +48,14 @@ export function ProductDetailsPage() {
         setSelectedVariant(foundProduct.variants[0]);
       }
       
+      // Pre-select first size and color
+      if (foundProduct.sizes && foundProduct.sizes.length > 0) {
+        setSelectedSize(foundProduct.sizes[0]);
+      }
+      if (foundProduct.colors && foundProduct.colors.length > 0) {
+        setSelectedColor(foundProduct.colors[0]);
+      }
+      
       // Select primary image
       const primaryImage = foundProduct.images.find(img => img.isPrimary) || foundProduct.images[0];
       if (primaryImage) {
@@ -70,7 +80,11 @@ export function ProductDetailsPage() {
       image: product.images[0]?.url || '',
       maxQuantity: selectedVariant?.stockCount || product.stockCount || 10,
       variantId: selectedVariant?.id,
-      variant: selectedVariant?.name,
+      variant: selectedVariant?.name || 
+        [
+          selectedSize ? `Size: ${selectedSize}` : null,
+          selectedColor ? `Color: ${selectedColor}` : null
+        ].filter(Boolean).join(' | ') || undefined,
       shippingCharge: product.shippingCharge || 0
     });
     openCart();
@@ -167,6 +181,48 @@ export function ProductDetailsPage() {
               </div>
             )}
 
+            {/* Sizes */}
+            {product.sizes && product.sizes.length > 0 && (
+              <div className="mb-6">
+                <h3 className="text-sm font-medium text-text-secondary uppercase tracking-wider mb-3">Select Size</h3>
+                <div className="flex flex-wrap gap-2">
+                  {product.sizes.map(size => (
+                    <button
+                      key={size}
+                      className={`h-10 px-4 rounded-md border text-sm font-medium transition-colors
+                        ${selectedSize === size 
+                          ? 'border-accent bg-accent/10 text-accent' 
+                          : 'border-border text-text-secondary hover:border-text-secondary'}`}
+                      onClick={() => setSelectedSize(size)}
+                    >
+                      {size}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Colors */}
+            {product.colors && product.colors.length > 0 && (
+              <div className="mb-6">
+                <h3 className="text-sm font-medium text-text-secondary uppercase tracking-wider mb-3">Select Color</h3>
+                <div className="flex flex-wrap gap-2">
+                  {product.colors.map(color => (
+                    <button
+                      key={color}
+                      className={`h-10 px-4 rounded-md border text-sm font-medium transition-colors
+                        ${selectedColor === color 
+                          ? 'border-accent bg-accent/10 text-accent' 
+                          : 'border-border text-text-secondary hover:border-text-secondary'}`}
+                      onClick={() => setSelectedColor(color)}
+                    >
+                      {color}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Quantity and Add to Cart */}
             <div className="pdp-quantity-row">
               <div className="pdp-quantity-control">
@@ -202,6 +258,15 @@ export function ProductDetailsPage() {
                 <div className="flex items-center gap-2">
                   <Truck size={18} className="text-accent" />
                   <span>Discreet Shipping</span>
+                </div>
+              )}
+              {product.deliveryTime && (
+                <div className="flex items-center gap-2 text-accent font-medium">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" width="18" height="18">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                  <span>{product.deliveryTime}</span>
                 </div>
               )}
               {(product.warrantyText ?? '1 Year Warranty') && (

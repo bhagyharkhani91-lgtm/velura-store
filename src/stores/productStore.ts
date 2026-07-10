@@ -56,6 +56,9 @@ export const useProductStore = create<ProductState>()((set, get) => ({
         hasDiscreetShipping: d.has_discreet_shipping,
         warrantyText: d.warranty_text || '',
         shippingCharge: d.shipping_charge ? Number(d.shipping_charge) : 0,
+        deliveryTime: d.delivery_time || '',
+        sizes: d.sizes || [],
+        colors: d.colors || [],
         status: d.status,
         createdAt: d.created_at,
         updatedAt: d.updated_at,
@@ -93,6 +96,9 @@ export const useProductStore = create<ProductState>()((set, get) => ({
         is_featured: productData.isFeatured,
         is_on_sale: productData.isOnSale,
         shipping_charge: productData.shippingCharge || 0,
+        delivery_time: productData.deliveryTime || null,
+        sizes: productData.sizes || [],
+        colors: productData.colors || [],
         status: productData.status || 'draft'
       };
 
@@ -127,6 +133,9 @@ export const useProductStore = create<ProductState>()((set, get) => ({
       if (updates.isFeatured !== undefined) dbUpdates.is_featured = updates.isFeatured;
       if (updates.isOnSale !== undefined) dbUpdates.is_on_sale = updates.isOnSale;
       if (updates.shippingCharge !== undefined) dbUpdates.shipping_charge = updates.shippingCharge;
+      if (updates.deliveryTime !== undefined) dbUpdates.delivery_time = updates.deliveryTime;
+      if (updates.sizes !== undefined) dbUpdates.sizes = updates.sizes;
+      if (updates.colors !== undefined) dbUpdates.colors = updates.colors;
 
       const { error } = await supabase.from('products').update(dbUpdates).eq('id', id);
       if (error) throw error;

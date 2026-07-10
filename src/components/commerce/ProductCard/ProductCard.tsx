@@ -106,6 +106,15 @@ export function ProductCard({ product }: ProductCardProps) {
             </svg>
             Discreet Shipping
           </span>
+          {product.deliveryTime && (
+            <span className="product-card-trust-badge text-accent font-medium">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" width="12" height="12">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              {product.deliveryTime}
+            </span>
+          )}
         </div>
       </div>
     </Link>

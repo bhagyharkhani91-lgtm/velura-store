@@ -9,6 +9,7 @@ interface OrdersStore {
   fetchOrders: (userId?: string) => Promise<void>;
   addOrder: (order: Order) => Promise<void>;
   updateOrderStatus: (orderId: string, status: OrderStatus) => Promise<void>;
+  updatePaymentStatus: (orderId: string, status: 'pending' | 'paid') => Promise<void>;
   getOrderById: (orderId: string) => Order | undefined;
   getOrdersByUserId: (userId: string) => Order[];
   getTotalRevenue: () => number;
@@ -47,6 +48,7 @@ export const useOrdersStore = create<OrdersStore>()((set, get) => ({
         timeline: d.timeline,
         shippingAddress: d.shipping_address,
         paymentMethod: d.payment_method,
+        paymentStatus: d.shipping?.paymentStatus || 'paid',
         couponCode: d.coupon_code,
         notes: d.notes,
         createdAt: d.created_at,
@@ -67,7 +69,7 @@ export const useOrdersStore = create<OrdersStore>()((set, get) => ({
           user_id: order.userId,
           items: order.items,
           subtotal: order.subtotal,
-          shipping: order.shipping,
+          shipping: { ...order.shipping, paymentStatus: order.paymentStatus || 'paid' },
           tax: order.tax,
           discount: order.discount,
           total: order.total,
@@ -124,6 +126,35 @@ export const useOrdersStore = create<OrdersStore>()((set, get) => ({
       }));
     } catch (err) {
       console.error("Error updating order", err);
+    }
+  },
+
+  updatePaymentStatus: async (orderId, status) => {
+    try {
+      const order = get().orders.find(o => o.id === orderId);
+      if (!order) return;
+      
+      const newUpdatedAt = new Date().toISOString();
+      
+      const { error } = await supabase
+        .from('orders')
+        .update({ 
+           shipping: { ...order.shipping, paymentStatus: status },
+           updated_at: newUpdatedAt
+        })
+        .eq('id', orderId);
+        
+      if (error) throw error;
+
+      set((state) => ({
+        orders: state.orders.map((o) =>
+          o.id === orderId
+            ? { ...o, paymentStatus: status, updatedAt: newUpdatedAt }
+            : o
+        ),
+      }));
+    } catch (err) {
+      console.error("Error updating payment status", err);
     }
   },
 

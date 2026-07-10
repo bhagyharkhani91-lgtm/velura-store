@@ -27,7 +27,7 @@ const isToday = (dateString: string) => {
 };
 
 export function AdminOrdersPage() {
-  const { orders, updateOrderStatus } = useOrdersStore();
+  const { orders, updateOrderStatus, updatePaymentStatus } = useOrdersStore();
   const { products } = useProductStore();
   const [activeTab, setActiveTab] = useState('today');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -352,9 +352,16 @@ export function AdminOrdersPage() {
                         Sent
                       </Button>
                     ) : order.status === 'shipped' ? (
-                      <Button size="sm" onClick={() => updateOrderStatus(order.id, 'delivered' as any)}>
-                        Delivered
-                      </Button>
+                      <div className="flex items-center gap-2">
+                        <Button size="sm" onClick={() => updateOrderStatus(order.id, 'delivered' as any)}>
+                          Delivered
+                        </Button>
+                        {order.paymentMethod === 'Cash on Delivery (COD)' && order.paymentStatus !== 'paid' && (
+                          <Button size="sm" onClick={() => updatePaymentStatus(order.id, 'paid')}>
+                            Paid
+                          </Button>
+                        )}
+                      </div>
                     ) : (
                       <span className={`inline-block text-xs px-2.5 py-1 rounded-md font-semibold capitalize ${getStatusColor(order.status)}`}>
                         {order.status}

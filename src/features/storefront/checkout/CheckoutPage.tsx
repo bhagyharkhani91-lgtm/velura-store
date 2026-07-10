@@ -18,6 +18,7 @@ export function CheckoutPage() {
   const { user } = useAuthStore();
   
   const [isSuccess, setIsSuccess] = useState(false);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<'Razorpay' | 'COD'>('Razorpay');
   const [formData, setFormData] = useState({
     firstName: user?.name?.split(' ')[0] || '',
     lastName: user?.name?.split(' ')[1] || '',
@@ -79,6 +80,13 @@ export function CheckoutPage() {
   const handlePayment = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    const receiptId = `ORD-${Math.floor(10000 + Math.random() * 90000)}`;
+
+    if (selectedPaymentMethod === 'COD') {
+      processSuccessfulOrder(receiptId, '', '', 'Cash on Delivery (COD)', 'pending');
+      return;
+    }
+
     // 1. Load Razorpay script
     const res = await loadRazorpay();
     if (!res) {
@@ -86,7 +94,6 @@ export function CheckoutPage() {
       return;
     }
 
-    const receiptId = `ORD-${Math.floor(10000 + Math.random() * 90000)}`;
     let orderIdToUse = '';
 
     try {
@@ -118,7 +125,7 @@ export function CheckoutPage() {
         image: "https://example.com/your_logo.png",
         handler: function (response: any) {
           // Payment Succeeded!
-          processSuccessfulOrder(receiptId, response.razorpay_payment_id, response.razorpay_order_id);
+          processSuccessfulOrder(receiptId, response.razorpay_payment_id, response.razorpay_order_id, 'Razorpay', 'paid');
         },
         prefill: {
           name: `${formData.firstName} ${formData.lastName}`,
@@ -148,7 +155,7 @@ export function CheckoutPage() {
     }
   };
 
-  const processSuccessfulOrder = (orderId: string, paymentId: string, rzpOrderId: string) => {
+  const processSuccessfulOrder = (orderId: string, paymentId: string, rzpOrderId: string, paymentMethod: string, paymentStatus: 'pending' | 'paid') => {
     const orderData = {
       id: orderId,
       orderNumber: orderId,
@@ -169,7 +176,8 @@ export function CheckoutPage() {
       discount: 0,
       status: 'pending',
       timeline: [{ status: 'pending', timestamp: new Date().toISOString() }],
-      paymentMethod: 'Razorpay',
+      paymentMethod,
+      paymentStatus,
       razorpayOrderId: rzpOrderId || '',
       razorpayPaymentId: paymentId || '',
       createdAt: new Date().toISOString(),
@@ -220,10 +228,17 @@ export function CheckoutPage() {
             {/* Payment Method */}
             <div className="bg-surface p-6 rounded-lg border border-border">
               <h2 className="text-xl font-semibold mb-4 text-primary">Payment</h2>
-              <div className="p-4 border border-accent bg-accent-subtle rounded-md flex items-center justify-between cursor-pointer transition-colors hover:bg-bg-hover">
-                <span className="font-medium text-primary">Razorpay (Cards, UPI, NetBanking)</span>
-                <div className="w-4 h-4 rounded-full border border-accent bg-accent flex items-center justify-center">
-                  <div className="w-2 h-2 rounded-full bg-bg-primary"></div>
+              <div className="relative">
+                <select 
+                  value={selectedPaymentMethod}
+                  onChange={(e) => setSelectedPaymentMethod(e.target.value as 'Razorpay' | 'COD')}
+                  className="w-full bg-surface border border-border rounded-md px-4 py-3 text-primary focus:outline-none focus:border-accent appearance-none cursor-pointer transition-colors hover:border-accent/50"
+                >
+                  <option value="Razorpay">Razorpay (Cards, UPI, NetBanking)</option>
+                  <option value="COD">Cash on Delivery (COD)</option>
+                </select>
+                <div className="absolute top-1/2 right-4 -translate-y-1/2 pointer-events-none text-secondary">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
                 </div>
               </div>
             </div>

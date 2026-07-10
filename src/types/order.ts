@@ -60,6 +60,7 @@ export interface Order {
     phone: string;
   };
   paymentMethod: string;
+  paymentStatus?: 'pending' | 'paid';
   razorpayOrderId?: string;
   razorpayPaymentId?: string;
   couponCode?: string;
