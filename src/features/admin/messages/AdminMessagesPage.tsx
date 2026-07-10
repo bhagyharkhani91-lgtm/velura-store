@@ -39,7 +39,14 @@ export function AdminMessagesPage() {
                     <div className="text-xs text-secondary mt-1">{msg.email}</div>
                   </td>
                   <td className="p-4 align-top">
-                    <div className="text-sm text-primary mb-1">{msg.subject || 'No Subject'}</div>
+                    <div className="text-sm text-primary mb-1 flex items-center gap-2">
+                      {msg.subject || 'No Subject'}
+                      {msg.subject?.startsWith('Order Cancel Reason') && (
+                        <span className="bg-red-500/20 text-red-500 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">
+                          Reason
+                        </span>
+                      )}
+                    </div>
                     <p className={`text-sm ${msg.status === 'unread' ? 'text-primary' : 'text-secondary'} whitespace-pre-wrap`}>
                       {msg.message}
                     </p>

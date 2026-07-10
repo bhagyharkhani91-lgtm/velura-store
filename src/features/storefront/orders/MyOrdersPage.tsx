@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Container } from '../../../components/layout/Container/Container';
 import { useAuthStore } from '../../../stores/authStore';
 import { useOrdersStore } from '../../../stores/ordersStore';
+import { useMessagesStore } from '../../../stores/messagesStore';
 import { useNavigate } from 'react-router-dom';
 import { formatPrice, formatDate } from '../../../utils';
 import { PackageSearch, Eye, MapPin, CreditCard, Package } from 'lucide-react';
@@ -11,11 +12,22 @@ import './MyOrdersPage.css';
 
 export function MyOrdersPage() {
   const { user, isAuthenticated, isLoading } = useAuthStore();
-  const { getOrdersByUserId } = useOrdersStore();
+  const { getOrdersByUserId, updateOrderStatus } = useOrdersStore();
+  const { sendMessage } = useMessagesStore();
   const navigate = useNavigate();
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
-  const closeModal = () => setSelectedOrder(null);
+  const [isCancelling, setIsCancelling] = useState(false);
+  const [cancelReason, setCancelReason] = useState('');
+  const [customReason, setCustomReason] = useState('');
+  const [isSubmittingCancel, setIsSubmittingCancel] = useState(false);
+
+  const closeModal = () => {
+    setSelectedOrder(null);
+    setIsCancelling(false);
+    setCancelReason('');
+    setCustomReason('');
+  };
 
   if (isLoading) {
     return <Container className="py-24 text-center"><div className="inline-block w-8 h-8 border-4 border-accent border-t-transparent rounded-full animate-spin"></div></Container>;
@@ -27,6 +39,33 @@ export function MyOrdersPage() {
   }
 
   const myOrders = getOrdersByUserId(user.id);
+
+  const handleCancelSubmit = async () => {
+    if (!selectedOrder || !user) return;
+    
+    const finalReason = cancelReason === 'Other' ? customReason : cancelReason;
+    if (!finalReason.trim()) {
+       alert("Please provide a reason for cancellation.");
+       return;
+    }
+    
+    setIsSubmittingCancel(true);
+    try {
+      await updateOrderStatus(selectedOrder.id, 'cancelled');
+      await sendMessage(
+         user.name || 'Customer', 
+         user.email || '', 
+         `Order Cancel Reason: #${selectedOrder.orderNumber}`, 
+         `Order cancelled by customer.\nReason: ${finalReason}`
+      );
+      closeModal();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to cancel order. Please try again.");
+    } finally {
+      setIsSubmittingCancel(false);
+    }
+  };
 
   return (
     <Container className="py-12">
@@ -114,19 +153,69 @@ export function MyOrdersPage() {
       >
         {selectedOrder && (
           <div className="flex flex-col gap-6">
-            {/* Status & Date */}
-            <div className="flex justify-between items-center bg-bg-secondary p-6 rounded-lg border border-border">
-              <div>
-                <p className="text-sm text-secondary mb-1">Date Placed</p>
-                <p className="font-medium text-primary text-lg">{formatDate(selectedOrder.createdAt)}</p>
-              </div>
-              <div className="text-right">
-                <p className="text-sm text-secondary mb-2">Current Status</p>
-                <span className={`status-${selectedOrder.status} inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide`}>
-                  {selectedOrder.status}
-                </span>
-              </div>
-            </div>
+            {isCancelling ? (
+               <div className="bg-bg-secondary p-6 rounded-lg border border-border">
+                 <h3 className="text-xl font-semibold text-primary mb-4">Cancel Order</h3>
+                 <p className="text-sm text-secondary mb-4">Please select a reason for cancelling this order.</p>
+                 
+                 <div className="flex flex-col gap-3 mb-6">
+                   {['Changed my mind', 'Found a better price', 'Order placed by mistake', 'Expected delivery time is too long', 'Other'].map(reason => (
+                     <label key={reason} className="flex items-center gap-3 cursor-pointer">
+                       <input 
+                         type="radio" 
+                         name="cancelReason" 
+                         value={reason} 
+                         checked={cancelReason === reason}
+                         onChange={(e) => setCancelReason(e.target.value)}
+                         className="w-4 h-4 text-accent focus:ring-accent bg-surface border-border"
+                       />
+                       <span className="text-primary">{reason}</span>
+                     </label>
+                   ))}
+                 </div>
+                 
+                 {cancelReason === 'Other' && (
+                   <textarea
+                     placeholder="Please tell us what went wrong..."
+                     value={customReason}
+                     onChange={(e) => setCustomReason(e.target.value)}
+                     className="w-full bg-surface border border-border rounded-md p-3 text-primary placeholder:text-secondary focus:outline-none focus:border-accent resize-none mb-6"
+                     rows={3}
+                   />
+                 )}
+                 
+                 <div className="flex justify-end gap-4">
+                   <button 
+                     onClick={() => setIsCancelling(false)} 
+                     className="px-4 py-2 border border-border rounded-md text-primary hover:bg-bg-hover transition-colors font-medium text-sm"
+                     disabled={isSubmittingCancel}
+                   >
+                     Back
+                   </button>
+                   <button 
+                     onClick={handleCancelSubmit} 
+                     className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors font-medium text-sm"
+                     disabled={isSubmittingCancel}
+                   >
+                     {isSubmittingCancel ? 'Cancelling...' : 'Confirm Cancellation'}
+                   </button>
+                 </div>
+               </div>
+            ) : (
+              <>
+                {/* Status & Date */}
+                <div className="flex justify-between items-center bg-bg-secondary p-6 rounded-lg border border-border">
+                  <div>
+                    <p className="text-sm text-secondary mb-1">Date Placed</p>
+                    <p className="font-medium text-primary text-lg">{formatDate(selectedOrder.createdAt)}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm text-secondary mb-2">Current Status</p>
+                    <span className={`status-${selectedOrder.status} inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide`}>
+                      {selectedOrder.status}
+                    </span>
+                  </div>
+                </div>
 
             {/* Timeline */}
             <div className="bg-bg-secondary p-6 rounded-lg border border-border">
@@ -212,6 +301,20 @@ export function MyOrdersPage() {
                 </div>
               </div>
             </div>
+            
+            {/* Cancel Order Button */}
+            {['pending', 'confirmed', 'processing'].includes(selectedOrder.status) && (
+              <div className="flex justify-end mt-2">
+                <button 
+                  onClick={() => setIsCancelling(true)}
+                  className="px-4 py-2 border border-red-500/30 text-red-500 rounded-md hover:bg-red-500/10 transition-colors font-medium text-sm"
+                >
+                  Cancel Order
+                </button>
+              </div>
+            )}
+            </>
+            )}
           </div>
         )}
       </Modal>
