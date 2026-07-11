@@ -19,9 +19,12 @@ export default async function handler(req, res) {
     const { amount, receipt } = req.body;
     
     // In Vercel, we will read these from process.env instead of hardcoding
-    // But we fall back to the test keys if not provided, to ensure it works instantly
-    const keyId = process.env.RAZORPAY_KEY_ID || 'rzp_test_TAzZYC15Rkxqdh';
-    const keySecret = process.env.RAZORPAY_KEY_SECRET || 'SBpkVPM74j64SmISy8BHQeMw';
+    const keyId = process.env.RAZORPAY_KEY_ID;
+    const keySecret = process.env.RAZORPAY_KEY_SECRET;
+
+    if (!keyId || !keySecret) {
+      throw new Error('Server configuration error: Missing payment gateway keys.');
+    }
 
     const basicAuth = Buffer.from(`${keyId}:${keySecret}`).toString('base64');
 

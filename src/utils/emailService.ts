@@ -1,4 +1,5 @@
 import { formatPrice } from './index';
+import { supabase } from '../lib/supabase';
 
 interface OrderItem {
   productId: string;
@@ -223,11 +224,18 @@ export async function sendOrderConfirmationEmail(order: OrderData) {
   `;
 
   try {
+    const { data: { session } } = await supabase.auth.getSession();
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+    
+    if (session?.access_token) {
+      headers['Authorization'] = `Bearer ${session.access_token}`;
+    }
+
     let response = await fetch('/api/send-email', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers,
       body: JSON.stringify({
         // Resend sandbox accounts require sending from onboarding@resend.dev
         from: 'VELURA <onboarding@resend.dev>',
@@ -253,9 +261,7 @@ export async function sendOrderConfirmationEmail(order: OrderData) {
         
         const fallbackResponse = await fetch('/api/send-email', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers,
           body: JSON.stringify({
             from: 'VELURA <onboarding@resend.dev>',
             to: ['delivered@resend.dev'],
