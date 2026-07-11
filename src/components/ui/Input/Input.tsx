@@ -47,6 +47,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             )}
             aria-invalid={!!error}
             aria-describedby={error ? `${inputId}-error` : hint ? `${inputId}-hint` : undefined}
+            required={required}
             {...props}
           />
           {rightIcon && !isPassword && <span className="input-icon input-icon--right">{rightIcon}</span>}

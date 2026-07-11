@@ -16,7 +16,7 @@ export function CheckoutPage() {
   const { items, getSubtotal, clearCart } = useCartStore();
   const { addOrder } = useOrdersStore();
   const { user } = useAuthStore();
-  
+
   const [isSuccess, setIsSuccess] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<'Razorpay' | 'COD'>('Razorpay');
   const [formData, setFormData] = useState({
@@ -64,6 +64,21 @@ export function CheckoutPage() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    
+    if (name === 'phone') {
+      // Allow only numbers and '+'
+      const phoneValue = value.replace(/[^\d+]/g, '');
+      setFormData(prev => ({ ...prev, [name]: phoneValue }));
+      return;
+    }
+
+    if (name === 'zipCode') {
+      // Allow only numbers for postal code
+      const zipValue = value.replace(/[^\d]/g, '');
+      setFormData(prev => ({ ...prev, [name]: zipValue }));
+      return;
+    }
+
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
@@ -79,7 +94,7 @@ export function CheckoutPage() {
 
   const handlePayment = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const receiptId = `ORD-${Math.floor(10000 + Math.random() * 90000)}`;
 
     if (selectedPaymentMethod === 'COD') {
@@ -117,7 +132,7 @@ export function CheckoutPage() {
 
       // 3. Initialize Razorpay Checkout
       const options: any = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_TAzZYC15Rkxqdh', 
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_TAzZYC15Rkxqdh',
         amount: Math.round(total * 100),
         currency: "INR",
         name: "Velura Store",
@@ -142,7 +157,7 @@ export function CheckoutPage() {
       }
 
       const rzp = new (window as any).Razorpay(options);
-      
+
       rzp.on('payment.failed', function (response: any) {
         console.error("Payment Failed:", response.error);
         alert(`Payment Failed! Reason: ${response.error.description}`);
@@ -192,7 +207,7 @@ export function CheckoutPage() {
   return (
     <Container className="py-12">
       <h1 className="heading-3xl mb-8">Checkout</h1>
-      
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
         {/* Checkout Form */}
         <div className="lg:col-span-2">
@@ -229,7 +244,7 @@ export function CheckoutPage() {
             <div className="bg-surface p-6 rounded-lg border border-border">
               <h2 className="text-xl font-semibold mb-4 text-primary">Payment</h2>
               <div className="relative">
-                <select 
+                <select
                   value={selectedPaymentMethod}
                   onChange={(e) => setSelectedPaymentMethod(e.target.value as 'Razorpay' | 'COD')}
                   className="w-full bg-surface border border-border rounded-md px-4 py-3 text-primary focus:outline-none focus:border-accent appearance-none cursor-pointer transition-colors hover:border-accent/50"
@@ -238,7 +253,7 @@ export function CheckoutPage() {
                   <option value="COD">Cash on Delivery (COD)</option>
                 </select>
                 <div className="absolute top-1/2 right-4 -translate-y-1/2 pointer-events-none text-secondary">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg>
                 </div>
               </div>
             </div>
@@ -253,7 +268,7 @@ export function CheckoutPage() {
         <div className="lg:col-span-1">
           <div className="bg-surface p-6 rounded-lg border border-border sticky top-24">
             <h2 className="text-xl font-semibold mb-6 text-primary">Order Summary</h2>
-            
+
             <div className="space-y-4 mb-6 max-h-[400px] overflow-y-auto pr-2">
               {items.map((item) => (
                 <div key={`${item.productId}-${item.variantId}`} className="flex flex-col gap-3 pb-4 border-b border-border last:border-0 last:pb-0">
@@ -269,7 +284,7 @@ export function CheckoutPage() {
                 </div>
               ))}
             </div>
-            
+
             <div className="border-t border-border pt-4 space-y-2 mb-4">
               <div className="flex justify-between text-sm">
                 <span className="text-secondary">Subtotal</span>
@@ -280,7 +295,7 @@ export function CheckoutPage() {
                 <span className="text-primary">{formatPrice(shipping)}</span>
               </div>
             </div>
-            
+
             <div className="border-t border-border pt-4 flex justify-between font-semibold text-lg">
               <span className="text-primary">Total</span>
               <span className="text-primary">{formatPrice(total)}</span>
