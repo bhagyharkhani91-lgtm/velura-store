@@ -3,6 +3,7 @@ import { Button } from '../../../components/ui/Button/Button';
 import { Trash2, CloudUpload } from 'lucide-react';
 import { useProductStore } from '../../../stores/productStore';
 import { useCategoryStore } from '../../../stores/categoryStore';
+import { validateImageUpload } from '../../../utils';
 import type { Product } from '../../../types/product';
 
 interface ProductFormModalProps {
@@ -78,7 +79,18 @@ export function ProductFormModal({ isOpen, onClose, editingProduct, initialCateg
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
+    
+    let hasError = false;
+    
     files.forEach(file => {
+      const { isValid, error } = validateImageUpload(file);
+      
+      if (!isValid) {
+        alert(error);
+        hasError = true;
+        return;
+      }
+      
       const reader = new FileReader();
       reader.onloadend = () => {
         setFormData(prev => ({ 
@@ -88,6 +100,10 @@ export function ProductFormModal({ isOpen, onClose, editingProduct, initialCateg
       };
       reader.readAsDataURL(file);
     });
+    
+    if (hasError && e.target) {
+      e.target.value = ''; // Reset input if there was an error
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {

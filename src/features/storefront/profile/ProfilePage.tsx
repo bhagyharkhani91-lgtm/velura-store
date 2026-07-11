@@ -5,6 +5,7 @@ import { Input } from '../../../components/ui/Input/Input';
 import { Button } from '../../../components/ui/Button/Button';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../../lib/supabase';
+import { validateImageUpload } from '../../../utils';
 import './ProfilePage.css';
 
 export function ProfilePage() {
@@ -72,6 +73,13 @@ export function ProfilePage() {
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    const { isValid, error: validationError } = validateImageUpload(file);
+    if (!isValid) {
+      alert(validationError);
+      if (e.target) e.target.value = '';
+      return;
+    }
 
     setIsUploading(true);
     setError(null);

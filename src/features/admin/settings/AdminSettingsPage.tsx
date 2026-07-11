@@ -4,6 +4,7 @@ import { Input } from '../../../components/ui/Input/Input';
 import { Save, Trash2, CloudUpload, Eye, EyeOff, ArrowUp, ArrowDown } from 'lucide-react';
 import { useSettingsStore, type HeroBanner } from '../../../stores/settingsStore';
 import { useUIStore } from '../../../stores/uiStore';
+import { validateImageUpload } from '../../../utils';
 
 export function AdminSettingsPage() {
   const { 
@@ -41,7 +42,17 @@ export function AdminSettingsPage() {
 
   const handleBannerUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
+    let hasError = false;
+    
     files.forEach((file, index) => {
+      const { isValid, error } = validateImageUpload(file);
+      
+      if (!isValid) {
+        alert(error);
+        hasError = true;
+        return;
+      }
+      
       const reader = new FileReader();
       reader.onloadend = () => {
         setHeroBannersText(prev => [...prev, {
@@ -52,6 +63,10 @@ export function AdminSettingsPage() {
       };
       reader.readAsDataURL(file);
     });
+    
+    if (hasError && e.target) {
+      e.target.value = '';
+    }
   };
 
   const moveBanner = (index: number, direction: 'up' | 'down') => {

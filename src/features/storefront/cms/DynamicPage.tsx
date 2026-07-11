@@ -2,6 +2,7 @@ import { useParams } from 'react-router-dom';
 import { useCMSStore } from '../../../stores/cmsStore';
 import { Container } from '../../../components/layout/Container/Container';
 import { ErrorElement } from '../../../components/layout/ErrorElement/ErrorElement';
+import DOMPurify from 'dompurify';
 import './DynamicPage.css'; // We will create this for basic prose styling
 
 export function DynamicPage() {
@@ -14,12 +15,14 @@ export function DynamicPage() {
     return <ErrorElement />;
   }
 
+  const sanitizedContent = DOMPurify.sanitize(page.content);
+
   return (
     <div className="dynamic-page py-16 min-h-[60vh]">
       <Container>
         <div className="prose max-w-3xl mx-auto">
-          {/* Dangerously setting inner HTML since this comes from our admin CMS */}
-          <div dangerouslySetInnerHTML={{ __html: page.content }} />
+          {/* Dangerously setting inner HTML after strict sanitization */}
+          <div dangerouslySetInnerHTML={{ __html: sanitizedContent }} />
         </div>
       </Container>
     </div>

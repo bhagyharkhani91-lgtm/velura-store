@@ -4,6 +4,7 @@ import { Button } from '../../../components/ui/Button/Button';
 import { useReviewsStore } from '../../../stores/reviewsStore';
 import { useAuthStore } from '../../../stores/authStore';
 import { useUIStore } from '../../../stores/uiStore';
+import { validateImageUpload } from '../../../utils';
 
 interface ProductReviewsSectionProps {
   productId: string;
@@ -26,16 +27,30 @@ export function ProductReviewsSection({ productId }: ProductReviewsSectionProps)
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
+    let hasError = false;
+    
     // Limit to 3 images max
     const newFiles = files.slice(0, 3 - imageUrls.length);
     
     newFiles.forEach(file => {
+      const { isValid, error } = validateImageUpload(file);
+      
+      if (!isValid) {
+        alert(error);
+        hasError = true;
+        return;
+      }
+
       const reader = new FileReader();
       reader.onloadend = () => {
         setImageUrls(prev => [...prev, reader.result as string]);
       };
       reader.readAsDataURL(file);
     });
+    
+    if (hasError && e.target) {
+      e.target.value = '';
+    }
   };
 
   const removeImage = (index: number) => {

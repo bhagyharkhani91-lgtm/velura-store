@@ -102,3 +102,18 @@ export function isValidPhone(phone: string): boolean {
 export function isValidZipCode(zip: string): boolean {
   return /^\d{5}(-\d{4})?$/.test(zip);
 }
+
+export function validateImageUpload(file: File): { isValid: boolean; error?: string } {
+  const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+  const VALID_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+
+  if (!VALID_TYPES.includes(file.type)) {
+    return { isValid: false, error: `Invalid file type. Only JPG, PNG, and WEBP are allowed.` };
+  }
+
+  if (file.size > MAX_SIZE) {
+    return { isValid: false, error: `File too large (${formatFileSize(file.size)}). Maximum allowed size is 5MB.` };
+  }
+
+  return { isValid: true };
+}
