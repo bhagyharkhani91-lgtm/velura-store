@@ -47,7 +47,7 @@ export function Footer() {
               <h3 className="footer-heading">Shop</h3>
               <ul className="footer-links">
                 <li><Link to="/categories/vibrators">Vibrators</Link></li>
-                <li><Link to="/categories/couples">Couples</Link></li>
+                <li><Link to="/categories/couple-toys">Couples</Link></li>
                 <li><Link to="/categories/massage">Massage</Link></li>
                 <li><Link to="/categories/accessories">Accessories</Link></li>
               </ul>

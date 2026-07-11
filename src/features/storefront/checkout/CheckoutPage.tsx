@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container } from '../../../components/layout/Container/Container';
 import { Button } from '../../../components/ui/Button/Button';
@@ -9,13 +9,13 @@ import { useAuthStore } from '../../../stores/authStore';
 import { formatPrice } from '../../../utils';
 import { CheckCircle } from 'lucide-react';
 import { sendOrderConfirmationEmail } from '../../../utils/emailService';
-
+import confetti from 'canvas-confetti';
 
 export function CheckoutPage() {
   const navigate = useNavigate();
   const { items, getSubtotal, clearCart } = useCartStore();
   const { addOrder } = useOrdersStore();
-  const { user } = useAuthStore();
+  const { user, isLoading } = useAuthStore();
 
   const [isSuccess, setIsSuccess] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<'Razorpay' | 'COD'>('Razorpay');
@@ -29,6 +29,35 @@ export function CheckoutPage() {
     state: '',
     zipCode: '',
   });
+
+  useEffect(() => {
+    if (!isLoading && !user && !isSuccess) {
+      navigate('/login?redirect=/checkout', { replace: true });
+    }
+  }, [user, isLoading, isSuccess, navigate]);
+
+  useEffect(() => {
+    if (isSuccess) {
+      const duration = 3 * 1000;
+      const animationEnd = Date.now() + duration;
+      const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+      const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
+
+      const interval: any = setInterval(function() {
+        const timeLeft = animationEnd - Date.now();
+
+        if (timeLeft <= 0) {
+          return clearInterval(interval);
+        }
+
+        const particleCount = 50 * (timeLeft / duration);
+        confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+        confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+      }, 250);
+      
+      return () => clearInterval(interval);
+    }
+  }, [isSuccess]);
 
   const subtotal = getSubtotal();
   const shipping = items.reduce((total, item) => total + ((item.shippingCharge || 0) * item.quantity), 0);
@@ -45,18 +74,20 @@ export function CheckoutPage() {
 
   if (isSuccess) {
     return (
-      <Container className="py-20 flex flex-col items-center justify-center" style={{ minHeight: '60vh' }}>
-        <div className="bg-surface border border-border p-10 rounded-2xl max-w-md w-full text-center shadow-2xl">
+      <Container className="py-20 flex flex-col items-center justify-center animate-fade-in" style={{ minHeight: '60vh' }}>
+        <div className="bg-surface border border-border p-10 rounded-2xl max-w-md w-full text-center shadow-2xl animate-scale-in">
           <div className="flex justify-center mb-6">
-            <div className="w-16 h-16 bg-success-muted text-success rounded-full flex items-center justify-center">
+            <div className="w-16 h-16 bg-success-muted text-success rounded-full flex items-center justify-center animate-heartbeat stagger-1">
               <CheckCircle size={32} />
             </div>
           </div>
-          <h1 className="text-2xl font-bold mb-3 text-primary">Order Placed Successfully!</h1>
-          <p className="text-secondary text-sm mb-8 leading-relaxed">
+          <h1 className="text-2xl font-bold mb-3 text-primary animate-fade-in-up stagger-2">Order Placed Successfully!</h1>
+          <p className="text-secondary text-sm mb-8 leading-relaxed animate-fade-in-up stagger-3">
             Thank you for your discreet purchase. You will receive an email confirmation shortly. A message with your order details has been shared with you.
           </p>
-          <Button onClick={() => navigate('/')} className="w-full">Return Home</Button>
+          <div className="animate-fade-in-up stagger-4">
+            <Button onClick={() => navigate('/')} className="w-full hover-scale">Return Home</Button>
+          </div>
         </div>
       </Container>
     );

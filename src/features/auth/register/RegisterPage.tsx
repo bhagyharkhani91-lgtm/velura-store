@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Mail, Lock, User as UserIcon } from 'lucide-react';
 import { Button } from '../../../components/ui/Button/Button';
 import { Input } from '../../../components/ui/Input/Input';
@@ -13,15 +13,18 @@ export function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
   const handleGoogleAuth = async () => {
     try {
+      const redirect = searchParams.get('redirect');
+      const redirectToUrl = redirect ? `${window.location.origin}${redirect}` : window.location.origin;
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: window.location.origin
+          redirectTo: redirectToUrl
         }
       });
       if (error) throw error;
@@ -60,7 +63,12 @@ export function RegisterPage() {
         
         // If email confirmation is enabled on Supabase, the user might need to check their email.
         // We will navigate them to the home page (or a "check email" page if you prefer)
-        navigate('/');
+        const redirect = searchParams.get('redirect');
+        if (redirect) {
+          navigate(redirect);
+        } else {
+          navigate('/');
+        }
       } else {
         setError('Please fill in all fields.');
       }
@@ -152,7 +160,7 @@ export function RegisterPage() {
 
         <div className="login-footer">
           Already have an account? 
-          <Link to="/login" className="login-signup-link">
+          <Link to={`/login${searchParams.get('redirect') ? `?redirect=${searchParams.get('redirect')}` : ''}`} className="login-signup-link">
             Sign in
           </Link>
         </div>
