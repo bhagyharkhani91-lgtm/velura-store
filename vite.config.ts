@@ -12,7 +12,10 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/api\/send-email/, '/emails'),
         configure: (proxy) => {
           proxy.on('proxyReq', (proxyReq) => {
-            proxyReq.setHeader('Authorization', 'Bearer REDACTED_Rotate_This_Key');
+            const apiKey = process.env.RESEND_API_KEY;
+            if (apiKey) {
+              proxyReq.setHeader('Authorization', `Bearer ${apiKey}`);
+            }
             proxyReq.setHeader('Content-Type', 'application/json');
           });
         }

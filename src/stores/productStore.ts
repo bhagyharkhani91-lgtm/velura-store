@@ -81,7 +81,9 @@ export const useProductStore = create<ProductState>()((set, get) => ({
         name: productData.name,
         short_description: productData.shortDescription,
         description: productData.description,
-        category_id: productData.categoryId || null, // null if empty string
+        category_id: productData.categoryId || null,
+        subcategory_id: productData.subcategoryId || null,
+        brand_id: productData.brandId || null,
         price: productData.price,
         compare_at_price: productData.compareAtPrice,
         images: productData.images,
@@ -95,6 +97,10 @@ export const useProductStore = create<ProductState>()((set, get) => ({
         is_best_seller: productData.isBestSeller,
         is_featured: productData.isFeatured,
         is_on_sale: productData.isOnSale,
+        seo_title: productData.seoTitle || '',
+        seo_description: productData.seoDescription || '',
+        has_discreet_shipping: productData.hasDiscreetShipping || false,
+        warranty_text: productData.warrantyText || '',
         shipping_charge: productData.shippingCharge || 0,
         delivery_time: productData.deliveryTime || null,
         sizes: productData.sizes || [],
@@ -119,23 +125,33 @@ export const useProductStore = create<ProductState>()((set, get) => ({
       // This is simplified, ideally you map each updated field
       const dbUpdates: any = { updated_at: new Date().toISOString() };
       if (updates.name) { dbUpdates.name = updates.name; dbUpdates.slug = slugify(updates.name); }
-      if (updates.price !== undefined) dbUpdates.price = updates.price;
-      if (updates.status) dbUpdates.status = updates.status;
-      if (updates.images) dbUpdates.images = updates.images;
-      if (updates.categoryId !== undefined) dbUpdates.category_id = updates.categoryId === '' ? null : updates.categoryId;
       if (updates.shortDescription !== undefined) dbUpdates.short_description = updates.shortDescription;
       if (updates.description !== undefined) dbUpdates.description = updates.description;
+      if (updates.categoryId !== undefined) dbUpdates.category_id = updates.categoryId === '' ? null : updates.categoryId;
+      if (updates.subcategoryId !== undefined) dbUpdates.subcategory_id = updates.subcategoryId === '' ? null : updates.subcategoryId;
+      if (updates.brandId !== undefined) dbUpdates.brand_id = updates.brandId === '' ? null : updates.brandId;
+      if (updates.price !== undefined) dbUpdates.price = updates.price;
       if (updates.compareAtPrice !== undefined) dbUpdates.compare_at_price = updates.compareAtPrice;
+      if (updates.images !== undefined) dbUpdates.images = updates.images;
+      if (updates.variants !== undefined) dbUpdates.variants = updates.variants;
+      if (updates.features !== undefined) dbUpdates.features = updates.features;
+      if (updates.materials !== undefined) dbUpdates.materials = updates.materials;
+      if (updates.tags !== undefined) dbUpdates.tags = updates.tags;
       if (updates.inStock !== undefined) dbUpdates.in_stock = updates.inStock;
       if (updates.stockCount !== undefined) dbUpdates.stock_count = updates.stockCount;
       if (updates.isNew !== undefined) dbUpdates.is_new = updates.isNew;
       if (updates.isBestSeller !== undefined) dbUpdates.is_best_seller = updates.isBestSeller;
       if (updates.isFeatured !== undefined) dbUpdates.is_featured = updates.isFeatured;
       if (updates.isOnSale !== undefined) dbUpdates.is_on_sale = updates.isOnSale;
+      if (updates.seoTitle !== undefined) dbUpdates.seo_title = updates.seoTitle;
+      if (updates.seoDescription !== undefined) dbUpdates.seo_description = updates.seoDescription;
+      if (updates.hasDiscreetShipping !== undefined) dbUpdates.has_discreet_shipping = updates.hasDiscreetShipping;
+      if (updates.warrantyText !== undefined) dbUpdates.warranty_text = updates.warrantyText;
       if (updates.shippingCharge !== undefined) dbUpdates.shipping_charge = updates.shippingCharge;
       if (updates.deliveryTime !== undefined) dbUpdates.delivery_time = updates.deliveryTime;
       if (updates.sizes !== undefined) dbUpdates.sizes = updates.sizes;
       if (updates.colors !== undefined) dbUpdates.colors = updates.colors;
+      if (updates.status !== undefined) dbUpdates.status = updates.status;
 
       const { error } = await supabase.from('products').update(dbUpdates).eq('id', id);
       if (error) throw error;

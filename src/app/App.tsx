@@ -9,6 +9,8 @@ import { useOrdersStore } from '../stores/ordersStore';
 import { useProductStore } from '../stores/productStore';
 import { useSettingsStore } from '../stores/settingsStore';
 
+const ADMIN_ROLES = ['admin', 'super_admin', 'manager'];
+
 export function App() {
   const [showSplash, setShowSplash] = useState(true);
   const [isAgeVerified, setIsAgeVerified] = useState(true);
@@ -19,14 +21,16 @@ export function App() {
 
   useEffect(() => {
     initializeAuth().then(() => {
-      // After auth is initialized, fetch all orders relevant to the user
-      fetchOrders();
+      const currentUser = useAuthStore.getState().user;
+      if (currentUser) {
+        const isAdmin = ADMIN_ROLES.includes(currentUser.role);
+        fetchOrders(isAdmin ? undefined : currentUser.id);
+      }
     });
-    
-    // Fetch public products and settings on mount
+
     fetchProducts();
     fetchSettings();
-    
+
     const hasSeenSplash = sessionStorage.getItem('velura_splash_shown');
     if (hasSeenSplash) {
       setShowSplash(false);

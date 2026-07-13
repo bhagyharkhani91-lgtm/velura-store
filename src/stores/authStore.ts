@@ -17,9 +17,11 @@ interface AuthStore {
   isLoading: boolean;
   login: (user: User) => void;
   logout: () => Promise<void>;
-  initialize: () => Promise<void>;
+  initialize: () => Promise<() => void>;
   updateProfile: (data: Partial<User>) => Promise<{ error: any }>;
 }
+
+let _unsubscribeAuthListener: (() => void) | null = null;
 
 export const useAuthStore = create<AuthStore>()((set, get) => ({
   user: null,
@@ -101,14 +103,14 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
     }
 
     // 2. Listen for auth changes
-    supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' && session?.user) {
          let { data: profile } = await supabase
           .from('profiles')
           .select('*')
           .eq('id', session.user.id)
           .single();
-          
+           
          // Auto-heal
          if (!profile) {
            const { data: newProfile } = await supabase.from('profiles').insert([
@@ -121,7 +123,7 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
            ]).select().single();
            profile = newProfile;
          }
-          
+           
          if (profile) {
            set({
              user: {
@@ -140,5 +142,12 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
         set({ user: null, isAuthenticated: false });
       }
     });
+
+    _unsubscribeAuthListener = () => subscription.unsubscribe();
+
+    return () => {
+      subscription.unsubscribe();
+      _unsubscribeAuthListener = null;
+    };
   }
 }));
