@@ -60,6 +60,9 @@ export function ProductCard({ product }: ProductCardProps) {
         {product.isOnSale && (
           <div className="product-card-badge-offer">ON OFFER</div>
         )}
+        {!product.inStock && (
+          <div className="product-card-badge-oos">Out of Stock</div>
+        )}
       </div>
 
       <div className="product-card-content">
@@ -89,8 +92,12 @@ export function ProductCard({ product }: ProductCardProps) {
           <span className="product-card-price">{formatPrice(product.price)}</span>
         </div>
         
-        <button className="product-card-add-btn" onClick={handleAddToCart}>
-          Add To Cart
+        <button 
+          className="product-card-add-btn" 
+          onClick={handleAddToCart}
+          disabled={!product.inStock}
+        >
+          {product.inStock ? 'Add To Cart' : 'Out of Stock'}
         </button>
         <div className="product-card-trust-badges">
           <span className="product-card-trust-badge">

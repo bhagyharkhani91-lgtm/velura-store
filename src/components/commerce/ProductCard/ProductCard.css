@@ -49,6 +49,21 @@
   letter-spacing: 0.5px;
 }
 
+.product-card-badge-oos {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background-color: rgba(239, 68, 68, 0.9);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: var(--weight-bold);
+  padding: 4px 10px;
+  text-transform: uppercase;
+  z-index: 2;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+}
+
 .product-card-content {
   padding: var(--space-6) var(--space-5);
   display: flex;
@@ -135,6 +150,18 @@
 .product-card-add-btn:hover {
   background-color: var(--color-accent);
   color: var(--color-text-primary);
+}
+
+.product-card-add-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: var(--color-bg-hover);
+  color: var(--color-text-secondary);
+}
+
+.product-card-add-btn:disabled:hover {
+  background-color: var(--color-bg-hover);
+  color: var(--color-text-secondary);
 }
 
 .product-card-trust-badges {
