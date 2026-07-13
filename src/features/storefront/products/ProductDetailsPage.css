@@ -2,6 +2,20 @@
   padding: var(--space-8) 0 var(--space-16);
 }
 
+@media (max-width: 480px) {
+  .pdp-page {
+    padding: var(--space-4) 0 var(--space-10);
+  }
+
+  .pdp-title {
+    font-size: var(--text-2xl);
+  }
+
+  .pdp-price {
+    font-size: var(--text-2xl);
+  }
+}
+
 .pdp-grid {
   display: grid;
   grid-template-columns: 1fr;

@@ -136,3 +136,17 @@
   color: var(--color-accent);
   text-decoration: underline;
 }
+
+@media (max-width: 640px) {
+  .login-card {
+    padding: var(--space-6);
+  }
+
+  .login-header {
+    margin-bottom: var(--space-6);
+  }
+
+  .login-title {
+    font-size: var(--text-2xl);
+  }
+}

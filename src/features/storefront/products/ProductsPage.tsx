@@ -18,10 +18,10 @@ export function ProductsPage() {
     : products;
 
   return (
-    <Container style={{ paddingTop: '60px', paddingBottom: '100px', minHeight: '60vh' }}>
-      <div className="flex items-center justify-between mb-8">
+    <Container style={{ paddingTop: '40px', paddingBottom: '80px', minHeight: '60vh' }}>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8">
         <div>
-          <h1 className="heading-4xl text-white mb-2">
+          <h1 className="text-3xl md:text-4xl text-white mb-2">
             {searchQuery ? `Search Results for "${searchQuery}"` : 'All Products'}
           </h1>
           <p className="text-secondary text-sm">Showing {displayProducts.length} products</p>

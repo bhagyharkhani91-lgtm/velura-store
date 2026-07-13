@@ -27,6 +27,19 @@
   opacity: 0;
 }
 
+@media (max-width: 768px) {
+  .splash-logo {
+    font-size: 3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .splash-logo {
+    font-size: 2.2rem;
+    letter-spacing: var(--tracking-wider);
+  }
+}
+
 .splash-subtitle {
   font-family: var(--font-body);
   font-size: var(--text-sm);

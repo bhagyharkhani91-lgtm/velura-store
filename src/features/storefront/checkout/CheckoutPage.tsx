@@ -244,8 +244,8 @@ export function CheckoutPage() {
   };
 
   return (
-    <Container className="py-12">
-      <h1 className="heading-3xl mb-8">Checkout</h1>
+    <Container className="py-8 md:py-12">
+      <h1 className="text-2xl md:text-3xl mb-6 md:mb-8">Checkout</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
         {/* Checkout Form */}
