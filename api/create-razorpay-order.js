@@ -16,9 +16,38 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { amount, receipt } = req.body;
-    
-    // In Vercel, we will read these from process.env instead of hardcoding
+    const { amount, receipt, items } = req.body;
+
+    if (typeof amount !== 'number' || amount <= 0 || !Number.isFinite(amount)) {
+      return res.status(400).json({ error: 'Invalid amount.' });
+    }
+
+    if (!receipt || typeof receipt !== 'string' || !/^ORD-\d+$/.test(receipt)) {
+      return res.status(400).json({ error: 'Invalid receipt.' });
+    }
+
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ error: 'Missing items.' });
+    }
+
+    let expectedTotal = 0;
+    for (const item of items) {
+      if (typeof item.price !== 'number' || item.price < 0) {
+        return res.status(400).json({ error: 'Invalid item price.' });
+      }
+      if (typeof item.quantity !== 'number' || item.quantity < 1 || !Number.isInteger(item.quantity)) {
+        return res.status(400).json({ error: 'Invalid item quantity.' });
+      }
+      const itemShipping = typeof item.shippingCharge === 'number' && item.shippingCharge >= 0
+        ? item.shippingCharge
+        : 0;
+      expectedTotal += item.price * item.quantity + itemShipping * item.quantity;
+    }
+
+    if (Math.abs(expectedTotal - amount) > 1) {
+      return res.status(400).json({ error: 'Amount mismatch.' });
+    }
+
     const keyId = process.env.RAZORPAY_KEY_ID;
     const keySecret = process.env.RAZORPAY_KEY_SECRET;
 
@@ -37,7 +66,7 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         amount: Math.round(amount * 100),
         currency: "INR",
-        receipt: receipt || `receipt_${Date.now()}`
+        receipt: receipt
       })
     });
 

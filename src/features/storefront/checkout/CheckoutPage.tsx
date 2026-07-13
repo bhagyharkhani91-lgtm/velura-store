@@ -148,7 +148,15 @@ export function CheckoutPage() {
       const orderResponse = await fetch('/api/create-razorpay-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: total, receipt: receiptId })
+        body: JSON.stringify({
+          amount: total,
+          receipt: receiptId,
+          items: items.map(item => ({
+            price: item.price,
+            quantity: item.quantity,
+            shippingCharge: item.shippingCharge || 0,
+          })),
+        }),
       }).catch(err => {
         console.warn("Backend fetch failed, proceeding with UI test mode only.", err);
         return null;
