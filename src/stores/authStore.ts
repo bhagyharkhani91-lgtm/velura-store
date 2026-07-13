@@ -21,8 +21,6 @@ interface AuthStore {
   updateProfile: (data: Partial<User>) => Promise<{ error: any }>;
 }
 
-let _unsubscribeAuthListener: (() => void) | null = null;
-
 export const useAuthStore = create<AuthStore>()((set, get) => ({
   user: null,
   isAuthenticated: false,
@@ -143,11 +141,8 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
       }
     });
 
-    _unsubscribeAuthListener = () => subscription.unsubscribe();
-
     return () => {
       subscription.unsubscribe();
-      _unsubscribeAuthListener = null;
     };
   }
 }));
