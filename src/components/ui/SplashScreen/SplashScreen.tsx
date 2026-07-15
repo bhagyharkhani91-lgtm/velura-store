@@ -27,7 +27,7 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
 
   return (
     <div className={`splash-container ${isFadingOut ? 'fade-out' : ''}`}>
-      <h1 className="splash-logo">Velura</h1>
+      <h1 className="splash-logo">Adult Store</h1>
       <p className="splash-subtitle">Intimate Wellness</p>
     </div>
   );

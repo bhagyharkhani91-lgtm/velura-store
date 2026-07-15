@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { supabase } from '../lib/supabase';
+import { sendShipmentConfirmationEmail } from '../utils/emailService';
 import type { Order, OrderStatus } from '../types/order';
 
 interface OrdersStore {
@@ -124,6 +125,19 @@ export const useOrdersStore = create<OrdersStore>()((set, get) => ({
             : o
         ),
       }));
+
+      if (status === 'shipped') {
+        const email = (order.shippingAddress as any).email;
+        if (email) {
+          sendShipmentConfirmationEmail({
+            id: order.id,
+            orderNumber: order.orderNumber,
+            items: order.items,
+            total: order.total,
+            shippingAddress: { ...order.shippingAddress, email },
+          });
+        }
+      }
     } catch (err) {
       console.error("Error updating order", err);
     }

@@ -74,7 +74,7 @@ export const useCategoryStore = create<CategoryState>()(
       }
     }),
     {
-      name: 'velura-categories-storage',
+      name: 'adult-store-categories',
     }
   )
 );

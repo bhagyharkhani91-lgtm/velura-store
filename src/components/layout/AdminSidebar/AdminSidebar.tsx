@@ -44,7 +44,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
     <aside className={`admin-sidebar ${isOpen ? 'open' : ''}`}>
       <div className="admin-sidebar-header">
         <Link to="/" className="admin-sidebar-logo">
-          VELURA
+          ADULT STORE
         </Link>
         <button className="admin-sidebar-close hide-desktop" onClick={onClose}>
           <X size={20} />

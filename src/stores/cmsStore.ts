@@ -35,7 +35,7 @@ const initialPages: CMSPage[] = [
     id: 'page-2',
     title: 'About Us',
     slug: 'about-us',
-    content: '<h2>About Velura</h2><p>Welcome to Velura, your premium destination...</p>',
+    content: '<h2>About Adult Store</h2><p>Welcome to Adult Store, your premium destination...</p>',
     isPublished: true,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -82,7 +82,7 @@ export const useCMSStore = create<CMSState>()(
       }
     }),
     {
-      name: 'velura-cms-storage',
+      name: 'adult-store-cms',
     }
   )
 );

@@ -49,7 +49,7 @@ export default async function handler(req, res) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        from: 'Velura Store <onboarding@resend.dev>', // Update this to your verified domain in production
+        from: 'Adult Store <support@adult-store.in>',
         to: [to],
         subject: subject,
         html: html

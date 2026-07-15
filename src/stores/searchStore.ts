@@ -43,6 +43,6 @@ export const useSearchStore = create<SearchStore>()(
 
       clearRecent: () => set({ recentSearches: [] }),
     }),
-    { name: 'velura-search', partialize: (s) => ({ recentSearches: s.recentSearches }) }
+    { name: 'adult-store-search', partialize: (s) => ({ recentSearches: s.recentSearches }) }
   )
 );

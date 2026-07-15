@@ -1,12 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Star, ChevronDown, ChevronUp, Minus, Plus, Truck, ShieldCheck } from 'lucide-react';
 import { Container } from '../../../components/layout/Container/Container';
 import { Button } from '../../../components/ui/Button/Button';
 import { useCartStore } from '../../../stores/cartStore';
 import { useProductStore } from '../../../stores/productStore';
+import { useCategoryStore } from '../../../stores/categoryStore';
 import { formatPrice } from '../../../utils';
 import type { Product, ProductVariant } from '../../../types/product';
+import { ProductCard } from '../../../components/commerce/ProductCard/ProductCard';
 import { ProductReviewsSection } from './ProductReviewsSection';
 import { useReviewsStore } from '../../../stores/reviewsStore';
 import './ProductDetailsPage.css';
@@ -28,8 +30,9 @@ export function ProductDetailsPage() {
     description: true
   });
 
-  const { getProductBySlug } = useProductStore();
+  const { getProductBySlug, getProductsByCategory } = useProductStore();
   const { reviews, isLoading: isReviewsLoading } = useReviewsStore();
+  const { categories } = useCategoryStore();
 
   const dynamicReviewCount = reviews.length;
   const dynamicRating = dynamicReviewCount > 0 
@@ -66,6 +69,19 @@ export function ProductDetailsPage() {
       navigate('/products');
     }
   }, [productSlug, navigate]);
+
+  const relatedProducts = useMemo(() => {
+    if (!product) return [];
+    return getProductsByCategory(product.categoryId)
+      .filter(p => p.id !== product.id)
+      .slice(0, 5);
+  }, [product, getProductsByCategory]);
+
+  const categoryName = useMemo(() => {
+    if (!product) return '';
+    const cat = categories.find(c => c.slug === product.categoryId);
+    return cat ? cat.name : product.categoryId;
+  }, [product, categories]);
 
   if (!product) {
     return <div className="pdp-page flex items-center justify-center min-h-[50vh]">Loading...</div>;
@@ -371,6 +387,18 @@ export function ProductDetailsPage() {
         
         {/* Reviews Section */}
         <ProductReviewsSection productId={product.id} />
+
+        {/* Related Products - Same Category */}
+        {relatedProducts.length > 0 && (
+          <section className="pdp-related-section">
+            <h2 className="pdp-related-title">More from {categoryName}</h2>
+            <div className="pdp-related-grid">
+              {relatedProducts.map(rp => (
+                <ProductCard key={rp.id} product={rp} />
+              ))}
+            </div>
+          </section>
+        )}
       </Container>
     </div>
   );

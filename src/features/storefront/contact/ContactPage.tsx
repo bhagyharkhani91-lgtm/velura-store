@@ -161,7 +161,7 @@ export function ContactPage() {
                 <h4 className="promise-title">OUR DISCRETION PROMISE</h4>
               </div>
               <p className="promise-text">
-                Your privacy is our utmost priority. All email correspondences, support queries, and billing charges are handled with strict confidentiality. Deliveries are shipped in completely unmarked, plain packaging with no mention of Velura.
+                Your privacy is our utmost priority. All email correspondences, support queries, and billing charges are handled with strict confidentiality. Deliveries are shipped in completely unmarked, plain packaging with no mention of Adult Store.
               </p>
             </div>
           </div>

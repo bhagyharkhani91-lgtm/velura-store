@@ -90,7 +90,7 @@ export function ShippingPage() {
 
         <div className="legal-block">
           <h3>Discreet Billing</h3>
-          <p>The charge on your credit card or bank statement will appear under our corporate entity name — <strong>not</strong> "Velura" or any product-related name — to ensure complete privacy.</p>
+          <p>The charge on your credit card or bank statement will appear under our corporate entity name — <strong>not</strong> "Adult Store" or any product-related name — to ensure complete privacy.</p>
         </div>
 
         <div className="legal-block">
@@ -140,7 +140,7 @@ export function ShippingPage() {
         <div className="legal-block">
           <h3>How to Initiate a Return</h3>
           <ol className="legal-list">
-            <li>Email us at <strong>support@velura.in</strong> with your order number and reason for return.</li>
+            <li>Email us at <strong>support@adult-store.in</strong> with your order number and reason for return.</li>
             <li>Our team will review your request within 1–2 business days and send you a return authorization.</li>
             <li>Pack the item securely in its original packaging and ship it using the provided return label.</li>
             <li>Once we receive and inspect the returned item, your refund will be processed within <strong>5–7 business days</strong>.</li>
@@ -162,7 +162,7 @@ export function ShippingPage() {
       <div className="faq-contact">
         <h2 className="heading-2xl mb-4">Have a question about your order?</h2>
         <p className="text-secondary mb-6">Our support team is available Monday–Saturday, 10 AM – 7 PM IST.</p>
-        <a href="mailto:support@velura.in" className="navbar-search-btn" style={{ padding: 'var(--space-3) var(--space-8)', borderRadius: 'var(--radius-md)', textDecoration: 'none', display: 'inline-block' }}>
+        <a href="mailto:support@adult-store.in" className="navbar-search-btn" style={{ padding: 'var(--space-3) var(--space-8)', borderRadius: 'var(--radius-md)', textDecoration: 'none', display: 'inline-block' }}>
           Contact Support
         </a>
       </div>

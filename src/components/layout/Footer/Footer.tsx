@@ -13,7 +13,7 @@ export function Footer() {
         <div className="footer-main">
           {/* Brand column */}
           <div className="footer-brand">
-            <Link to="/" className="footer-logo">VELURA</Link>
+            <Link to="/" className="footer-logo">ADULT STORE</Link>
             <p className="footer-tagline">
               Premium intimate wellness products designed for your pleasure and well-being.
             </p>
@@ -79,7 +79,7 @@ export function Footer() {
         {/* Bottom bar */}
         <div className="footer-bottom">
           <p className="footer-copyright">
-            &copy; {new Date().getFullYear()} Velura. All rights reserved.
+            &copy; {new Date().getFullYear()} Adult Store. All rights reserved.
           </p>
 
           <div className="footer-bottom-links">

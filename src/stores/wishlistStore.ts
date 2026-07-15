@@ -42,6 +42,6 @@ export const useWishlistStore = create<WishlistStore>()(
       hasItem: (productId) => get().items.includes(productId),
       clearAll: () => set({ items: [] }),
     }),
-    { name: 'velura-wishlist' }
+    { name: 'adult-store-wishlist' }
   )
 );

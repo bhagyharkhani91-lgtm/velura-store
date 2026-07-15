@@ -77,7 +77,7 @@ export const useAuthStore = create<AuthState>()(
       },
     }),
     {
-      name: 'velura-auth',
+      name: 'adult-store-auth',
       partialize: (state) => ({
         user: state.user,
         isAuthenticated: state.isAuthenticated,

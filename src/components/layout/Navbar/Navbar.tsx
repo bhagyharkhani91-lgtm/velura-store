@@ -88,7 +88,7 @@ export function Navbar() {
 
             {/* Logo */}
             <Link to="/" className="navbar-logo" style={isAuthPage ? { margin: '0 auto' } : {}}>
-              VELURA
+              ADULT STORE
             </Link>
 
             {/* Search Bar - Hidden on Auth Pages */}

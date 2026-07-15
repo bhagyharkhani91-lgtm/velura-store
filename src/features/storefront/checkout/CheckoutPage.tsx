@@ -174,7 +174,7 @@ export function CheckoutPage() {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_TAzZYC15Rkxqdh',
         amount: Math.round(total * 100),
         currency: "INR",
-        name: "Velura Store",
+        name: "Adult Store",
         description: "Premium Purchase",
         image: "https://example.com/your_logo.png",
         handler: function (response: any) {

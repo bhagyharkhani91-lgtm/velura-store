@@ -123,7 +123,7 @@ export function AdminSettingsPage() {
           <div className="bg-surface rounded-lg p-6 border border-border">
             <h2 className="text-xl font-semibold mb-4 text-primary">General Information</h2>
             <div className="flex flex-col gap-4">
-              <Input label="Store Name" value="VELURA" disabled />
+              <Input label="Store Name" value="ADULT STORE" disabled />
             </div>
           </div>
 
