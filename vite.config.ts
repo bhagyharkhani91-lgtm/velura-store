@@ -40,9 +40,9 @@ function emailDevMiddleware(): Plugin {
               },
               body: JSON.stringify({ from, to, subject, html }),
             });
-            const data = await resendRes.json();
+            const data = await resendRes.json() as { id?: string; message?: string; error?: { message?: string } };
             if (!resendRes.ok) {
-              console.error('[email-middleware] Resend error:', data);
+              console.error('[email-middleware] Resend error:', JSON.stringify(data));
             } else {
               console.log('[email-middleware] Email sent:', data.id);
             }
