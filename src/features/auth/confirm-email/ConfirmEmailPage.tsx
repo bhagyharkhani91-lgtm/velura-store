@@ -14,7 +14,7 @@ export function ConfirmEmailPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { isAuthenticated, isLoading: authLoading } = useAuthStore();
-  const timerRef = useRef<ReturnType<typeof setTimeout>>();
+  const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => {
     const code = searchParams.get('code');
