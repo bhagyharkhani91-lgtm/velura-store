@@ -21,8 +21,11 @@ export function ProductCard({ product }: ProductCardProps) {
     ? Math.round(((product.compareAtPrice - product.price) / product.compareAtPrice) * 100)
     : 0;
 
+  const isOutOfStock = product.stockCount === 0 || !product.inStock;
+
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
+    if (isOutOfStock) return;
     addItem({
       productId: product.id,
       variantId: product.variants[0]?.id,
@@ -60,7 +63,7 @@ export function ProductCard({ product }: ProductCardProps) {
         {product.isOnSale && (
           <div className="product-card-badge-offer">ON OFFER</div>
         )}
-        {!product.inStock && (
+        {isOutOfStock && (
           <div className="product-card-badge-oos">Out of Stock</div>
         )}
       </div>
@@ -95,9 +98,9 @@ export function ProductCard({ product }: ProductCardProps) {
         <button 
           className="product-card-add-btn" 
           onClick={handleAddToCart}
-          disabled={!product.inStock}
+          disabled={isOutOfStock}
         >
-          {product.inStock ? 'Add To Cart' : 'Out of Stock'}
+          {isOutOfStock ? 'Out of Stock' : 'Add To Cart'}
         </button>
         <div className="product-card-trust-badges">
           <span className="product-card-trust-badge">
