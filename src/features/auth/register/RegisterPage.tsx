@@ -75,7 +75,7 @@ export function RegisterPage() {
             data: {
               name: name
             },
-            emailRedirectTo: `${window.location.origin}/login?verified=true`
+            emailRedirectTo: `${window.location.origin}/confirm-email`
           }
         });
 

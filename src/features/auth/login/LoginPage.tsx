@@ -4,6 +4,7 @@ import { Mail, Lock, ShieldCheck } from 'lucide-react';
 import { Button } from '../../../components/ui/Button/Button';
 import { Input } from '../../../components/ui/Input/Input';
 import { supabase } from '../../../lib/supabase';
+import { useAuthStore } from '../../../stores/authStore';
 import './LoginPage.css';
 
 export function LoginPage() {
@@ -17,6 +18,18 @@ export function LoginPage() {
   
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { isAuthenticated, isLoading: authLoading, user } = useAuthStore();
+
+  useEffect(() => {
+    if (isAuthenticated && !authLoading) {
+      const redirect = searchParams.get('redirect');
+      if (user?.role === 'admin') {
+        navigate(redirect || '/admin', { replace: true });
+      } else {
+        navigate(redirect || '/', { replace: true });
+      }
+    }
+  }, [isAuthenticated, authLoading]);
 
   useEffect(() => {
     const savedEmail = localStorage.getItem('rememberedEmail');

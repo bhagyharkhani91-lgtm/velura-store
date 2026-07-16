@@ -16,6 +16,7 @@ import { TermsPage } from '../features/storefront/legal/TermsPage';
 import { DisclaimerPage } from '../features/storefront/legal/DisclaimerPage';
 import { ShippingPage } from '../features/storefront/legal/ShippingPage';
 import { RegisterPage } from '../features/auth/register/RegisterPage';
+import { ConfirmEmailPage } from '../features/auth/confirm-email/ConfirmEmailPage';
 import { ForgotPasswordPage } from '../features/auth/forgot-password/ForgotPasswordPage';
 import { UpdatePasswordPage } from '../features/auth/forgot-password/UpdatePasswordPage';
 import { ContactPage } from '../features/storefront/contact/ContactPage';
@@ -81,6 +82,10 @@ export const router = createBrowserRouter([
       {
         path: 'register',
         element: <RegisterPage />,
+      },
+      {
+        path: 'confirm-email',
+        element: <ConfirmEmailPage />,
       },
       {
         path: 'forgot-password',
