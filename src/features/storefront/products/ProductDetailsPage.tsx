@@ -87,7 +87,10 @@ export function ProductDetailsPage() {
     return <div className="pdp-page flex items-center justify-center min-h-[50vh]">Loading...</div>;
   }
 
+  const isOutOfStock = product.stockCount === 0 || !product.inStock;
+
   const handleAddToCart = () => {
+    if (isOutOfStock) return;
     addItem({
       productId: product.id,
       name: product.name,
@@ -163,8 +166,8 @@ export function ProductDetailsPage() {
                 </div>
                 <span>({displayReviewCount} Reviews)</span>
                 <span>•</span>
-                <span className={product.inStock ? 'text-success' : 'text-error'}>
-                  {product.inStock ? 'In Stock' : 'Out of Stock'}
+                <span className={isOutOfStock ? 'text-error' : 'text-success'}>
+                  {isOutOfStock ? 'Out of Stock' : 'In Stock'}
                 </span>
               </div>
             </div>
@@ -245,7 +248,7 @@ export function ProductDetailsPage() {
                 <button 
                   className="pdp-qty-btn" 
                   onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                  disabled={quantity <= 1}
+                  disabled={isOutOfStock || quantity <= 1}
                 >
                   <Minus size={16} />
                 </button>
@@ -253,7 +256,7 @@ export function ProductDetailsPage() {
                 <button 
                   className="pdp-qty-btn" 
                   onClick={() => setQuantity(q => q + 1)}
-                  disabled={quantity >= (selectedVariant?.stockCount || product.stockCount || 10)}
+                  disabled={isOutOfStock || quantity >= (selectedVariant?.stockCount || product.stockCount || 10)}
                 >
                   <Plus size={16} />
                 </button>
@@ -263,9 +266,9 @@ export function ProductDetailsPage() {
                 size="lg" 
                 className="pdp-add-btn" 
                 onClick={handleAddToCart}
-                disabled={!product.inStock || (selectedVariant !== null && !selectedVariant.inStock)}
+                disabled={isOutOfStock || (selectedVariant !== null && !selectedVariant.inStock)}
               >
-                Add to Cart
+                {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
               </Button>
             </div>
 
