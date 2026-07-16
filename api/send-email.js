@@ -50,7 +50,7 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         from: 'Adult Store <support@adult-store.in>',
-        to: [to],
+        to: Array.isArray(to) ? to : [to],
         subject: subject,
         html: html
       })
