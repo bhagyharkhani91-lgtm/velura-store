@@ -38,6 +38,7 @@ export function CheckoutPage() {
 
   useEffect(() => {
     if (isSuccess) {
+      window.scrollTo({ top: 0, behavior: 'auto' });
       const duration = 3 * 1000;
       const animationEnd = Date.now() + duration;
       const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
