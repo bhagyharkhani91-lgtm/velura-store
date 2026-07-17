@@ -1,0 +1,109 @@
+.recent-purchase-popup {
+  position: fixed;
+  bottom: 16px;
+  left: 16px;
+  z-index: 1000;
+  max-width: 320px;
+  width: calc(100% - 32px);
+  background: var(--color-surface, #1a1a1a);
+  border: 1px solid var(--color-border, #2a2a2a);
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  font-family: var(--font-body, sans-serif);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  pointer-events: none;
+}
+
+.recent-purchase-popup.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.recent-purchase-popup__image {
+  flex: 0 0 56px;
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  background: var(--color-bg-secondary, #141414);
+}
+
+.recent-purchase-popup__body {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 8px 10px 8px 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+}
+
+.recent-purchase-popup__name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-primary, #fff);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+.recent-purchase-popup__message {
+  font-size: 11px;
+  color: var(--color-text-secondary, #aaa);
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.recent-purchase-popup__close {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-secondary, #aaa);
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.recent-purchase-popup__close:hover {
+  opacity: 1;
+}
+
+@media (max-width: 480px) {
+  .recent-purchase-popup {
+    max-width: calc(100vw - 24px);
+    bottom: 12px;
+    left: 12px;
+    width: calc(100vw - 24px);
+  }
+
+  .recent-purchase-popup__image {
+    flex-basis: 48px;
+    width: 48px;
+    height: 48px;
+  }
+
+  .recent-purchase-popup__name {
+    font-size: 12px;
+  }
+
+  .recent-purchase-popup__message {
+    font-size: 10px;
+  }
+}

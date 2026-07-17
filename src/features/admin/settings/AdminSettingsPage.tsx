@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { Button } from '../../../components/ui/Button/Button';
 import { Input } from '../../../components/ui/Input/Input';
 import { Save, Trash2, CloudUpload, Eye, EyeOff, ArrowUp, ArrowDown } from 'lucide-react';
-import { useSettingsStore, type HeroBanner } from '../../../stores/settingsStore';
+import { useSettingsStore, type HeroBanner, type PurchaseNotification } from '../../../stores/settingsStore';
+import { useProductStore } from '../../../stores/productStore';
 import { useUIStore } from '../../../stores/uiStore';
 import { validateImageUpload, uploadToCloudinary } from '../../../utils';
 
@@ -20,10 +21,13 @@ export function AdminSettingsPage() {
     returnPolicy,
     setReturnPolicy,
     heroBanners,
-    setHeroBanners
+    setHeroBanners,
+    purchaseNotification,
+    setPurchaseNotification
   } = useSettingsStore();
   const { addToast } = useUIStore();
-  
+  const { products } = useProductStore();
+
   const [messagesText, setMessagesText] = useState(promoMessages.join('\n'));
   const [titleText, setTitleText] = useState(contactTitle);
   const [descriptionText, setDescriptionText] = useState(contactDescription);
@@ -33,12 +37,21 @@ export function AdminSettingsPage() {
   const [hoursText, setHoursText] = useState(contactHours);
   const [returnPolicyText, setReturnPolicyText] = useState(returnPolicy);
   const [heroBannersText, setHeroBannersText] = useState<HeroBanner[]>(heroBanners || []);
+  const [notifProductId, setNotifProductId] = useState(purchaseNotification?.productId || '');
+  const [notifMessage, setNotifMessage] = useState(purchaseNotification?.message || '');
+  const [notifActive, setNotifActive] = useState(purchaseNotification?.isActive ?? false);
 
   useEffect(() => {
     if (heroBanners) {
       setHeroBannersText(heroBanners);
     }
   }, [heroBanners]);
+
+  useEffect(() => {
+    setNotifProductId(purchaseNotification?.productId || '');
+    setNotifMessage(purchaseNotification?.message || '');
+    setNotifActive(purchaseNotification?.isActive ?? false);
+  }, [purchaseNotification]);
 
   const handleBannerUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -103,10 +116,17 @@ export function AdminSettingsPage() {
     setReturnPolicy(returnPolicyText);
     setHeroBanners(heroBannersText);
 
-    addToast({ 
-      type: 'success', 
-      title: 'Settings Saved', 
-      message: 'Store settings and contact details have been updated successfully.' 
+    const trimmedMsg = notifMessage.trim();
+    const newNotification: PurchaseNotification | null =
+      notifActive && notifProductId && trimmedMsg
+        ? { productId: notifProductId, message: trimmedMsg, isActive: true }
+        : null;
+    setPurchaseNotification(newNotification);
+
+    addToast({
+      type: 'success',
+      title: 'Settings Saved',
+      message: 'Store settings and contact details have been updated successfully.'
     });
   };
 
@@ -189,6 +209,46 @@ export function AdminSettingsPage() {
                   onChange={(e) => setMessagesText(e.target.value)}
                   placeholder="e.g. 50% DISCOUNT ON ALL PRODUCTS&#10;CASH ON DELIVERY AVAILABLE"
                 />
+              </div>
+            </div>
+          </div>
+
+          {/* Recent Purchase Notification (Admin-controlled social proof) */}
+          <div className="bg-surface rounded-lg p-6 border border-border">
+            <h2 className="text-xl font-semibold mb-4 text-primary">Recent Purchase Notification</h2>
+            <p className="text-sm text-secondary mb-4">Choose a product and write the purchase message customers will see in a small popup at the bottom-left of the home page. This is a manual entry — it is not linked to real orders.</p>
+            <div className="flex flex-col gap-4">
+              <div>
+                <label className="block text-sm font-medium text-secondary mb-1">Product</label>
+                <select
+                  className="w-full bg-bg-secondary border border-border rounded-md px-4 py-2 text-primary focus:outline-none focus:border-accent"
+                  value={notifProductId}
+                  onChange={(e) => setNotifProductId(e.target.value)}
+                >
+                  <option value="">-- Select a product --</option>
+                  {products.map((p) => (
+                    <option key={p.id} value={p.id}>{p.name}</option>
+                  ))}
+                </select>
+              </div>
+              <Input
+                label="Purchase Message"
+                value={notifMessage}
+                onChange={(e) => setNotifMessage(e.target.value)}
+                placeholder="e.g. Someone from Mumbai bought this 5 minutes ago"
+              />
+              <div className="flex items-center justify-between p-4 border border-border rounded-md">
+                <div>
+                  <p className="font-medium text-primary">Show on Home Page</p>
+                  <p className="text-xs text-secondary">When enabled, this popup appears to visitors on the home page.</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setNotifActive(!notifActive)}
+                  className={`w-12 h-6 rounded-full relative cursor-pointer transition-colors ${notifActive ? 'bg-accent' : 'bg-bg-secondary'}`}
+                >
+                  <div className={`w-4 h-4 bg-white rounded-full absolute top-1 transition-all ${notifActive ? 'left-7' : 'left-1'}`} />
+                </button>
               </div>
             </div>
           </div>

@@ -6,6 +6,12 @@ export interface HeroBanner {
   isActive: boolean;
 }
 
+export interface PurchaseNotification {
+  productId: string;
+  message: string;
+  isActive: boolean;
+}
+
 interface SettingsState {
   promoMessages: string[];
   contactTitle: string;
@@ -16,11 +22,13 @@ interface SettingsState {
   contactHours: string;
   returnPolicy: string;
   heroBanners: HeroBanner[];
+  purchaseNotification: PurchaseNotification | null;
   isLoading: boolean;
   fetchSettings: () => Promise<void>;
   setPromoMessages: (messages: string[]) => Promise<void>;
   setReturnPolicy: (policy: string) => Promise<void>;
   setHeroBanners: (banners: HeroBanner[]) => Promise<void>;
+  setPurchaseNotification: (notification: PurchaseNotification | null) => Promise<void>;
   setContactInfo: (info: {
     contactTitle: string;
     contactDescription: string;
@@ -52,6 +60,7 @@ export const useSettingsStore = create<SettingsState>()((set) => ({
   contactHours: 'Mon - Sat: 10:00 AM - 8:00 PM (IST)',
   returnPolicy: 'At Adult Store, we strive to ensure your complete satisfaction. If you are not entirely satisfied with your purchase, we offer a hassle-free return and exchange process. You may return unworn, unwashed, and undamaged items within 30 days of delivery for a full refund or exchange. Please ensure that all original tags are attached and the items are returned in their original packaging. For health and hygiene reasons, certain intimate items are non-returnable. Please contact our concierge team at support@adult-store.com to initiate a return request.',
   heroBanners: [],
+  purchaseNotification: null,
   isLoading: false,
 
   fetchSettings: async () => {
@@ -75,6 +84,19 @@ export const useSettingsStore = create<SettingsState>()((set) => ({
           contactHours: data.contact_hours || '',
           returnPolicy: data.return_policy || ''
         });
+        
+        const rawNotification = data.purchase_notification;
+        if (rawNotification && typeof rawNotification === 'object' && rawNotification.productId) {
+          set({
+            purchaseNotification: {
+              productId: rawNotification.productId,
+              message: rawNotification.message || '',
+              isActive: rawNotification.isActive !== false
+            }
+          });
+        } else {
+          set({ purchaseNotification: null });
+        }
         
         let parsedBanners = data.hero_banners || [];
         if (parsedBanners.length === 0) {
@@ -123,6 +145,19 @@ export const useSettingsStore = create<SettingsState>()((set) => ({
       set({ heroBanners: banners });
     } catch (err) {
       console.error('Error updating hero banners:', err);
+    }
+  },
+
+  setPurchaseNotification: async (notification) => {
+    try {
+      const { error } = await supabase
+        .from('site_settings')
+        .update({ purchase_notification: notification })
+        .eq('id', 1);
+      if (error) throw error;
+      set({ purchaseNotification: notification });
+    } catch (err) {
+      console.error('Error updating purchase notification:', err);
     }
   },
 
