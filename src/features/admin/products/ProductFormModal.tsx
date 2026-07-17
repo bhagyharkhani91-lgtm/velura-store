@@ -3,7 +3,7 @@ import { Button } from '../../../components/ui/Button/Button';
 import { Trash2, CloudUpload } from 'lucide-react';
 import { useProductStore } from '../../../stores/productStore';
 import { useCategoryStore } from '../../../stores/categoryStore';
-import { validateImageUpload } from '../../../utils';
+import { validateImageUpload, uploadToCloudinary } from '../../../utils';
 import type { Product } from '../../../types/product';
 
 interface ProductFormModalProps {
@@ -91,14 +91,14 @@ export function ProductFormModal({ isOpen, onClose, editingProduct, initialCateg
         return;
       }
       
-      const reader = new FileReader();
-      reader.onloadend = () => {
+      uploadToCloudinary(file).then(result => {
         setFormData(prev => ({ 
           ...prev, 
-          imageUrls: [...prev.imageUrls, reader.result as string] 
+          imageUrls: [...prev.imageUrls, result.url] 
         }));
-      };
-      reader.readAsDataURL(file);
+      }).catch(err => {
+        alert('Image upload failed: ' + err.message);
+      });
     });
     
     if (hasError && e.target) {

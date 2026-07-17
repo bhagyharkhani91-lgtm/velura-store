@@ -103,6 +103,28 @@ export function isValidZipCode(zip: string): boolean {
   return /^\d{5}(-\d{4})?$/.test(zip);
 }
 
+export async function uploadToCloudinary(file: File): Promise<{ url: string; publicId: string }> {
+  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+  const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', uploadPreset);
+
+  const response = await fetch(
+    `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+    { method: 'POST', body: formData }
+  );
+
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}));
+    throw new Error((body as { error?: { message?: string } }).error?.message || 'Image upload failed');
+  }
+
+  const data = await response.json() as { secure_url: string; public_id: string };
+  return { url: data.secure_url, publicId: data.public_id };
+}
+
 export function validateImageUpload(file: File): { isValid: boolean; error?: string } {
   const MAX_SIZE = 5 * 1024 * 1024; // 5MB
   const VALID_TYPES = ['image/jpeg', 'image/png', 'image/webp'];

@@ -4,7 +4,7 @@ import { Button } from '../../../components/ui/Button/Button';
 import { useReviewsStore } from '../../../stores/reviewsStore';
 import { useAuthStore } from '../../../stores/authStore';
 import { useUIStore } from '../../../stores/uiStore';
-import { validateImageUpload } from '../../../utils';
+import { validateImageUpload, uploadToCloudinary } from '../../../utils';
 
 interface ProductReviewsSectionProps {
   productId: string;
@@ -41,11 +41,11 @@ export function ProductReviewsSection({ productId }: ProductReviewsSectionProps)
         return;
       }
 
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImageUrls(prev => [...prev, reader.result as string]);
-      };
-      reader.readAsDataURL(file);
+      uploadToCloudinary(file).then(result => {
+        setImageUrls(prev => [...prev, result.url]);
+      }).catch(err => {
+        alert('Image upload failed: ' + err.message);
+      });
     });
     
     if (hasError && e.target) {

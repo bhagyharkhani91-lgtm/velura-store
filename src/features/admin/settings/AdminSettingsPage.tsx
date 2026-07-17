@@ -4,7 +4,7 @@ import { Input } from '../../../components/ui/Input/Input';
 import { Save, Trash2, CloudUpload, Eye, EyeOff, ArrowUp, ArrowDown } from 'lucide-react';
 import { useSettingsStore, type HeroBanner } from '../../../stores/settingsStore';
 import { useUIStore } from '../../../stores/uiStore';
-import { validateImageUpload } from '../../../utils';
+import { validateImageUpload, uploadToCloudinary } from '../../../utils';
 
 export function AdminSettingsPage() {
   const { 
@@ -53,15 +53,15 @@ export function AdminSettingsPage() {
         return;
       }
       
-      const reader = new FileReader();
-      reader.onloadend = () => {
+      uploadToCloudinary(file).then(result => {
         setHeroBannersText(prev => [...prev, {
           id: `banner-${Date.now()}-${index}`,
-          url: reader.result as string,
+          url: result.url,
           isActive: true
         }]);
-      };
-      reader.readAsDataURL(file);
+      }).catch(err => {
+        alert('Image upload failed: ' + err.message);
+      });
     });
     
     if (hasError && e.target) {
