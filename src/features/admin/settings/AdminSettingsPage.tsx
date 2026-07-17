@@ -289,10 +289,14 @@ export function AdminSettingsPage() {
                         </div>
                         <button
                           type="button"
+                          role="switch"
+                          aria-checked={n.isActive}
                           onClick={() => updateNotification(n.id, { isActive: !n.isActive })}
-                          className={`w-12 h-6 rounded-full relative cursor-pointer transition-colors ${n.isActive ? 'bg-accent' : 'bg-bg-secondary'}`}
+                          className={`w-12 h-6 rounded-full relative cursor-pointer transition-colors duration-200 ease-in-out flex items-center ${n.isActive ? 'bg-accent' : 'bg-bg-secondary'}`}
                         >
-                          <div className={`w-4 h-4 bg-white rounded-full absolute top-1 transition-all ${n.isActive ? 'left-7' : 'left-1'}`} />
+                          <span
+                            className={`inline-block w-4 h-4 bg-white rounded-full shadow-sm transition-transform duration-200 ease-in-out translate-x-0.5 ${n.isActive ? 'translate-x-6' : 'translate-x-0.5'}`}
+                          />
                         </button>
                       </div>
                     </div>
