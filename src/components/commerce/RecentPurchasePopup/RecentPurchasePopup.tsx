@@ -7,22 +7,31 @@ import './RecentPurchasePopup.css';
 const DISMISS_KEY = 'recent_purchase_dismissed_at';
 const RESHOW_DELAY_MS = 6 * 60 * 60 * 1000;
 const APPEAR_DELAY_MS = 1500;
+const ROTATE_INTERVAL_MS = 5000;
+const FADE_DURATION_MS = 400;
 
 export function RecentPurchasePopup() {
-  const { purchaseNotification } = useSettingsStore();
+  const { purchaseNotifications } = useSettingsStore();
   const { products } = useProductStore();
   const [visible, setVisible] = useState(false);
   const [dismissed, setDismissed] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
-  const notification = purchaseNotification;
-  const product = notification?.productId
-    ? products.find((p) => p.id === notification.productId)
-    : undefined;
+  // Resolve active notifications with valid products (memo of render cycle).
+  const activeItems = purchaseNotifications
+    .filter((n) => n.isActive && n.message)
+    .map((n) => ({
+      notification: n,
+      product: products.find((p) => p.id === n.productId)
+    }))
+    .filter((item) => item.product);
 
-  const isReady = !!(notification?.isActive && notification?.message && product);
+  const current = activeItems[currentIndex];
+  const hasItems = activeItems.length > 0;
 
+  // First appearance + dismiss/reshow logic.
   useEffect(() => {
-    if (!isReady) {
+    if (!hasItems) {
       setVisible(false);
       return;
     }
@@ -38,7 +47,33 @@ export function RecentPurchasePopup() {
 
     const t = setTimeout(() => setVisible(true), APPEAR_DELAY_MS);
     return () => clearTimeout(t);
-  }, [isReady, notification?.productId, notification?.message]);
+  }, [hasItems]);
+
+  // Keep currentIndex in bounds when list shrinks.
+  useEffect(() => {
+    if (activeItems.length === 0) {
+      setCurrentIndex(0);
+      return;
+    }
+    if (currentIndex >= activeItems.length) {
+      setCurrentIndex(0);
+    }
+  }, [activeItems.length, currentIndex]);
+
+  // Rotation timer: fade out → advance → fade in.
+  useEffect(() => {
+    if (!visible || activeItems.length <= 1) return;
+
+    const t = setInterval(() => {
+      setVisible(false);
+      setTimeout(() => {
+        setCurrentIndex((prev) => (prev + 1) % activeItems.length);
+        setVisible(true);
+      }, FADE_DURATION_MS);
+    }, ROTATE_INTERVAL_MS);
+
+    return () => clearInterval(t);
+  }, [visible, activeItems.length]);
 
   const handleClose = () => {
     setVisible(false);
@@ -50,10 +85,12 @@ export function RecentPurchasePopup() {
     }
   };
 
-  if (!isReady || dismissed) {
+  if (!hasItems || dismissed) {
     return null;
   }
 
+  const product = current?.product;
+  const notification = current?.notification;
   const primaryImage = product?.images?.find((img) => img.isPrimary) || product?.images?.[0];
 
   return (

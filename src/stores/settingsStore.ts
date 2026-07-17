@@ -7,6 +7,7 @@ export interface HeroBanner {
 }
 
 export interface PurchaseNotification {
+  id: string;
   productId: string;
   message: string;
   isActive: boolean;
@@ -22,13 +23,13 @@ interface SettingsState {
   contactHours: string;
   returnPolicy: string;
   heroBanners: HeroBanner[];
-  purchaseNotification: PurchaseNotification | null;
+  purchaseNotifications: PurchaseNotification[];
   isLoading: boolean;
   fetchSettings: () => Promise<void>;
   setPromoMessages: (messages: string[]) => Promise<void>;
   setReturnPolicy: (policy: string) => Promise<void>;
   setHeroBanners: (banners: HeroBanner[]) => Promise<void>;
-  setPurchaseNotification: (notification: PurchaseNotification | null) => Promise<void>;
+  setPurchaseNotifications: (notifications: PurchaseNotification[]) => Promise<void>;
   setContactInfo: (info: {
     contactTitle: string;
     contactDescription: string;
@@ -60,7 +61,7 @@ export const useSettingsStore = create<SettingsState>()((set) => ({
   contactHours: 'Mon - Sat: 10:00 AM - 8:00 PM (IST)',
   returnPolicy: 'At Adult Store, we strive to ensure your complete satisfaction. If you are not entirely satisfied with your purchase, we offer a hassle-free return and exchange process. You may return unworn, unwashed, and undamaged items within 30 days of delivery for a full refund or exchange. Please ensure that all original tags are attached and the items are returned in their original packaging. For health and hygiene reasons, certain intimate items are non-returnable. Please contact our concierge team at support@adult-store.com to initiate a return request.',
   heroBanners: [],
-  purchaseNotification: null,
+  purchaseNotifications: [],
   isLoading: false,
 
   fetchSettings: async () => {
@@ -86,17 +87,26 @@ export const useSettingsStore = create<SettingsState>()((set) => ({
         });
         
         const rawNotification = data.purchase_notification;
-        if (rawNotification && typeof rawNotification === 'object' && rawNotification.productId) {
-          set({
-            purchaseNotification: {
-              productId: rawNotification.productId,
-              message: rawNotification.message || '',
-              isActive: rawNotification.isActive !== false
-            }
-          });
-        } else {
-          set({ purchaseNotification: null });
+        let parsedNotifications: PurchaseNotification[] = [];
+        if (Array.isArray(rawNotification)) {
+          parsedNotifications = rawNotification
+            .filter((n: any) => n && typeof n === 'object' && n.productId)
+            .map((n: any) => ({
+              id: n.id || `notif-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+              productId: n.productId,
+              message: n.message || '',
+              isActive: n.isActive !== false
+            }));
+        } else if (rawNotification && typeof rawNotification === 'object' && rawNotification.productId) {
+          // legacy single-object format → migrate to array
+          parsedNotifications = [{
+            id: rawNotification.id || `notif-${Date.now()}`,
+            productId: rawNotification.productId,
+            message: rawNotification.message || '',
+            isActive: rawNotification.isActive !== false
+          }];
         }
+        set({ purchaseNotifications: parsedNotifications });
         
         let parsedBanners = data.hero_banners || [];
         if (parsedBanners.length === 0) {
@@ -148,16 +158,16 @@ export const useSettingsStore = create<SettingsState>()((set) => ({
     }
   },
 
-  setPurchaseNotification: async (notification) => {
+  setPurchaseNotifications: async (notifications) => {
     try {
       const { error } = await supabase
         .from('site_settings')
-        .update({ purchase_notification: notification })
+        .update({ purchase_notification: notifications })
         .eq('id', 1);
       if (error) throw error;
-      set({ purchaseNotification: notification });
+      set({ purchaseNotifications: notifications });
     } catch (err) {
-      console.error('Error updating purchase notification:', err);
+      console.error('Error updating purchase notifications:', err);
     }
   },
 

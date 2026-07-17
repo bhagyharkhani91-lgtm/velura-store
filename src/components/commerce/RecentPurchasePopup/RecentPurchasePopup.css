@@ -26,6 +26,11 @@
   pointer-events: auto;
 }
 
+.recent-purchase-popup.hidden {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
 .recent-purchase-popup__image {
   flex: 0 0 56px;
   width: 56px;

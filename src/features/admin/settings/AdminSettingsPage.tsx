@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from '../../../components/ui/Button/Button';
 import { Input } from '../../../components/ui/Input/Input';
-import { Save, Trash2, CloudUpload, Eye, EyeOff, ArrowUp, ArrowDown } from 'lucide-react';
+import { Save, Trash2, CloudUpload, Eye, EyeOff, ArrowUp, ArrowDown, Plus } from 'lucide-react';
 import { useSettingsStore, type HeroBanner, type PurchaseNotification } from '../../../stores/settingsStore';
 import { useProductStore } from '../../../stores/productStore';
 import { useUIStore } from '../../../stores/uiStore';
@@ -22,8 +22,8 @@ export function AdminSettingsPage() {
     setReturnPolicy,
     heroBanners,
     setHeroBanners,
-    purchaseNotification,
-    setPurchaseNotification
+    purchaseNotifications,
+    setPurchaseNotifications
   } = useSettingsStore();
   const { addToast } = useUIStore();
   const { products } = useProductStore();
@@ -37,9 +37,7 @@ export function AdminSettingsPage() {
   const [hoursText, setHoursText] = useState(contactHours);
   const [returnPolicyText, setReturnPolicyText] = useState(returnPolicy);
   const [heroBannersText, setHeroBannersText] = useState<HeroBanner[]>(heroBanners || []);
-  const [notifProductId, setNotifProductId] = useState(purchaseNotification?.productId || '');
-  const [notifMessage, setNotifMessage] = useState(purchaseNotification?.message || '');
-  const [notifActive, setNotifActive] = useState(purchaseNotification?.isActive ?? false);
+  const [notifList, setNotifList] = useState<PurchaseNotification[]>(purchaseNotifications || []);
 
   useEffect(() => {
     if (heroBanners) {
@@ -48,10 +46,28 @@ export function AdminSettingsPage() {
   }, [heroBanners]);
 
   useEffect(() => {
-    setNotifProductId(purchaseNotification?.productId || '');
-    setNotifMessage(purchaseNotification?.message || '');
-    setNotifActive(purchaseNotification?.isActive ?? false);
-  }, [purchaseNotification]);
+    setNotifList(purchaseNotifications || []);
+  }, [purchaseNotifications]);
+
+  const addNotification = () => {
+    setNotifList(prev => [
+      ...prev,
+      {
+        id: `notif-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        productId: '',
+        message: '',
+        isActive: true
+      }
+    ]);
+  };
+
+  const updateNotification = (id: string, patch: Partial<PurchaseNotification>) => {
+    setNotifList(prev => prev.map(n => (n.id === id ? { ...n, ...patch } : n)));
+  };
+
+  const removeNotification = (id: string) => {
+    setNotifList(prev => prev.filter(n => n.id !== id));
+  };
 
   const handleBannerUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -116,12 +132,10 @@ export function AdminSettingsPage() {
     setReturnPolicy(returnPolicyText);
     setHeroBanners(heroBannersText);
 
-    const trimmedMsg = notifMessage.trim();
-    const newNotification: PurchaseNotification | null =
-      notifActive && notifProductId && trimmedMsg
-        ? { productId: notifProductId, message: trimmedMsg, isActive: true }
-        : null;
-    setPurchaseNotification(newNotification);
+    const cleanNotifs = notifList
+      .map(n => ({ ...n, message: n.message.trim() }))
+      .filter(n => n.productId && n.message);
+    setPurchaseNotifications(cleanNotifs);
 
     addToast({
       type: 'success',
@@ -215,42 +229,77 @@ export function AdminSettingsPage() {
 
           {/* Recent Purchase Notification (Admin-controlled social proof) */}
           <div className="bg-surface rounded-lg p-6 border border-border">
-            <h2 className="text-xl font-semibold mb-4 text-primary">Recent Purchase Notification</h2>
-            <p className="text-sm text-secondary mb-4">Choose a product and write the purchase message customers will see in a small popup at the bottom-left of the home page. This is a manual entry — it is not linked to real orders.</p>
-            <div className="flex flex-col gap-4">
+            <div className="flex justify-between items-start mb-4">
               <div>
-                <label className="block text-sm font-medium text-secondary mb-1">Product</label>
-                <select
-                  className="w-full bg-bg-secondary border border-border rounded-md px-4 py-2 text-primary focus:outline-none focus:border-accent"
-                  value={notifProductId}
-                  onChange={(e) => setNotifProductId(e.target.value)}
-                >
-                  <option value="">-- Select a product --</option>
-                  {products.map((p) => (
-                    <option key={p.id} value={p.id}>{p.name}</option>
-                  ))}
-                </select>
+                <h2 className="text-xl font-semibold text-primary">Recent Purchase Notification</h2>
+                <p className="text-sm text-secondary mt-1">Choose a product and write the purchase message customers will see in a small popup at the bottom-left of the home page. These are manual entries — they are not linked to real orders. Add as many as you like; the storefront will rotate through the active ones.</p>
               </div>
-              <Input
-                label="Purchase Message"
-                value={notifMessage}
-                onChange={(e) => setNotifMessage(e.target.value)}
-                placeholder="e.g. Someone from Mumbai bought this 5 minutes ago"
-              />
-              <div className="flex items-center justify-between p-4 border border-border rounded-md">
-                <div>
-                  <p className="font-medium text-primary">Show on Home Page</p>
-                  <p className="text-xs text-secondary">When enabled, this popup appears to visitors on the home page.</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setNotifActive(!notifActive)}
-                  className={`w-12 h-6 rounded-full relative cursor-pointer transition-colors ${notifActive ? 'bg-accent' : 'bg-bg-secondary'}`}
-                >
-                  <div className={`w-4 h-4 bg-white rounded-full absolute top-1 transition-all ${notifActive ? 'left-7' : 'left-1'}`} />
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={addNotification}
+                className="flex items-center gap-2 px-3 py-2 rounded-md border border-border bg-bg-secondary hover:bg-bg-hover text-sm font-medium text-primary transition-colors whitespace-nowrap"
+              >
+                <Plus size={16} /> Add
+              </button>
             </div>
+
+            {notifList.length === 0 ? (
+              <div className="text-center py-8 border border-dashed border-border rounded-md">
+                <p className="text-secondary text-sm">No notifications yet. Click "Add" to create one.</p>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-4">
+                {notifList.map((n, index) => (
+                  <div key={n.id} className="border border-border rounded-md p-4 bg-bg-secondary/30">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-xs font-semibold text-secondary uppercase tracking-wider">Notification {index + 1}</span>
+                      <button
+                        type="button"
+                        onClick={() => removeNotification(n.id)}
+                        className="text-error hover:bg-error/10 rounded-md p-1.5 transition-colors"
+                        aria-label="Delete notification"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                    <div className="flex flex-col gap-3">
+                      <div>
+                        <label className="block text-sm font-medium text-secondary mb-1">Product</label>
+                        <select
+                          className="w-full bg-bg-secondary border border-border rounded-md px-4 py-2 text-primary focus:outline-none focus:border-accent"
+                          value={n.productId}
+                          onChange={(e) => updateNotification(n.id, { productId: e.target.value })}
+                        >
+                          <option value="">-- Select a product --</option>
+                          {products.map((p) => (
+                            <option key={p.id} value={p.id}>{p.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <Input
+                        label="Purchase Message"
+                        value={n.message}
+                        onChange={(e) => updateNotification(n.id, { message: e.target.value })}
+                        placeholder="e.g. Someone from Mumbai bought this 5 minutes ago"
+                      />
+                      <div className="flex items-center justify-between p-3 border border-border rounded-md">
+                        <div>
+                          <p className="font-medium text-primary text-sm">Active</p>
+                          <p className="text-xs text-secondary">When enabled, this popup can appear to visitors on the home page.</p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => updateNotification(n.id, { isActive: !n.isActive })}
+                          className={`w-12 h-6 rounded-full relative cursor-pointer transition-colors ${n.isActive ? 'bg-accent' : 'bg-bg-secondary'}`}
+                        >
+                          <div className={`w-4 h-4 bg-white rounded-full absolute top-1 transition-all ${n.isActive ? 'left-7' : 'left-1'}`} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
           <div className="bg-surface rounded-lg p-6 border border-border">
             <h2 className="text-xl font-semibold mb-4 text-primary">Hero Banner Configuration</h2>
