@@ -1,6 +1,16 @@
 import { formatPrice } from './index';
 import { supabase } from '../lib/supabase';
 
+function resolveImageUrl(url: string): string {
+  if (!url) return '';
+  if (/^https?:\/\//i.test(url)) return url;
+  const origin =
+    (typeof window !== 'undefined' && window.location?.origin) ||
+    (import.meta.env.VITE_SITE_URL as string | undefined) ||
+    'https://adult-store.in';
+  return url.startsWith('/') ? `${origin}${url}` : `${origin}/${url}`;
+}
+
 interface OrderItem {
   productId: string;
   name: string;
@@ -96,7 +106,7 @@ export async function sendOrderConfirmationEmail(order: OrderData) {
           <table border="0" cellspacing="0" cellpadding="0" style="width: 100%;">
             <tr>
               <td style="width: 60px; vertical-align: top;">
-                <img src="${item.image}" alt="${item.name}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; border: 1px solid #eaeaea;" />
+                <img src="${resolveImageUrl(item.image)}" alt="${item.name}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; border: 1px solid #eaeaea;" />
               </td>
               <td style="padding-left: 12px; vertical-align: top;">
                 <div style="font-weight: 600; color: #111111; font-size: 14px; margin-bottom: 2px;">${item.name}</div>
@@ -286,7 +296,7 @@ export async function sendShipmentConfirmationEmail(order: ShipmentData) {
           <table border="0" cellspacing="0" cellpadding="0" style="width: 100%;">
             <tr>
               <td style="width: 60px; vertical-align: top;">
-                <img src="${item.image}" alt="${item.name}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; border: 1px solid #eaeaea;" />
+                <img src="${resolveImageUrl(item.image)}" alt="${item.name}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; border: 1px solid #eaeaea;" />
               </td>
               <td style="padding-left: 12px; vertical-align: top;">
                 <div style="font-weight: 600; color: #111111; font-size: 14px; margin-bottom: 2px;">${item.name}</div>
