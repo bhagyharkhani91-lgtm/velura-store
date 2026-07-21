@@ -1,0 +1,196 @@
+.admin-delivery {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.admin-delivery-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.admin-delivery-stat-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.admin-delivery-stat-icon {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.admin-delivery-stat-icon.total { background: var(--color-accent-subtle); color: var(--color-accent); }
+.admin-delivery-stat-icon.pending { background: var(--color-warning-muted); color: var(--color-warning); }
+.admin-delivery-stat-icon.transit { background: var(--color-info-muted); color: var(--color-info); }
+.admin-delivery-stat-icon.delivered { background: var(--color-success-muted); color: var(--color-success); }
+
+.admin-delivery-stat-info h3 {
+  font-size: 0.8rem;
+  color: var(--color-secondary);
+  margin: 0 0 0.2rem 0;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.admin-delivery-stat-info p {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin: 0;
+}
+
+.admin-delivery-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--color-border);
+  overflow-x: auto;
+}
+
+.admin-delivery-tab {
+  padding: 0.75rem 1.25rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-secondary);
+  border: none;
+  background: transparent;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.admin-delivery-tab:hover {
+  color: var(--color-primary);
+}
+
+.admin-delivery-tab.active {
+  color: var(--color-accent);
+  border-bottom-color: var(--color-accent);
+}
+
+.admin-delivery-table-wrapper {
+  overflow-x: auto;
+}
+
+.admin-delivery-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.admin-delivery-status.NEW,
+.admin-delivery-status.PENDING { background: var(--color-warning-muted); color: var(--color-warning); }
+
+.admin-delivery-status.AWB_ASSIGNED,
+.admin-delivery-status.PICKUP_SCHEDULED,
+.admin-delivery-status.PICKUP_QUEUED { background: var(--color-info-muted); color: var(--color-info); }
+
+.admin-delivery-status.IN_TRANSIT,
+.admin-delivery-status.OUT_FOR_DELIVERY { background: var(--color-accent-subtle); color: var(--color-accent); }
+
+.admin-delivery-status.DELIVERED { background: var(--color-success-muted); color: var(--color-success); }
+
+.admin-delivery-status.CANCELLED { background: var(--color-error-muted); color: var(--color-error); }
+
+.admin-delivery-status.RTO_INITIATED,
+.admin-delivery-status.RTO_DELIVERED { background: var(--color-error-muted); color: var(--color-error); }
+
+.admin-delivery-actions {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.admin-delivery-actions .btn-sm {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.72rem;
+}
+
+.admin-delivery-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  color: var(--color-secondary);
+}
+
+.admin-delivery-timeline {
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.admin-delivery-timeline::before {
+  content: '';
+  position: absolute;
+  left: 0.4rem;
+  top: 0.3rem;
+  bottom: 0.3rem;
+  width: 2px;
+  background: var(--color-border);
+}
+
+.admin-delivery-timeline-item {
+  position: relative;
+  padding-bottom: 1.25rem;
+}
+
+.admin-delivery-timeline-item:last-child {
+  padding-bottom: 0;
+}
+
+.admin-delivery-timeline-dot {
+  position: absolute;
+  left: -1.1rem;
+  top: 0.2rem;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  background: var(--color-accent);
+  border: 2px solid var(--color-surface);
+  z-index: 1;
+}
+
+.admin-delivery-timeline-item:first-child .admin-delivery-timeline-dot {
+  background: var(--color-success);
+  width: 0.75rem;
+  height: 0.75rem;
+  left: -1.175rem;
+}
+
+.admin-delivery-timeline-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-bottom: 0.1rem;
+}
+
+.admin-delivery-timeline-location {
+  font-size: 0.72rem;
+  color: var(--color-secondary);
+}
+
+.admin-delivery-timeline-date {
+  font-size: 0.7rem;
+  color: var(--color-tertiary);
+}

@@ -35,6 +35,7 @@ import { AdminPagesPage } from '../features/admin/pages/AdminPagesPage';
 import { AdminCategoriesPage } from '../features/admin/categories/AdminCategoriesPage';
 import { AdminReviewsPage } from '../features/admin/reviews/AdminReviewsPage';
 import { AdminMessagesPage } from '../features/admin/messages/AdminMessagesPage';
+import { AdminDeliveryPage } from '../features/admin/delivery/AdminDeliveryPage';
 import { DynamicPage } from '../features/storefront/cms/DynamicPage';
 
 export const router = createBrowserRouter([
@@ -176,6 +177,10 @@ export const router = createBrowserRouter([
           {
             path: 'messages',
             element: <AdminMessagesPage />,
+          },
+          {
+            path: 'delivery',
+            element: <AdminDeliveryPage />,
           },
           {
             path: 'settings',

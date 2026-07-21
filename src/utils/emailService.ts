@@ -288,6 +288,57 @@ export async function sendOrderConfirmationEmail(order: OrderData) {
 export async function sendShipmentConfirmationEmail(order: ShipmentData) {
   const { orderNumber, items, total, shippingAddress } = order;
 
+  let trackingHtml = '';
+  try {
+    const { data: shipments } = await supabase
+      .from('shipments')
+      .select('awb_code, courier_name')
+      .eq('order_id', order.id)
+      .limit(1);
+
+    const shipment = shipments?.[0];
+    if (shipment?.awb_code) {
+      const trackUrl = `https://shiprocket.co/tracking/${shipment.awb_code}`;
+      trackingHtml = `
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #f0fdf4; border-left: 4px solid #22c55e; margin-bottom: 32px;">
+          <tr>
+            <td style="padding: 16px;">
+              <h4 style="color: #22c55e; margin: 0 0 6px 0; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Tracking Information</h4>
+              <p style="color: #166534; font-size: 12.5px; line-height: 18px; margin: 0 0 8px 0;">
+                <strong>AWB:</strong> ${shipment.awb_code}<br />
+                <strong>Courier:</strong> ${shipment.courier_name || 'Dispatched'}<br />
+              </p>
+              <a href="${trackUrl}" target="_blank" rel="noopener noreferrer" style="display: inline-block; background-color: #22c55e; color: #ffffff; text-decoration: none; padding: 8px 16px; border-radius: 4px; font-size: 12px; font-weight: 600;">Track Your Order</a>
+            </td>
+          </tr>
+        </table>`;
+    } else {
+      trackingHtml = `
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #f7f5f2; border-left: 4px solid #bfa17a; margin-bottom: 32px;">
+          <tr>
+            <td style="padding: 16px;">
+              <h4 style="color: #bfa17a; margin: 0 0 6px 0; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Tracking</h4>
+              <p style="color: #6e655b; font-size: 12.5px; line-height: 18px; margin: 0;">
+                Your order is being processed. Tracking information will be available once dispatched.
+              </p>
+            </td>
+          </tr>
+        </table>`;
+    }
+  } catch {
+    trackingHtml = `
+      <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #f7f5f2; border-left: 4px solid #bfa17a; margin-bottom: 32px;">
+        <tr>
+          <td style="padding: 16px;">
+            <h4 style="color: #bfa17a; margin: 0 0 6px 0; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Tracking</h4>
+            <p style="color: #6e655b; font-size: 12.5px; line-height: 18px; margin: 0;">
+              Your order is being processed. Tracking information will be available once dispatched.
+            </p>
+          </td>
+        </tr>
+      </table>`;
+  }
+
   const itemsHtml = items
     .map(
       (item) => `
@@ -385,6 +436,8 @@ export async function sendShipmentConfirmationEmail(order: ShipmentData) {
                         </td>
                       </tr>
                     </table>
+
+                    ${trackingHtml}
 
                     <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom: 24px;">
                       <tr>

@@ -9,7 +9,8 @@ import {
   X,
   ExternalLink,
   MessageSquare,
-  Inbox
+  Inbox,
+  Truck
 } from 'lucide-react';
 import './AdminSidebar.css';
 
@@ -27,6 +28,7 @@ const navItems = [
   { path: '/admin/users', icon: Users, label: 'Users' },
   { path: '/admin/reviews', icon: MessageSquare, label: 'Reviews' },
   { path: '/admin/messages', icon: Inbox, label: 'Messages' },
+  { path: '/admin/delivery', icon: Truck, label: 'Delivery' },
   { path: '/admin/settings', icon: Settings, label: 'Settings' },
 ];
 

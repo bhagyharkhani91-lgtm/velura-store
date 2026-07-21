@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Button } from '../../../components/ui/Button/Button';
-import { Search, Download, Package } from 'lucide-react';
+import { Search, Download, Package, AlertTriangle } from 'lucide-react';
 import { useOrdersStore } from '../../../stores/ordersStore';
+import { useShipmentStore } from '../../../stores/shipmentStore';
 import { formatPrice } from '../../../utils';
 import type { Order } from '../../../types/order';
 import { useProductStore } from '../../../stores/productStore';
@@ -28,6 +29,7 @@ const isToday = (dateString: string) => {
 
 export function AdminOrdersPage() {
   const { orders, updateOrderStatus, updatePaymentStatus } = useOrdersStore();
+  const { createShipment } = useShipmentStore();
   const { products } = useProductStore();
   const [activeTab, setActiveTab] = useState('today');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -35,6 +37,8 @@ export function AdminOrdersPage() {
   const [exportStartDate, setExportStartDate] = useState(new Date().toISOString().split('T')[0]);
   const [exportEndDate, setExportEndDate] = useState(new Date().toISOString().split('T')[0]);
   const [exportAllTime, setExportAllTime] = useState(false);
+  const [acceptLoading, setAcceptLoading] = useState<string | null>(null);
+  const [acceptError, setAcceptError] = useState<string | null>(null);
 
   const filteredOrders = orders.filter(order => {
     if (activeTab === 'today') {
@@ -43,6 +47,42 @@ export function AdminOrdersPage() {
     const tab = TABS.find(t => t.id === activeTab);
     return tab ? tab.statuses.includes(order.status) : true;
   });
+
+  const handleAccept = async (order: Order) => {
+    setAcceptLoading(order.id);
+    setAcceptError(null);
+    try {
+      await updateOrderStatus(order.id, 'confirmed' as any);
+      await createShipment({
+        id: order.id,
+        orderNumber: order.orderNumber,
+        items: order.items.map((item) => ({
+          productId: item.productId,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+        })),
+        subtotal: order.subtotal,
+        shippingAddress: {
+          firstName: order.shippingAddress.firstName,
+          lastName: order.shippingAddress.lastName,
+          street: order.shippingAddress.street,
+          apartment: order.shippingAddress.apartment,
+          city: order.shippingAddress.city,
+          state: order.shippingAddress.state,
+          zipCode: order.shippingAddress.zipCode,
+          country: order.shippingAddress.country,
+          phone: order.shippingAddress.phone,
+          email: (order.shippingAddress as any).email,
+        },
+        paymentMethod: order.paymentMethod,
+      });
+    } catch (err: any) {
+      setAcceptError(err.message || 'Failed to create shipment. Order accepted but shipment creation failed.');
+    } finally {
+      setAcceptLoading(null);
+    }
+  };
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -197,6 +237,13 @@ export function AdminOrdersPage() {
 
   return (
     <div>
+      {acceptError && (
+        <div className="mb-4 p-3 bg-error-muted border border-error/30 rounded-lg flex items-center gap-2 text-sm text-error">
+          <AlertTriangle size={16} />
+          <span>{acceptError}</span>
+          <button onClick={() => setAcceptError(null)} className="ml-auto text-error hover:underline text-xs">&times; Dismiss</button>
+        </div>
+      )}
       <div className="flex justify-between items-center mb-6">
         <h1 className="heading-3xl">Orders Management</h1>
         <Button variant="outline" leftIcon={<Download size={18} />} onClick={exportCSV} disabled={filteredOrders.length === 0}>Export CSV</Button>
@@ -340,8 +387,12 @@ export function AdminOrdersPage() {
                       </span>
                     ) : order.status === 'pending' ? (
                       <div className="flex items-center gap-2">
-                        <Button size="sm" onClick={() => updateOrderStatus(order.id, 'confirmed' as any)}>
-                          Accept
+                        <Button
+                          size="sm"
+                          onClick={() => handleAccept(order)}
+                          disabled={acceptLoading === order.id}
+                        >
+                          {acceptLoading === order.id ? 'Accepting...' : 'Accept'}
                         </Button>
                         <Button size="sm" variant="danger" onClick={() => updateOrderStatus(order.id, 'cancelled' as any)}>
                           Decline
