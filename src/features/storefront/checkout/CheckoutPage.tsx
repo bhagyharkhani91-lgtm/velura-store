@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container } from '../../../components/layout/Container/Container';
 import { Button } from '../../../components/ui/Button/Button';
@@ -7,8 +7,9 @@ import { useCartStore } from '../../../stores/cartStore';
 import { useOrdersStore } from '../../../stores/ordersStore';
 import { useAuthStore } from '../../../stores/authStore';
 import { formatPrice } from '../../../utils';
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle, Loader2, AlertCircle } from 'lucide-react';
 import { sendOrderConfirmationEmail } from '../../../utils/emailService';
+import { checkServiceability } from '../../../lib/shiprocket';
 import confetti from 'canvas-confetti';
 
 export function CheckoutPage() {
@@ -24,11 +25,58 @@ export function CheckoutPage() {
     lastName: user?.name?.split(' ')[1] || '',
     email: user?.email || '',
     phone: '',
-    street: '',
+    address1: '',
+    address2: '',
+    landmark: '',
     city: '',
     state: '',
     zipCode: '',
   });
+  const [pincodeStatus, setPincodeStatus] = useState<'idle' | 'checking' | 'valid' | 'invalid'>('idle');
+  const [pincodeMessage, setPincodeMessage] = useState('');
+  const pincodeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (pincodeTimer.current) clearTimeout(pincodeTimer.current);
+
+    if (formData.zipCode.length !== 6) {
+      if (formData.zipCode.length > 0 && formData.zipCode.length < 6) {
+        setPincodeStatus('idle');
+        setPincodeMessage('Enter 6-digit pincode');
+      } else if (formData.zipCode.length > 6) {
+        setPincodeStatus('invalid');
+        setPincodeMessage('Pincode must be exactly 6 digits');
+      } else {
+        setPincodeStatus('idle');
+        setPincodeMessage('');
+      }
+      return;
+    }
+
+    setPincodeStatus('checking');
+    setPincodeMessage('Checking delivery availability...');
+
+    pincodeTimer.current = setTimeout(async () => {
+      try {
+        const cod = selectedPaymentMethod === 'COD' ? 1 : 0;
+        const result = await checkServiceability(formData.zipCode, 0.5, cod);
+        if (result.serviceable) {
+          setPincodeStatus('valid');
+          setPincodeMessage('Delivery available to this pincode');
+        } else {
+          setPincodeStatus('invalid');
+          setPincodeMessage(result.message || 'Not deliverable to this pincode');
+        }
+      } catch {
+        setPincodeStatus('invalid');
+        setPincodeMessage('Could not verify pincode. Please try again.');
+      }
+    }, 600);
+
+    return () => {
+      if (pincodeTimer.current) clearTimeout(pincodeTimer.current);
+    };
+  }, [formData.zipCode, selectedPaymentMethod]);
 
   useEffect(() => {
     if (!isLoading && !user && !isSuccess) {
@@ -221,7 +269,19 @@ export function CheckoutPage() {
       subtotal,
       shipping: { method: 'Standard', cost: shipping, estimatedDays: '3-5 Days' },
       total,
-      shippingAddress: { ...formData, country: 'India' },
+      shippingAddress: {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        street: formData.address1,
+        apartment: formData.address2,
+        city: formData.city,
+        state: formData.state,
+        zipCode: formData.zipCode,
+        country: 'India',
+        phone: formData.phone,
+        email: formData.email,
+        landmark: formData.landmark,
+      },
     };
 
     addOrder({
@@ -270,13 +330,29 @@ export function CheckoutPage() {
             {/* Shipping Info */}
             <div className="bg-surface p-6 rounded-lg border border-border">
               <h2 className="text-xl font-semibold mb-4 text-primary">Shipping Address</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="md:col-span-2">
-                  <Input label="Street Address" name="street" value={formData.street} onChange={handleInputChange} required />
+              <div className="grid grid-cols-1 gap-4">
+                <Input label="Flat, House No, Building, Company, Apartment" name="address1" value={formData.address1} onChange={handleInputChange} required />
+                <Input label="Area, Street, Sector, Village" name="address2" value={formData.address2} onChange={handleInputChange} required />
+                <Input label="Landmark" name="landmark" value={formData.landmark} onChange={handleInputChange} />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Input label="Pincode" name="zipCode" value={formData.zipCode} onChange={handleInputChange} maxLength={6} required />
+                    {pincodeMessage && (
+                      <div className={`flex items-center gap-1.5 mt-1.5 text-xs ${
+                        pincodeStatus === 'valid' ? 'text-success' :
+                        pincodeStatus === 'invalid' ? 'text-error' :
+                        pincodeStatus === 'checking' ? 'text-secondary' : 'text-secondary'
+                      }`}>
+                        {pincodeStatus === 'checking' && <Loader2 size={12} className="animate-spin" />}
+                        {pincodeStatus === 'valid' && <CheckCircle size={12} />}
+                        {pincodeStatus === 'invalid' && <AlertCircle size={12} />}
+                        {pincodeMessage}
+                      </div>
+                    )}
+                  </div>
+                  <Input label="Town / City" name="city" value={formData.city} onChange={handleInputChange} required />
                 </div>
-                <Input label="City" name="city" value={formData.city} onChange={handleInputChange} required />
                 <Input label="State" name="state" value={formData.state} onChange={handleInputChange} required />
-                <Input label="Postal Code" name="zipCode" value={formData.zipCode} onChange={handleInputChange} required />
               </div>
             </div>
 
@@ -298,8 +374,15 @@ export function CheckoutPage() {
               </div>
             </div>
 
-            <Button type="submit" size="lg" className="w-full">
-              Complete Order ({formatPrice(total)})
+            <Button
+              type="submit"
+              size="lg"
+              className="w-full"
+              disabled={pincodeStatus !== 'valid' || formData.zipCode.length !== 6}
+            >
+              {pincodeStatus === 'checking'
+                ? 'Verifying address...'
+                : `Complete Order (${formatPrice(total)})`}
             </Button>
           </form>
         </div>

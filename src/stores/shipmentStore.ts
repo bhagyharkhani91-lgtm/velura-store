@@ -31,6 +31,7 @@ interface ShipmentStore {
       country: string;
       phone: string;
       email?: string;
+      landmark?: string;
     };
     paymentMethod: string;
   }) => Promise<Shipment | null>;
@@ -94,14 +95,21 @@ export const useShipmentStore = create<ShipmentStore>()((set, get) => ({
     try {
       const fullName = `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}`.trim();
       const phone = (order.shippingAddress as any).phone || '';
+      const landmark = (order.shippingAddress as any).landmark || '';
+
+      const address1 = order.shippingAddress.street || '';
+      const address2 = order.shippingAddress.apartment || '';
+
+      const billingAddress = [address1, address2].filter(Boolean).join(', ');
+      const billingAddress2 = landmark || '';
 
       const srResult = await createShiprocketOrder({
         order_id: order.orderNumber,
         pickup_location: 'Primary',
         billing_customer_name: fullName,
         billing_last_name: order.shippingAddress.lastName || order.shippingAddress.firstName,
-        billing_address: order.shippingAddress.street,
-        billing_address_2: order.shippingAddress.apartment || '',
+        billing_address: billingAddress,
+        billing_address_2: billingAddress2,
         billing_city: order.shippingAddress.city,
         billing_pincode: order.shippingAddress.zipCode,
         billing_state: order.shippingAddress.state,

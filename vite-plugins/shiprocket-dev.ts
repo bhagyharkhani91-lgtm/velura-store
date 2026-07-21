@@ -274,6 +274,44 @@ export function shiprocketDevMiddleware(): Plugin {
                 break;
               }
 
+              case 'check-serviceability': {
+                const { delivery_postcode, weight, cod } = data;
+                if (!delivery_postcode) {
+                  res.statusCode = 400;
+                  res.setHeader('Content-Type', 'application/json');
+                  res.end(JSON.stringify({ error: 'Missing delivery_postcode' }));
+                  return;
+                }
+
+                const pickupPostcode = getEnv('SHIPROCKET_PICKUP_PINCODE', processEnv);
+                if (!pickupPostcode) {
+                  res.statusCode = 400;
+                  res.setHeader('Content-Type', 'application/json');
+                  res.end(JSON.stringify({ error: 'Pickup pincode not configured' }));
+                  return;
+                }
+
+                const params = new URLSearchParams({
+                  pickup_postcode: pickupPostcode,
+                  delivery_postcode,
+                  weight: String(weight || 0.5),
+                  cod: String(cod || 0),
+                });
+
+                const token = await getAuthToken(processEnv);
+                const url = `${SHIPROCKET_BASE}/courier/serviceability/?${params.toString()}`;
+                const srResponse = await fetch(url, {
+                  method: 'GET',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                  },
+                });
+                result = await srResponse.json();
+                console.log('[shiprocket-dev] check-serviceability result:', JSON.stringify(result).substring(0, 200));
+                break;
+              }
+
               default:
                 res.statusCode = 400;
                 res.setHeader('Content-Type', 'application/json');

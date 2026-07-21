@@ -55,9 +55,6 @@ export default async function handler(req, res) {
     return;
   }
 
-  const payload = requireAuth(req, res);
-  if (!payload) return;
-
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method Not Allowed' });
     return;
@@ -69,6 +66,11 @@ export default async function handler(req, res) {
     if (!action) {
       res.status(400).json({ error: 'Missing action' });
       return;
+    }
+
+    if (action !== 'check-serviceability') {
+      const payload = requireAuth(req, res);
+      if (!payload) return;
     }
 
     switch (action) {
@@ -197,6 +199,40 @@ export default async function handler(req, res) {
           method: 'POST',
           body: JSON.stringify({ shipment_id: [shipment_id] }),
         });
+        res.status(200).json(result);
+        break;
+      }
+
+      case 'check-serviceability': {
+        const { delivery_postcode, weight, cod } = data;
+        if (!delivery_postcode) {
+          res.status(400).json({ error: 'Missing delivery_postcode' });
+          return;
+        }
+
+        const pickupPostcode = process.env.SHIPROCKET_PICKUP_PINCODE;
+        if (!pickupPostcode) {
+          res.status(400).json({ error: 'Pickup pincode not configured' });
+          return;
+        }
+
+        const params = new URLSearchParams({
+          pickup_postcode: pickupPostcode,
+          delivery_postcode,
+          weight: String(weight || 0.5),
+          cod: String(cod || 0),
+        });
+
+        const url = `${SHIPROCKET_BASE}/courier/serviceability/?${params.toString()}`;
+        const token = await getAuthToken();
+        const srResponse = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        const result = await srResponse.json();
         res.status(200).json(result);
         break;
       }

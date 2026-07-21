@@ -124,3 +124,35 @@ export async function generateLabel(shipmentId: number | string) {
     response: result.response,
   };
 }
+
+export interface ServiceabilityResult {
+  serviceable: boolean;
+  couriers: Array<{
+    courier_name: string;
+    courier_company_id: number;
+    min_weight: number;
+    rate: number;
+    cod: boolean;
+  }>;
+  message: string;
+  pickup_postcode: string;
+  delivery_postcode: string;
+}
+
+export async function checkServiceability(deliveryPostcode: string, weight?: number, cod?: number): Promise<ServiceabilityResult> {
+  const result = await fetchShiprocket('check-serviceability', {
+    delivery_postcode: deliveryPostcode,
+    weight: weight || 0.5,
+    cod: cod || 0,
+  });
+
+  const isServiceable = result.status === 200 || result.data?.available_courier_companies?.length > 0;
+
+  return {
+    serviceable: isServiceable,
+    couriers: result.data?.available_courier_companies || [],
+    message: result.message || (isServiceable ? 'Serviceable' : 'Not serviceable'),
+    pickup_postcode: result.pickup_postcode || '',
+    delivery_postcode: result.delivery_postcode || deliveryPostcode,
+  };
+}
