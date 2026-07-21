@@ -1,6 +1,6 @@
 import { defineConfig, loadEnv, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
-import { shiprocketDevMiddleware } from './vite-plugins/shiprocket-dev'
+import { shiprocketDevMiddleware } from './vite-plugins/shiprocket-dev.js'
 
 function emailDevMiddleware(): Plugin {
   return {
