@@ -3,10 +3,13 @@ import { Container } from '../../../components/layout/Container/Container';
 import { useAuthStore } from '../../../stores/authStore';
 import { useOrdersStore } from '../../../stores/ordersStore';
 import { useMessagesStore } from '../../../stores/messagesStore';
+import { useReviewsStore } from '../../../stores/reviewsStore';
+import { useUIStore } from '../../../stores/uiStore';
 import { useNavigate } from 'react-router-dom';
 import { formatPrice, formatDate } from '../../../utils';
-import { PackageSearch, Eye, MapPin, CreditCard, Package } from 'lucide-react';
+import { PackageSearch, Eye, MapPin, CreditCard, Package, Star } from 'lucide-react';
 import { Modal } from '../../../components/ui/Modal/Modal';
+import { Button } from '../../../components/ui/Button/Button';
 import type { Order } from '../../../types/order';
 import './MyOrdersPage.css';
 
@@ -21,6 +24,13 @@ export function MyOrdersPage() {
   const [cancelReason, setCancelReason] = useState('');
   const [customReason, setCustomReason] = useState('');
   const [isSubmittingCancel, setIsSubmittingCancel] = useState(false);
+
+  const [reviewModal, setReviewModal] = useState<{ productId: string; productName: string; productImage: string } | null>(null);
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewContent, setReviewContent] = useState('');
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+  const { addReview } = useReviewsStore();
+  const { addToast } = useUIStore();
 
   const closeModal = () => {
     setSelectedOrder(null);
@@ -39,6 +49,22 @@ export function MyOrdersPage() {
   }
 
   const myOrders = getOrdersByUserId(user.id);
+
+  const handleReviewSubmit = async () => {
+    if (!reviewModal || !user || !reviewContent.trim()) return;
+    setIsSubmittingReview(true);
+    try {
+      await addReview(reviewModal.productId, user.id, reviewRating, reviewContent.trim(), []);
+      addToast({ type: 'success', title: 'Review submitted', message: `Thank you for reviewing ${reviewModal.productName}!` });
+      setReviewModal(null);
+      setReviewRating(5);
+      setReviewContent('');
+    } catch (err: any) {
+      addToast({ type: 'error', title: 'Failed to submit', message: err.message || 'Please try again.' });
+    } finally {
+      setIsSubmittingReview(false);
+    }
+  };
 
   const handleCancelSubmit = async () => {
     if (!selectedOrder || !user) return;
@@ -135,6 +161,19 @@ export function MyOrdersPage() {
                         >
                           <Eye size={12} /> View Details
                         </button>
+                        {order.status === 'delivered' && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setReviewModal({ productId: item.productId, productName: item.name, productImage: item.image });
+                              setReviewRating(5);
+                              setReviewContent('');
+                            }}
+                            className="flex items-center gap-1 text-xs font-medium text-accent hover:text-accent/80 transition-colors"
+                          >
+                            <Star size={12} /> Write Review
+                          </button>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -318,6 +357,61 @@ export function MyOrdersPage() {
           </div>
         )}
       </Modal>
+      <Modal
+        isOpen={!!reviewModal}
+        onClose={() => setReviewModal(null)}
+        title="Write a Review"
+        size="sm"
+      >
+        {reviewModal && (
+          <div className="flex flex-col gap-5">
+            <div className="flex items-center gap-3">
+              {reviewModal.productImage && (
+                <img src={reviewModal.productImage} alt={reviewModal.productName} className="w-12 h-12 rounded object-cover border border-border" />
+              )}
+              <span className="text-sm font-medium text-primary">{reviewModal.productName}</span>
+            </div>
+
+            <div>
+              <label className="block text-sm text-secondary mb-2">Rating</label>
+              <div className="flex gap-1">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    type="button"
+                    onClick={() => setReviewRating(star)}
+                  >
+                    <Star
+                      size={24}
+                      fill={star <= reviewRating ? "#FACC15" : "none"}
+                      color={star <= reviewRating ? "#FACC15" : "#4B5563"}
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm text-secondary mb-2">Your Review</label>
+              <textarea
+                rows={4}
+                value={reviewContent}
+                onChange={(e) => setReviewContent(e.target.value)}
+                placeholder="Share your experience with this product..."
+                className="w-full bg-surface border border-border rounded-md px-3 py-2 text-primary focus:outline-none focus:border-accent resize-none text-sm"
+              />
+            </div>
+
+            <div className="flex justify-end gap-3 pt-3 border-t border-border">
+              <Button variant="ghost" onClick={() => setReviewModal(null)}>Cancel</Button>
+              <Button onClick={handleReviewSubmit} disabled={!reviewContent.trim() || isSubmittingReview}>
+                {isSubmittingReview ? 'Submitting...' : 'Submit Review'}
+              </Button>
+            </div>
+          </div>
+        )}
+      </Modal>
+
     </Container>
   );
 }

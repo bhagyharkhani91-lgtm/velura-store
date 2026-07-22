@@ -75,8 +75,14 @@ export function ProductCard({ product }: ProductCardProps) {
           )}
           <div className="product-card-stars">
             {[...Array(5)].map((_, i) => (
-              <Star key={i} size={14} fill="#FFD700" color="#FFD700" />
+              <Star key={i} size={14} 
+                fill={i < Math.round(product.rating) ? "#FFD700" : "none"} 
+                color={i < Math.round(product.rating) ? "#FFD700" : "#4B5563"} 
+              />
             ))}
+            {product.reviewCount > 0 && (
+              <span className="text-xs text-secondary ml-1">({product.reviewCount})</span>
+            )}
           </div>
         </div>
         
