@@ -308,7 +308,7 @@ export function shiprocketDevMiddleware(): Plugin {
                   },
                 });
                 result = await srResponse.json();
-                console.log('[shiprocket-dev] check-serviceability result:', JSON.stringify(result).substring(0, 200));
+                console.log('[shiprocket-dev] check-serviceability result:', JSON.stringify(result));
                 break;
               }
 

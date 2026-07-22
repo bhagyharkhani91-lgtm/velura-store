@@ -176,13 +176,21 @@ export async function checkServiceability(deliveryPostcode: string, weight?: num
     cod: cod || 0,
   });
 
-  const isServiceable = result.status === 200 || result.data?.available_courier_companies?.length > 0;
+  const couriers: any[] =
+    result.data?.available_courier_companies ||
+    result.available_courier_companies ||
+    [];
+
+  const apiStatus = Number(result.status || result.status_code || 0);
+  const hasCouriers = couriers.length > 0;
+  const isServiceable = apiStatus === 200 || apiStatus === 1 || hasCouriers || result.recommended_courier_company_id != null;
+  const defaultMsg = isServiceable ? 'Delivery available' : 'No couriers available for this pincode';
 
   return {
     serviceable: isServiceable,
-    couriers: result.data?.available_courier_companies || [],
-    message: result.message || (isServiceable ? 'Serviceable' : 'Not serviceable'),
-    pickup_postcode: result.pickup_postcode || '',
-    delivery_postcode: result.delivery_postcode || deliveryPostcode,
+    couriers,
+    message: result.message || defaultMsg,
+    pickup_postcode: result.pickup_postcode || result.data?.pickup_postcode || '',
+    delivery_postcode: result.delivery_postcode || result.data?.delivery_postcode || deliveryPostcode,
   };
 }
