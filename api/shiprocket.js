@@ -49,7 +49,7 @@ function setCORS(res) {
   res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization');
 }
 
-function requireAdminAuth(req, res) {
+async function requireAdminAuth(req, res) {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     res.status(401).json({ error: 'Unauthorized' });
@@ -58,7 +58,33 @@ function requireAdminAuth(req, res) {
   try {
     const token = authHeader.split(' ')[1];
     const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64url').toString());
-    const role = payload.user_metadata?.role || payload.app_metadata?.role;
+    const userId = payload.sub;
+    if (!userId) {
+      res.status(401).json({ error: 'Invalid token: missing user id' });
+      return false;
+    }
+
+    const supabaseUrl = process.env.VITE_SUPABASE_URL;
+    const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
+
+    if (!supabaseUrl || !supabaseKey) {
+      res.status(500).json({ error: 'Supabase not configured on server' });
+      return false;
+    }
+
+    const profileRes = await fetchWithTimeout(
+      `${supabaseUrl}/rest/v1/profiles?id=eq.${userId}&select=role`,
+      {
+        headers: {
+          'apikey': supabaseKey,
+          'Authorization': `Bearer ${supabaseKey}`,
+        },
+      },
+    );
+
+    const profiles = await profileRes.json();
+    const role = Array.isArray(profiles) && profiles.length > 0 ? profiles[0].role : null;
+
     if (role !== 'admin') {
       res.status(403).json({ error: 'Forbidden: Admin access required' });
       return false;
@@ -137,7 +163,7 @@ export default async function handler(req, res) {
       return;
     }
 
-    if (!requireAdminAuth(req, res)) return;
+    if (!(await requireAdminAuth(req, res))) return;
 
     switch (action) {
       case 'create-order': {
