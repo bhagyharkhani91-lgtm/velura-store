@@ -79,9 +79,9 @@ export function CheckoutPage() {
           setPincodeStatus('invalid');
           setPincodeMessage(result.message || 'Not deliverable to this pincode');
         }
-      } catch {
+      } catch (err: any) {
         setPincodeStatus('invalid');
-        setPincodeMessage('Could not verify pincode. Please try again.');
+        setPincodeMessage(err?.message || 'Could not verify pincode. Please try again.');
       }
     };
 
