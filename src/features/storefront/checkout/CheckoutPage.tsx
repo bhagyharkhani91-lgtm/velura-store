@@ -238,7 +238,7 @@ export function CheckoutPage() {
 
       // 3. Initialize Razorpay Checkout
       const options: any = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_TAzZYC15Rkxqdh',
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
         amount: Math.round(total * 100),
         currency: "INR",
         name: "Adult Store",

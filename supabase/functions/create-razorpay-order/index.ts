@@ -14,9 +14,12 @@ serve(async (req) => {
   try {
     const { amount, receipt } = await req.json();
 
-    // Get keys from environment variables (fallback to the provided test key for development)
-    const keyId = Deno.env.get('RAZORPAY_KEY_ID') || 'rzp_test_TAzZYC15Rkxqdh';
-    const keySecret = Deno.env.get('RAZORPAY_KEY_SECRET') || 'SBpkVPM74j64SmISy8BHQeMw';
+    const keyId = Deno.env.get('RAZORPAY_KEY_ID');
+    const keySecret = Deno.env.get('RAZORPAY_KEY_SECRET');
+
+    if (!keyId || !keySecret) {
+      throw new Error('Server configuration error: Missing Razorpay keys.');
+    }
 
     const basicAuth = btoa(`${keyId}:${keySecret}`);
 
