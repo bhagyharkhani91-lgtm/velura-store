@@ -35,15 +35,21 @@ export function CheckoutPage() {
   const [pincodeStatus, setPincodeStatus] = useState<'idle' | 'checking' | 'valid' | 'invalid'>('idle');
   const [pincodeMessage, setPincodeMessage] = useState('');
   const pincodeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastCheckedPincode = useRef<string>('');
+  const prevLength = useRef(0);
 
   useEffect(() => {
     if (pincodeTimer.current) clearTimeout(pincodeTimer.current);
 
-    if (formData.zipCode.length !== 6) {
-      if (formData.zipCode.length > 0 && formData.zipCode.length < 6) {
+    const currentLength = formData.zipCode.length;
+    const justReachedSix = prevLength.current < 6 && currentLength === 6;
+    prevLength.current = currentLength;
+
+    if (currentLength !== 6) {
+      if (currentLength > 0 && currentLength < 6) {
         setPincodeStatus('idle');
         setPincodeMessage('Enter 6-digit pincode');
-      } else if (formData.zipCode.length > 6) {
+      } else if (currentLength > 6) {
         setPincodeStatus('invalid');
         setPincodeMessage('Pincode must be exactly 6 digits');
       } else {
@@ -53,13 +59,19 @@ export function CheckoutPage() {
       return;
     }
 
+    if (formData.zipCode === lastCheckedPincode.current) return;
+
+    lastCheckedPincode.current = formData.zipCode;
     setPincodeStatus('checking');
     setPincodeMessage('Checking delivery availability...');
 
-    pincodeTimer.current = setTimeout(async () => {
+    const cod = selectedPaymentMethod === 'COD' ? 1 : 0;
+    const pincode = formData.zipCode;
+    const delay = justReachedSix ? 0 : 200;
+
+    const doCheck = async () => {
       try {
-        const cod = selectedPaymentMethod === 'COD' ? 1 : 0;
-        const result = await checkServiceability(formData.zipCode, 0.5, cod);
+        const result = await checkServiceability(pincode, 0.5, cod);
         if (result.serviceable) {
           setPincodeStatus('valid');
           setPincodeMessage('Delivery available to this pincode');
@@ -71,7 +83,13 @@ export function CheckoutPage() {
         setPincodeStatus('invalid');
         setPincodeMessage('Could not verify pincode. Please try again.');
       }
-    }, 600);
+    };
+
+    if (delay === 0) {
+      doCheck();
+    } else {
+      pincodeTimer.current = setTimeout(doCheck, delay);
+    }
 
     return () => {
       if (pincodeTimer.current) clearTimeout(pincodeTimer.current);

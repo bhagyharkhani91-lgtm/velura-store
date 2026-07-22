@@ -1,7 +1,16 @@
 const API = '/api/shiprocket';
+const TIMEOUT_MS = 8000;
 
 async function fetchShiprocket(action: string, data: any) {
-  const { data: { session } } = await (await import('./supabase')).supabase.auth.getSession();
+  let session: any = null;
+  try {
+    const supabaseModule = await import('./supabase');
+    const { data } = await supabaseModule.supabase.auth.getSession();
+    session = data.session;
+  } catch {
+    // proceed without auth — serviceability check doesn't need it
+  }
+
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
   };
@@ -9,17 +18,38 @@ async function fetchShiprocket(action: string, data: any) {
     headers['Authorization'] = `Bearer ${session.access_token}`;
   }
 
-  const response = await fetch(API, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify({ action, data }),
-  });
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
-  const result = await response.json();
-  if (!response.ok) {
-    throw new Error(result.error || `Shiprocket API error: ${response.status}`);
+  try {
+    const response = await fetch(API, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ action, data }),
+      signal: controller.signal,
+    });
+
+    clearTimeout(timer);
+
+    const text = await response.text();
+    let result: any;
+    try {
+      result = JSON.parse(text);
+    } catch {
+      throw new Error(`Unexpected response: ${text.substring(0, 100)}`);
+    }
+
+    if (!response.ok) {
+      throw new Error(result.error || `Shiprocket API error: ${response.status}`);
+    }
+    return result;
+  } catch (err: any) {
+    clearTimeout(timer);
+    if (err.name === 'AbortError') {
+      throw new Error('Request timed out. Please try again.');
+    }
+    throw err;
   }
-  return result;
 }
 
 export const SHIPROCKET_STATUS_LABELS: Record<string, string> = {
