@@ -1,4 +1,16 @@
--- Trigger function to update product rating and review count
+-- Backfill existing product ratings from reviews
+UPDATE public.products p
+SET 
+  rating = COALESCE(
+    (SELECT ROUND(AVG(r.rating)::numeric, 1) FROM public.product_reviews r WHERE r.product_id = p.id AND r.status = 'approved'),
+    0
+  ),
+  review_count = (
+    SELECT COUNT(*) FROM public.product_reviews r WHERE r.product_id = p.id AND r.status = 'approved'
+  ),
+  updated_at = now();
+
+-- Trigger function to keep product rating and review count in sync
 CREATE OR REPLACE FUNCTION public.update_product_rating()
 RETURNS TRIGGER AS $$
 DECLARE

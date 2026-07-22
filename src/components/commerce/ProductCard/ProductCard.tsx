@@ -80,9 +80,9 @@ export function ProductCard({ product }: ProductCardProps) {
                 color={i < Math.round(product.rating) ? "#FFD700" : "#4B5563"} 
               />
             ))}
-            {product.reviewCount > 0 && (
-              <span className="text-xs text-secondary ml-1">({product.reviewCount})</span>
-            )}
+            <span className="text-xs text-secondary ml-1">
+              {product.reviewCount > 0 ? `(${product.reviewCount})` : '(0)'}
+            </span>
           </div>
         </div>
         
