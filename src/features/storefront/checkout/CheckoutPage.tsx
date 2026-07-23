@@ -184,9 +184,13 @@ export function CheckoutPage() {
     return new Promise((resolve) => {
       const script = document.createElement('script');
       script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.crossOrigin = 'anonymous';
       script.onload = () => resolve(true);
-      script.onerror = () => resolve(false);
-      document.body.appendChild(script);
+      script.onerror = (e) => {
+        console.error('Razorpay SDK load failed:', e);
+        resolve(false);
+      };
+      document.head.appendChild(script);
     });
   };
 
