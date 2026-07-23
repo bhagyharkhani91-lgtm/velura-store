@@ -62,24 +62,9 @@ function emailDevMiddleware(): Plugin {
   };
 }
 
-function cspDevPlugin(): Plugin {
-  return {
-    name: 'csp-dev-headers',
-    configureServer(server) {
-      server.middlewares.use((_req, res, next) => {
-        res.setHeader(
-          'Content-Security-Policy',
-          "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.cloudinary.com https://api.razorpay.com; frame-src 'self' https://api.razorpay.com https://checkout.razorpay.com;"
-        );
-        next();
-      });
-    },
-  };
-}
-
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), cspDevPlugin(), emailDevMiddleware(), shiprocketDevMiddleware()],
+  plugins: [react(), emailDevMiddleware(), shiprocketDevMiddleware()],
   server: {
     proxy: {
       '/api/create-razorpay-order': {
