@@ -43,6 +43,6 @@ export const useSearchStore = create<SearchStore>()(
 
       clearRecent: () => set({ recentSearches: [] }),
     }),
-    { name: 'adult-store-search', partialize: (s) => ({ recentSearches: s.recentSearches }) }
+    { name: 'personal-care-search', partialize: (s) => ({ recentSearches: s.recentSearches }) }
   )
 );

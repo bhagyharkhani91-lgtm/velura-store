@@ -33,9 +33,9 @@ const initialPages: CMSPage[] = [
   },
   {
     id: 'page-2',
-    title: 'About Us',
+    title: 'About Personal Care',
     slug: 'about-us',
-    content: '<h2>About Adult Store</h2><p>Welcome to Adult Store, your premium destination...</p>',
+    content: '<h2>About Personal Care</h2><p>Welcome to Personal Care, your premium destination for wellness and personal care products...</p>',
     isPublished: true,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -82,7 +82,7 @@ export const useCMSStore = create<CMSState>()(
       }
     }),
     {
-      name: 'adult-store-cms',
+      name: 'personal-care-cms',
     }
   )
 );

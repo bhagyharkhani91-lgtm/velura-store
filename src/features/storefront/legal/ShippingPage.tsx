@@ -16,7 +16,7 @@ export function ShippingPage() {
         <div className="legal-highlight-card">
           <Truck size={28} className="legal-highlight-icon" />
           <h3>Discreet Shipping</h3>
-          <p>Plain unmarked packaging. No branding or product details on the outside.</p>
+          <p>Plain unmarked packaging for your privacy. No branding or product details on the outside.</p>
         </div>
         <div className="legal-highlight-card">
           <Clock size={28} className="legal-highlight-icon" />
@@ -85,12 +85,12 @@ export function ShippingPage() {
 
         <div className="legal-block">
           <h3>Discreet Packaging</h3>
-          <p>We take your privacy seriously. Every order is shipped in a <strong>plain, unmarked brown box or standard courier satchel</strong>. There are no brand names, logos, or product descriptions on the outside of the package. The sender name on the shipping label will appear as our discreet parent company name.</p>
+          <p>We take your privacy seriously. Every order is shipped in a <strong>plain, unmarked brown box or standard courier satchel</strong>. There are no brand names, logos, or product descriptions on the outside of the package. The sender name on the shipping label will appear as our corporate name.</p>
         </div>
 
         <div className="legal-block">
           <h3>Discreet Billing</h3>
-          <p>The charge on your credit card or bank statement will appear under our corporate entity name — <strong>not</strong> "Adult Store" or any product-related name — to ensure complete privacy.</p>
+          <p>The charge on your credit card or bank statement will appear under our corporate entity name — <strong>not</strong> any product-related name — to ensure complete privacy.</p>
         </div>
 
         <div className="legal-block">
@@ -113,7 +113,7 @@ export function ShippingPage() {
 
         <div className="legal-block">
           <h3>Eligibility for Returns</h3>
-          <p>Due to the intimate and hygienic nature of our products, we can <strong>only accept returns</strong> under the following conditions:</p>
+          <p>Due to the hygienic nature of our products, we can <strong>only accept returns</strong> under the following conditions:</p>
           <ul className="legal-list">
             <li>The item is <strong>unopened, unused, and in its original sealed packaging</strong>.</li>
             <li>The return request is initiated within <strong>14 days of delivery</strong>.</li>
@@ -125,9 +125,9 @@ export function ShippingPage() {
           <h3>Non-Returnable Items</h3>
           <p>For hygiene and safety reasons, the following items <strong>cannot be returned or exchanged</strong> once opened:</p>
           <ul className="legal-list">
-            <li>Vibrators, dildos, and any insertable products.</li>
+            <li>Personal massagers and insertable wellness devices.</li>
             <li>Lubricants, oils, and topical products.</li>
-            <li>Lingerie, bodysuits, and intimate apparel.</li>
+            <li>Apparel, bodysuits, and personal wear.</li>
             <li>Any item marked "Final Sale" or "Non-Returnable" on its product page.</li>
           </ul>
         </div>
@@ -140,7 +140,7 @@ export function ShippingPage() {
         <div className="legal-block">
           <h3>How to Initiate a Return</h3>
           <ol className="legal-list">
-            <li>Email us at <strong>support@adult-store.in</strong> with your order number and reason for return.</li>
+            <li>Email us at <strong>support@personalcare.in</strong> with your order number and reason for return.</li>
             <li>Our team will review your request within 1–2 business days and send you a return authorization.</li>
             <li>Pack the item securely in its original packaging and ship it using the provided return label.</li>
             <li>Once we receive and inspect the returned item, your refund will be processed within <strong>5–7 business days</strong>.</li>
@@ -162,7 +162,7 @@ export function ShippingPage() {
       <div className="faq-contact">
         <h2 className="heading-2xl mb-4">Have a question about your order?</h2>
         <p className="text-secondary mb-6">Our support team is available Monday–Saturday, 10 AM – 7 PM IST.</p>
-        <a href="mailto:support@adult-store.in" className="navbar-search-btn" style={{ padding: 'var(--space-3) var(--space-8)', borderRadius: 'var(--radius-md)', textDecoration: 'none', display: 'inline-block' }}>
+        <a href="mailto:support@personalcare.in" className="navbar-search-btn" style={{ padding: 'var(--space-3) var(--space-8)', borderRadius: 'var(--radius-md)', textDecoration: 'none', display: 'inline-block' }}>
           Contact Support
         </a>
       </div>

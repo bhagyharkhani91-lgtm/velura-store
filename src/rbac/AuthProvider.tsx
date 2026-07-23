@@ -77,7 +77,7 @@ export const useAuthStore = create<AuthState>()(
       },
     }),
     {
-      name: 'adult-store-auth',
+      name: 'personal-care-auth',
       partialize: (state) => ({
         user: state.user,
         isAuthenticated: state.isAuthenticated,

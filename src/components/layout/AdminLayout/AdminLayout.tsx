@@ -29,7 +29,7 @@ export function AdminLayout() {
             </button>
             <h1 className="admin-header-title">
               <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
-                <span className="brand-name">ADULT STORE</span>
+                <span className="brand-name">PERSONAL CARE</span>
               </Link>
               <span className="admin-badge">ADMIN</span>
             </h1>

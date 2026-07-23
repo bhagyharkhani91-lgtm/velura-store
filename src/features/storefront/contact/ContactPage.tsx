@@ -54,7 +54,7 @@ export function ContactPage() {
         addToast({
           type: 'success',
           title: 'Message Sent',
-          message: 'Your message has been sent successfully. We will reply discreetly within 24 hours.'
+          message: 'Your message has been sent successfully. We will reply within 24 hours.'
         });
       }, 500);
       return;
@@ -113,7 +113,7 @@ export function ContactPage() {
                 <div className="card-content">
                   <h3 className="card-title">Call Us</h3>
                   <a href={`tel:${contactPhone}`} className="card-link">{contactPhone}</a>
-                  <p className="card-subtext">Direct concierge support</p>
+                  <p className="card-subtext">Direct support</p>
                 </div>
               </div>
 
@@ -158,10 +158,10 @@ export function ContactPage() {
             <div className="privacy-promise glass-card">
               <div className="promise-header">
                 <ShieldCheck size={20} className="promise-icon" />
-                <h4 className="promise-title">OUR DISCRETION PROMISE</h4>
+                <h4 className="promise-title">OUR PRIVACY PROMISE</h4>
               </div>
               <p className="promise-text">
-                Your privacy is our utmost priority. All email correspondences, support queries, and billing charges are handled with strict confidentiality. Deliveries are shipped in completely unmarked, plain packaging with no mention of Adult Store.
+                Your privacy is our utmost priority. All email correspondences, support queries, and billing charges are handled with strict confidentiality. Deliveries are shipped in plain, unmarked packaging for your privacy.
               </p>
             </div>
           </div>

@@ -4,12 +4,12 @@ import './Info.css';
 export function FAQPage() {
   const faqs = [
     {
-      question: "Is the packaging discreet?",
-      answer: "Yes, 100%. We understand the importance of privacy. All orders are shipped in plain, unmarked brown boxes or standard courier satchels. There are no logos, branding, or product descriptions on the outside of the package. The return address and billing name will appear as our discreet corporate entity."
+      question: "Is the packaging private?",
+      answer: "Yes, 100%. We understand the importance of privacy. All orders are shipped in plain, unmarked brown boxes or standard courier satchels. There are no logos, branding, or product descriptions on the outside of the package."
     },
     {
       question: "What will show up on my bank statement?",
-      answer: "Your privacy is guaranteed. The charge on your credit card or bank statement will appear under our discreet parent company name, not 'Naughty Nights'."
+      answer: "Your privacy is guaranteed. The charge on your credit card or bank statement will appear under our corporate name, not any product-related name."
     },
     {
       question: "Do you offer Cash on Delivery (COD)?",
@@ -21,7 +21,7 @@ export function FAQPage() {
     },
     {
       question: "What is your return policy?",
-      answer: "Due to the intimate nature of our products and strict hygiene standards, we only accept returns for items that are unopened, unused, and in their original sealed packaging within 14 days of delivery. If you receive a defective item, please contact our support team immediately for a replacement."
+      answer: "Due to the hygienic nature of our products, we only accept returns for items that are unopened, unused, and in their original sealed packaging within 14 days of delivery. If you receive a defective item, please contact our support team immediately for a replacement."
     },
     {
       question: "Are your products safe and body-safe?",

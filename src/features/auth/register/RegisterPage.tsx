@@ -108,7 +108,7 @@ export function RegisterPage() {
           <>
             <div className="login-header">
               <h1 className="login-title">Create Account</h1>
-              <p className="login-subtitle">Join us to explore premium intimate wellness</p>
+               <p className="login-subtitle">Join us to explore premium personal care and wellness</p>
             </div>
 
             {error && (

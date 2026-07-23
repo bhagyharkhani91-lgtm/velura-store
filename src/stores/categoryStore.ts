@@ -20,15 +20,15 @@ interface CategoryState {
 }
 
 const initialCategories: Category[] = [
-  { id: 'cat-1', name: 'Men Toys', slug: 'men-toys', description: 'Toys designed specifically for men.', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-  { id: 'cat-2', name: 'Women Toys', slug: 'women-toys', description: 'Toys designed specifically for women.', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-  { id: 'cat-3', name: 'Couple Toys', slug: 'couple-toys', description: 'Enhance your intimacy together.', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-  { id: 'cat-4', name: 'Vibrators', slug: 'vibrators', description: 'Premium vibrators for ultimate pleasure.', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-  { id: 'cat-5', name: 'Dildos', slug: 'dildos', description: 'Realistic and luxury dildos.', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-  { id: 'cat-6', name: 'Bondage', slug: 'bondage', description: 'Light bondage and restraint accessories.', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-  { id: 'cat-7', name: 'Anal Toys', slug: 'anal-toys', description: 'Safe and enjoyable anal toys.', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-  { id: 'cat-8', name: 'Lubes and Lotions', slug: 'lubes-and-lotions', description: 'Premium lubricants and massage lotions.', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-  { id: 'cat-9', name: 'Lingerie', slug: 'lingerie', description: 'Sensual lingerie for all bodies.', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+  { id: 'cat-1', name: 'Men Care', slug: 'men-toys', description: 'Personal care products for men.', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+  { id: 'cat-2', name: 'Women Care', slug: 'women-toys', description: 'Personal care products for women.', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+  { id: 'cat-3', name: 'Couple Wellness', slug: 'couple-toys', description: 'Wellness products for couples.', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+  { id: 'cat-4', name: 'Massagers', slug: 'vibrators', description: 'Premium personal massagers.', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+  { id: 'cat-5', name: 'Wellness Tools', slug: 'dildos', description: 'Personal wellness and care tools.', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+  { id: 'cat-6', name: 'Accessories', slug: 'bondage', description: 'Wellness accessories and aids.', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+  { id: 'cat-7', name: 'Health Devices', slug: 'anal-toys', description: 'Personal health and wellness devices.', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+  { id: 'cat-8', name: 'Lotions & Oils', slug: 'lubes-and-lotions', description: 'Premium body lotions and massage oils.', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+  { id: 'cat-9', name: 'Apparel', slug: 'lingerie', description: 'Comfortable apparel for all bodies.', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
   { id: 'cat-10', name: 'Sale', slug: 'sale', description: 'Discounted products and special offers.', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
   { id: 'cat-11', name: 'Fresh Picks', slug: 'fresh-picks', description: 'Our newest and trending arrivals.', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
   { id: 'cat-12', name: 'Top Men', slug: 'top-men', description: 'Our top premium collection for men.', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
@@ -74,7 +74,7 @@ export const useCategoryStore = create<CategoryState>()(
       }
     }),
     {
-      name: 'adult-store-categories',
+      name: 'personal-care-categories',
     }
   )
 );

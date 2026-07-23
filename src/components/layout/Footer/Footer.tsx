@@ -13,9 +13,9 @@ export function Footer() {
         <div className="footer-main">
           {/* Brand column */}
           <div className="footer-brand">
-            <Link to="/" className="footer-logo">ADULT STORE</Link>
+            <Link to="/" className="footer-logo">PERSONAL CARE</Link>
             <p className="footer-tagline">
-              Premium intimate wellness products designed for your pleasure and well-being.
+              Premium personal care and wellness products for a healthier, happier you.
             </p>
 
             {/* Social icons */}
@@ -46,8 +46,8 @@ export function Footer() {
             <div className="footer-col">
               <h3 className="footer-heading">Shop</h3>
               <ul className="footer-links">
-                <li><Link to="/categories/vibrators">Vibrators</Link></li>
-                <li><Link to="/categories/couple-toys">Couples</Link></li>
+                <li><Link to="/categories/vibrators">Massagers</Link></li>
+                <li><Link to="/categories/couple-toys">Wellness</Link></li>
                 <li><Link to="/categories/massage">Massage</Link></li>
                 <li><Link to="/categories/accessories">Accessories</Link></li>
               </ul>
@@ -79,7 +79,7 @@ export function Footer() {
         {/* Bottom bar */}
         <div className="footer-bottom">
           <p className="footer-copyright">
-            &copy; {new Date().getFullYear()} Adult Store. All rights reserved.
+            &copy; {new Date().getFullYear()} Personal Care. All rights reserved.
           </p>
 
           <div className="footer-bottom-links">
@@ -102,7 +102,7 @@ export function Footer() {
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" width="14" height="14">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
               </svg>
-              Discreet Shipping
+              Private Shipping
             </span>
           </div>
         </div>

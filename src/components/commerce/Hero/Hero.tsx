@@ -55,11 +55,11 @@ export function Hero() {
       <Container className="hero-container">
         <div className="hero-content">
           <h1 className="hero-title">
-            Unleash Your<br />
-            <span className="hero-title-accent">Wildest Desires</span>
+            Discover Your<br />
+            <span className="hero-title-accent">Personal Wellness</span>
           </h1>
           <p className="hero-subtitle">
-            Explore our curated collection of premium intimate wellness products designed to elevate your pleasure and confidence.
+            Explore our curated collection of premium personal care and wellness products designed to enhance your daily life and well-being.
           </p>
           <Link to="/products" className="hero-btn">
             Shop Now <ArrowRight size={20} />

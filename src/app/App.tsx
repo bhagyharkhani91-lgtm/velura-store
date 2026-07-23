@@ -31,12 +31,12 @@ export function App() {
     fetchProducts();
     fetchSettings();
 
-    const hasSeenSplash = sessionStorage.getItem('adultStore_splash_shown');
+    const hasSeenSplash = sessionStorage.getItem('personalCare_splash_shown');
     if (hasSeenSplash) {
       setShowSplash(false);
     }
 
-    const hasVerifiedAge = localStorage.getItem('adultStore_age_verified');
+    const hasVerifiedAge = localStorage.getItem('personalCare_age_verified');
     if (!hasVerifiedAge) {
       setIsAgeVerified(false);
     }
@@ -44,12 +44,12 @@ export function App() {
 
   const handleSplashComplete = () => {
     setShowSplash(false);
-    sessionStorage.setItem('adultStore_splash_shown', 'true');
+    sessionStorage.setItem('personalCare_splash_shown', 'true');
   };
 
   const handleAgeVerify = () => {
     setIsAgeVerified(true);
-    localStorage.setItem('adultStore_age_verified', 'true');
+    localStorage.setItem('personalCare_age_verified', 'true');
   };
 
   return (

@@ -88,7 +88,7 @@ export function Navbar() {
 
             {/* Logo */}
             <Link to="/" className="navbar-logo" style={isAuthPage ? { margin: '0 auto' } : {}}>
-              ADULT STORE
+              PERSONAL CARE
             </Link>
 
             {/* Search Bar - Hidden on Auth Pages */}

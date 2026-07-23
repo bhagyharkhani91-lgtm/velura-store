@@ -39,7 +39,7 @@ export function TermsPage() {
         <section>
           <h2>5. Returns and Refunds</h2>
           <p>
-            Due to the intimate nature of our products, we only accept returns on unopened and unused items within 30 days of delivery, or for defective products under warranty. Please refer to our Shipping & Returns policy for full details.
+            For health and hygiene reasons, we only accept returns on unopened and unused items within 30 days of delivery, or for defective products under warranty. Please refer to our Shipping & Returns policy for full details.
           </p>
         </section>
       </div>

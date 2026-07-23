@@ -35,7 +35,7 @@ export function HomePage() {
         <Container>
           <div className="mens-section-heading-container">
             <h2 className="mens-section-heading heading-display">
-              TOP MEN PRODUCTS
+              TOP MEN'S COLLECTION
             </h2>
           </div>
           {displayMenProducts.length > 0 ? (
@@ -73,7 +73,7 @@ export function HomePage() {
         <Container>
           <div className="womens-section-heading-container">
             <h2 className="womens-section-heading heading-display">
-              TOP WOMEN PRODUCTS
+              TOP WOMEN'S COLLECTION
             </h2>
           </div>
           {displayWomenProducts.length > 0 ? (

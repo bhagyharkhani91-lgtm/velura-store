@@ -150,7 +150,7 @@ export function CheckoutPage() {
           </div>
           <h1 className="text-2xl font-bold mb-3 text-primary animate-fade-in-up stagger-2">Order Placed Successfully!</h1>
           <p className="text-secondary text-sm mb-8 leading-relaxed animate-fade-in-up stagger-3">
-            Thank you for your discreet purchase. You will receive an email confirmation shortly. A message with your order details has been shared with you.
+            Thank you for your purchase. You will receive an email confirmation shortly. A message with your order details has been shared with you.
           </p>
           <div className="animate-fade-in-up stagger-4">
             <Button onClick={() => navigate('/')} className="w-full hover-scale">Return Home</Button>
@@ -241,8 +241,8 @@ export function CheckoutPage() {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
         amount: Math.round(total * 100),
         currency: "INR",
-        name: "Adult Store",
-        description: "Premium Purchase",
+        name: "Personal Care",
+        description: "Wellness Products",
         image: "https://example.com/your_logo.png",
         handler: function (response: any) {
           // Payment Succeeded!

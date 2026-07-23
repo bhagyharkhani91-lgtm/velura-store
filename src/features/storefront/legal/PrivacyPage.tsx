@@ -11,14 +11,14 @@ export function PrivacyPage() {
         <section>
           <h2>1. Introduction</h2>
           <p>
-            At ADULT STORE, we take your privacy and discretion extremely seriously. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website or make a purchase.
+            At PERSONAL CARE, we take your privacy extremely seriously. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website or make a purchase.
           </p>
         </section>
 
         <section>
-          <h2>2. Discreet Billing and Shipping</h2>
+          <h2>2. Private Billing and Shipping</h2>
           <p>
-            Your privacy is our top priority. All charges on your credit card statement will appear under a discreet corporate name, not "ADULT STORE". All packages are shipped in plain, unmarked boxes with no logos or descriptions of the contents on the outside.
+            Your privacy is our top priority. All charges on your credit card statement will appear under our corporate name. All packages are shipped in plain, unmarked boxes with no logos or descriptions of the contents on the outside.
           </p>
         </section>
 

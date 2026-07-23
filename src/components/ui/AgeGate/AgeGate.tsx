@@ -22,7 +22,7 @@ export function AgeGate({ onVerify }: AgeGateProps) {
         
         <div className="age-gate-content">
           <p className="text-secondary mb-4">
-            This website contains adult-oriented products and information. You must be at least 20 years of age to enter.
+            This website contains wellness and personal care products. You must be at least 20 years of age to enter.
           </p>
           <p className="text-secondary">
             By entering this site, you agree to our Terms of Service and Privacy Policy, and you confirm that you are of legal age in your jurisdiction.
