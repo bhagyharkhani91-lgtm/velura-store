@@ -6,6 +6,8 @@ import { useSettingsStore, type HeroBanner, type PurchaseNotification } from '..
 import { useProductStore } from '../../../stores/productStore';
 import { useUIStore } from '../../../stores/uiStore';
 import { validateImageUpload, uploadToCloudinary } from '../../../utils';
+import forHimBgDefault from '../../../assets/for_him_bg.png';
+import forHerBgDefault from '../../../assets/for_her_bg.png';
 
 export function AdminSettingsPage() {
   const { 
@@ -252,10 +254,15 @@ export function AdminSettingsPage() {
               <div>
                 <label className="block text-sm font-medium text-secondary mb-2">For Him Background</label>
                 <div className="relative aspect-video border border-border rounded-lg overflow-hidden bg-bg-secondary mb-3">
-                  {forHimBgUrl ? (
-                    <img src={forHimBgUrl} alt="For Him background" className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="flex items-center justify-center h-full text-secondary text-sm">No image uploaded</div>
+                  <img
+                    src={forHimBgUrl || forHimBgDefault}
+                    alt="For Him background"
+                    className="w-full h-full object-cover"
+                  />
+                  {!forHimBgUrl && (
+                    <div className="absolute bottom-0 left-0 right-0 bg-black/60 py-1 px-3">
+                      <span className="text-xs text-secondary">Using default image</span>
+                    </div>
                   )}
                 </div>
                 <label
@@ -274,10 +281,15 @@ export function AdminSettingsPage() {
               <div>
                 <label className="block text-sm font-medium text-secondary mb-2">For Her Background</label>
                 <div className="relative aspect-video border border-border rounded-lg overflow-hidden bg-bg-secondary mb-3">
-                  {forHerBgUrl ? (
-                    <img src={forHerBgUrl} alt="For Her background" className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="flex items-center justify-center h-full text-secondary text-sm">No image uploaded</div>
+                  <img
+                    src={forHerBgUrl || forHerBgDefault}
+                    alt="For Her background"
+                    className="w-full h-full object-cover"
+                  />
+                  {!forHerBgUrl && (
+                    <div className="absolute bottom-0 left-0 right-0 bg-black/60 py-1 px-3">
+                      <span className="text-xs text-secondary">Using default image</span>
+                    </div>
                   )}
                 </div>
                 <label
