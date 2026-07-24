@@ -15,7 +15,11 @@ interface ProductFormModalProps {
 
 export function ProductFormModal({ isOpen, onClose, editingProduct, initialCategoryId }: ProductFormModalProps) {
   const { addProduct, updateProduct } = useProductStore();
-  const { categories } = useCategoryStore();
+  const { categories, fetchCategories } = useCategoryStore();
+
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
   
   const [formData, setFormData] = useState({
     name: '',

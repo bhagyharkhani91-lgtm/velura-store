@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Container } from '../../layout/Container/Container';
 import { useCategoryStore } from '../../../stores/categoryStore';
@@ -34,7 +35,11 @@ const getCategoryIcon = (slug: string) => {
 };
 
 export function CategoryIcons() {
-  const { categories } = useCategoryStore();
+  const { categories, fetchCategories } = useCategoryStore();
+
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
 
   if (!categories || categories.length === 0) return null;
 

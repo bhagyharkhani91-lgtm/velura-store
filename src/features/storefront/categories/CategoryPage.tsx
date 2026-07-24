@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Container } from '../../../components/layout/Container/Container';
 import { ProductCard } from '../../../components/commerce/ProductCard/ProductCard';
@@ -8,7 +9,11 @@ import { EmptyState } from '../../../components/ui/EmptyState/EmptyState';
 export function CategoryPage() {
   const { categoryId } = useParams();
   const { products } = useProductStore();
-  const { categories } = useCategoryStore();
+  const { categories, fetchCategories } = useCategoryStore();
+
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
   
   // Find the category to get the proper name
   const category = categories.find(c => c.slug === categoryId);

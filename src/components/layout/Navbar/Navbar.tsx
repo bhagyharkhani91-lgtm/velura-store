@@ -22,7 +22,11 @@ export function Navbar() {
   // Check if we are on an auth page to show a simplified header
   const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
 
-  const { categories } = useCategoryStore();
+  const { categories, fetchCategories } = useCategoryStore();
+
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
 
   const { promoMessages } = useSettingsStore();
 

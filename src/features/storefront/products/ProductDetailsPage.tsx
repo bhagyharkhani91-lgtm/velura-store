@@ -32,7 +32,11 @@ export function ProductDetailsPage() {
 
   const { getProductBySlug, getProductsByCategory } = useProductStore();
   const { reviews, isLoading: isReviewsLoading } = useReviewsStore();
-  const { categories } = useCategoryStore();
+  const { categories, fetchCategories } = useCategoryStore();
+
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
 
   const dynamicReviewCount = reviews.length;
   const dynamicRating = dynamicReviewCount > 0 

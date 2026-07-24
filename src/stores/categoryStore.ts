@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { generateId, slugify } from '../utils';
+import { supabase } from '../lib/supabase';
+import { slugify } from '../utils';
 
 export interface Category {
   id: string;
@@ -13,9 +14,13 @@ export interface Category {
 
 interface CategoryState {
   categories: Category[];
-  addCategory: (category: Omit<Category, 'id' | 'createdAt' | 'updatedAt' | 'slug'>) => void;
-  updateCategory: (id: string, updates: Partial<Category>) => void;
-  deleteCategory: (id: string) => void;
+  isLoading: boolean;
+  error: string | null;
+  initialized: boolean;
+  fetchCategories: () => Promise<void>;
+  addCategory: (category: Omit<Category, 'id' | 'createdAt' | 'updatedAt' | 'slug'>) => Promise<void>;
+  updateCategory: (id: string, updates: Partial<Category>) => Promise<void>;
+  deleteCategory: (id: string) => Promise<void>;
   getCategoryBySlug: (slug: string) => Category | undefined;
 }
 
@@ -39,42 +44,107 @@ export const useCategoryStore = create<CategoryState>()(
   persist(
     (set, get) => ({
       categories: initialCategories,
-      
-      addCategory: (categoryData) => set((state) => {
-        const now = new Date().toISOString();
+      isLoading: false,
+      error: null,
+      initialized: false,
+
+      fetchCategories: async () => {
+        const { isLoading } = get();
+        if (isLoading) return;
+
+        set({ isLoading: true, error: null });
+        try {
+          const { data, error } = await supabase.from('categories').select('*').order('created_at');
+          if (error) throw error;
+
+          if (data && data.length > 0) {
+            const mapped: Category[] = data.map((c: any) => ({
+              id: c.id,
+              name: c.name,
+              slug: c.slug,
+              description: c.description || '',
+              createdAt: c.created_at,
+              updatedAt: c.created_at,
+            }));
+            set({ categories: mapped, isLoading: false, initialized: true });
+          } else {
+            const seedPayload = initialCategories.map(c => ({
+              name: c.name,
+              slug: c.slug,
+              description: c.description,
+            }));
+
+            const { error: seedError } = await supabase.from('categories').insert(seedPayload);
+            if (seedError) throw seedError;
+
+            const { data: seeded, error: refetchErr } = await supabase.from('categories').select('*').order('created_at');
+            if (refetchErr) throw refetchErr;
+
+            if (seeded) {
+              const mapped: Category[] = seeded.map((c: any) => ({
+                id: c.id,
+                name: c.name,
+                slug: c.slug,
+                description: c.description || '',
+                createdAt: c.created_at,
+                updatedAt: c.created_at,
+              }));
+              set({ categories: mapped, isLoading: false, initialized: true });
+            }
+          }
+        } catch (err: any) {
+          set({ error: err.message, isLoading: false });
+        }
+      },
+
+      addCategory: async (categoryData) => {
         const slug = slugify(categoryData.name);
-        
-        const newCategory: Category = {
-          ...categoryData,
+        const { error } = await supabase.from('categories').insert([{
+          name: categoryData.name,
           slug,
-          id: `cat-${generateId()}`,
-          createdAt: now,
-          updatedAt: now,
-        };
-        
-        return {
-          categories: [...state.categories, newCategory],
-        };
-      }),
-      
-      updateCategory: (id, updates) => set((state) => ({
-        categories: state.categories.map((c) => 
-          c.id === id 
-            ? { ...c, ...updates, updatedAt: new Date().toISOString() } 
-            : c
-        ),
-      })),
-      
-      deleteCategory: (id) => set((state) => ({
-        categories: state.categories.filter((c) => c.id !== id),
-      })),
-      
+          description: categoryData.description,
+        }]);
+        if (error) throw error;
+        await get().fetchCategories();
+      },
+
+      updateCategory: async (id, updates) => {
+        const dbUpdates: Record<string, any> = {};
+        if (updates.name !== undefined) {
+          dbUpdates.name = updates.name;
+          dbUpdates.slug = slugify(updates.name);
+        }
+        if (updates.description !== undefined) dbUpdates.description = updates.description;
+
+        const { error } = await supabase.from('categories').update(dbUpdates).eq('id', id);
+        if (error) throw error;
+        await get().fetchCategories();
+      },
+
+      deleteCategory: async (id) => {
+        const category = get().categories.find(c => c.id === id);
+
+        const { error } = await supabase.from('categories').delete().eq('id', id);
+        if (error) throw error;
+
+        if (category) {
+          const { error: unlinkErr } = await supabase
+            .from('products')
+            .update({ category_id: null })
+            .eq('category_id', category.slug);
+          if (unlinkErr) console.error('Error unlinking products from deleted category:', unlinkErr);
+        }
+
+        await get().fetchCategories();
+      },
+
       getCategoryBySlug: (slug) => {
         return get().categories.find(c => c.slug === slug);
       }
     }),
     {
       name: 'personal-care-categories',
+      partialize: (state) => ({ categories: state.categories }),
     }
   )
 );
