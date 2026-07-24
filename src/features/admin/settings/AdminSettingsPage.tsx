@@ -28,6 +28,8 @@ export function AdminSettingsPage() {
   const { addToast } = useUIStore();
   const { products } = useProductStore();
 
+  const { genderSplitForHimBg, genderSplitForHerBg, setGenderSplitBgs } = useSettingsStore();
+
   const [messagesText, setMessagesText] = useState(promoMessages.join('\n'));
   const [titleText, setTitleText] = useState(contactTitle);
   const [descriptionText, setDescriptionText] = useState(contactDescription);
@@ -38,6 +40,8 @@ export function AdminSettingsPage() {
   const [returnPolicyText, setReturnPolicyText] = useState(returnPolicy);
   const [heroBannersText, setHeroBannersText] = useState<HeroBanner[]>(heroBanners || []);
   const [notifList, setNotifList] = useState<PurchaseNotification[]>(purchaseNotifications || []);
+  const [forHimBgUrl, setForHimBgUrl] = useState(genderSplitForHimBg);
+  const [forHerBgUrl, setForHerBgUrl] = useState(genderSplitForHerBg);
 
   useEffect(() => {
     if (heroBanners) {
@@ -48,6 +52,11 @@ export function AdminSettingsPage() {
   useEffect(() => {
     setNotifList(purchaseNotifications || []);
   }, [purchaseNotifications]);
+
+  useEffect(() => {
+    setForHimBgUrl(genderSplitForHimBg);
+    setForHerBgUrl(genderSplitForHerBg);
+  }, [genderSplitForHimBg, genderSplitForHerBg]);
 
   const addNotification = () => {
     setNotifList(prev => [
@@ -114,6 +123,28 @@ export function AdminSettingsPage() {
     setHeroBannersText(newBanners);
   };
 
+  const handleGenderSplitUpload = (target: 'him' | 'her') => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const { isValid, error } = validateImageUpload(file);
+    if (!isValid) {
+      alert(error);
+      if (e.target) e.target.value = '';
+      return;
+    }
+
+    uploadToCloudinary(file).then(result => {
+      if (target === 'him') {
+        setForHimBgUrl(result.url);
+      } else {
+        setForHerBgUrl(result.url);
+      }
+    }).catch(err => {
+      alert('Image upload failed: ' + err.message);
+    });
+  };
+
   const handleSave = () => {
     const newMessages = messagesText
       .split('\n')
@@ -131,6 +162,7 @@ export function AdminSettingsPage() {
     });
     setReturnPolicy(returnPolicyText);
     setHeroBanners(heroBannersText);
+    setGenderSplitBgs(forHimBgUrl, forHerBgUrl);
 
     const cleanNotifs = notifList
       .map(n => ({ ...n, message: n.message.trim() }))
@@ -207,6 +239,58 @@ export function AdminSettingsPage() {
                 value={hoursText} 
                 onChange={(e) => setHoursText(e.target.value)} 
               />
+            </div>
+          </div>
+
+          {/* Gender Split Panel Backgrounds */}
+          <div className="bg-surface rounded-lg p-6 border border-border">
+            <h2 className="text-xl font-semibold mb-4 text-primary">Gender Split Panel Backgrounds</h2>
+            <p className="text-sm text-secondary mb-4">Customize the background images for the "For Him" and "For Her" sections on the homepage. Recommended size: 960x520. Leave empty to use the default images.</p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* FOR HIM */}
+              <div>
+                <label className="block text-sm font-medium text-secondary mb-2">For Him Background</label>
+                <div className="relative aspect-video border border-border rounded-lg overflow-hidden bg-bg-secondary mb-3">
+                  {forHimBgUrl ? (
+                    <img src={forHimBgUrl} alt="For Him background" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="flex items-center justify-center h-full text-secondary text-sm">No image uploaded</div>
+                  )}
+                </div>
+                <label
+                  className="block w-full border-2 border-dashed rounded-lg p-4 text-center cursor-pointer hover:bg-bg-hover transition-colors"
+                  style={{ borderColor: '#60A5FA', backgroundColor: 'rgba(59, 130, 246, 0.05)' }}
+                >
+                  <CloudUpload size={20} className="mx-auto mb-1" style={{ color: '#3B82F6' }} />
+                  <span className="text-sm font-medium" style={{ color: '#9CA3AF' }}>
+                    <span style={{ color: '#3B82F6', textDecoration: 'underline' }}>Upload</span> For Him Image
+                  </span>
+                  <input type="file" accept="image/*" className="hidden" onChange={handleGenderSplitUpload('him')} />
+                </label>
+              </div>
+
+              {/* FOR HER */}
+              <div>
+                <label className="block text-sm font-medium text-secondary mb-2">For Her Background</label>
+                <div className="relative aspect-video border border-border rounded-lg overflow-hidden bg-bg-secondary mb-3">
+                  {forHerBgUrl ? (
+                    <img src={forHerBgUrl} alt="For Her background" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="flex items-center justify-center h-full text-secondary text-sm">No image uploaded</div>
+                  )}
+                </div>
+                <label
+                  className="block w-full border-2 border-dashed rounded-lg p-4 text-center cursor-pointer hover:bg-bg-hover transition-colors"
+                  style={{ borderColor: '#EC4899', backgroundColor: 'rgba(236, 72, 153, 0.05)' }}
+                >
+                  <CloudUpload size={20} className="mx-auto mb-1" style={{ color: '#EC4899' }} />
+                  <span className="text-sm font-medium" style={{ color: '#9CA3AF' }}>
+                    <span style={{ color: '#EC4899', textDecoration: 'underline' }}>Upload</span> For Her Image
+                  </span>
+                  <input type="file" accept="image/*" className="hidden" onChange={handleGenderSplitUpload('her')} />
+                </label>
+              </div>
             </div>
           </div>
 

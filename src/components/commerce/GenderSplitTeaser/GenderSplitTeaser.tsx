@@ -1,10 +1,16 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
-import forHimBg from '../../../assets/for_him_bg.png';
-import forHerBg from '../../../assets/for_her_bg.png';
+import { useSettingsStore } from '../../../stores/settingsStore';
+import forHimBgDefault from '../../../assets/for_him_bg.png';
+import forHerBgDefault from '../../../assets/for_her_bg.png';
 import './GenderSplitTeaser.css';
 
 export function GenderSplitTeaser() {
+  const { genderSplitForHimBg, genderSplitForHerBg } = useSettingsStore();
+
+  const forHimBg = genderSplitForHimBg || forHimBgDefault;
+  const forHerBg = genderSplitForHerBg || forHerBgDefault;
+
   return (
     <section className="gender-split-section">
       <div className="gender-split-container">

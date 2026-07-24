@@ -24,12 +24,15 @@ interface SettingsState {
   returnPolicy: string;
   heroBanners: HeroBanner[];
   purchaseNotifications: PurchaseNotification[];
+  genderSplitForHimBg: string;
+  genderSplitForHerBg: string;
   isLoading: boolean;
   fetchSettings: () => Promise<void>;
   setPromoMessages: (messages: string[]) => Promise<void>;
   setReturnPolicy: (policy: string) => Promise<void>;
   setHeroBanners: (banners: HeroBanner[]) => Promise<void>;
   setPurchaseNotifications: (notifications: PurchaseNotification[]) => Promise<void>;
+  setGenderSplitBgs: (forHimBg: string, forHerBg: string) => Promise<void>;
   setContactInfo: (info: {
     contactTitle: string;
     contactDescription: string;
@@ -62,6 +65,8 @@ export const useSettingsStore = create<SettingsState>()((set) => ({
   returnPolicy: 'At Personal Care, we strive to ensure your complete satisfaction. If you are not entirely satisfied with your purchase, we offer a hassle-free return and exchange process. You may return unworn, unwashed, and undamaged items within 30 days of delivery for a full refund or exchange. Please ensure that all original tags are attached and the items are returned in their original packaging. For health and hygiene reasons, certain personal care items are non-returnable. Please contact our support team at support@personalcare.in to initiate a return request.',
   heroBanners: [],
   purchaseNotifications: [],
+  genderSplitForHimBg: '',
+  genderSplitForHerBg: '',
   isLoading: false,
 
   fetchSettings: async () => {
@@ -83,7 +88,9 @@ export const useSettingsStore = create<SettingsState>()((set) => ({
           contactPhone: data.contact_phone || '',
           contactAddress: data.contact_address || '',
           contactHours: data.contact_hours || '',
-          returnPolicy: data.return_policy || ''
+          returnPolicy: data.return_policy || '',
+          genderSplitForHimBg: data.gender_split_for_him_bg || '',
+          genderSplitForHerBg: data.gender_split_for_her_bg || ''
         });
         
         const rawNotification = data.purchase_notification;
@@ -185,6 +192,19 @@ export const useSettingsStore = create<SettingsState>()((set) => ({
       set(info);
     } catch (err) {
       console.error('Error updating contact info:', err);
+    }
+  },
+
+  setGenderSplitBgs: async (forHimBg, forHerBg) => {
+    try {
+      const { error } = await supabase.from('site_settings').update({
+        gender_split_for_him_bg: forHimBg,
+        gender_split_for_her_bg: forHerBg
+      }).eq('id', 1);
+      if (error) throw error;
+      set({ genderSplitForHimBg: forHimBg, genderSplitForHerBg: forHerBg });
+    } catch (err) {
+      console.error('Error updating gender split backgrounds:', err);
     }
   }
 }));
