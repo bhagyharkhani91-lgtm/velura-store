@@ -1,20 +1,34 @@
+import { useState, useEffect } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { Drawer } from '../../ui/Drawer/Drawer';
 import { useUIStore } from '../../../stores/uiStore';
 import { useAuthStore } from '../../../stores/authStore';
-import { Home, Package, Tags, Info, Phone, LogIn, LogOut, User as UserIcon, ShoppingBag, ShieldCheck } from 'lucide-react';
+import { useCategoryStore } from '../../../stores/categoryStore';
+import { Home, Package, Tags, Info, Phone, LogIn, LogOut, User as UserIcon, ShoppingBag, ShieldCheck, ChevronDown, ChevronRight } from 'lucide-react';
 import './MobileMenu.css';
 
 export function MobileMenu() {
   const { isMobileMenuOpen, closeMobileMenu } = useUIStore();
   const { user, isAuthenticated, logout } = useAuthStore();
+  const { categories, fetchCategories } = useCategoryStore();
   const navigate = useNavigate();
+  const [categoriesExpanded, setCategoriesExpanded] = useState(false);
+
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      fetchCategories();
+    }
+  }, [isMobileMenuOpen, fetchCategories]);
 
   const handleLogout = () => {
     logout();
     closeMobileMenu();
     navigate('/');
   };
+
+  const displayCategories = categories.filter(
+    c => c.slug !== 'top-men' && c.slug !== 'top-women'
+  );
 
   return (
     <Drawer
@@ -40,10 +54,31 @@ export function MobileMenu() {
               </NavLink>
             </li>
             <li>
-              <NavLink to="/categories" className="mobile-nav-item" onClick={closeMobileMenu}>
+              <button
+                className="mobile-nav-item w-full"
+                onClick={() => setCategoriesExpanded(!categoriesExpanded)}
+              >
                 <Tags size={20} />
                 <span>Categories</span>
-              </NavLink>
+                <span className="ml-auto">
+                  {categoriesExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                </span>
+              </button>
+              {categoriesExpanded && (
+                <ul className="pl-10 py-1 space-y-1">
+                  {displayCategories.map(cat => (
+                    <li key={cat.id}>
+                      <NavLink
+                        to={`/categories/${cat.slug}`}
+                        className="mobile-nav-item text-sm py-2"
+                        onClick={closeMobileMenu}
+                      >
+                        {cat.name}
+                      </NavLink>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </li>
             <li>
               <NavLink to="/about" className="mobile-nav-item" onClick={closeMobileMenu}>
