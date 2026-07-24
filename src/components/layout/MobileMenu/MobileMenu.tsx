@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { Drawer } from '../../ui/Drawer/Drawer';
 import { useUIStore } from '../../../stores/uiStore';
 import { useAuthStore } from '../../../stores/authStore';
 import { useCategoryStore } from '../../../stores/categoryStore';
+import { useProductStore } from '../../../stores/productStore';
 import { Home, Package, Tags, Info, Phone, LogIn, LogOut, User as UserIcon, ShoppingBag, ShieldCheck, ChevronDown, ChevronRight } from 'lucide-react';
 import './MobileMenu.css';
 
@@ -11,14 +12,16 @@ export function MobileMenu() {
   const { isMobileMenuOpen, closeMobileMenu } = useUIStore();
   const { user, isAuthenticated, logout } = useAuthStore();
   const { categories, fetchCategories } = useCategoryStore();
+  const { products, fetchProducts } = useProductStore();
   const navigate = useNavigate();
   const [categoriesExpanded, setCategoriesExpanded] = useState(false);
 
   useEffect(() => {
     if (isMobileMenuOpen) {
       fetchCategories();
+      fetchProducts();
     }
-  }, [isMobileMenuOpen, fetchCategories]);
+  }, [isMobileMenuOpen, fetchCategories, fetchProducts]);
 
   const handleLogout = () => {
     logout();
@@ -29,6 +32,16 @@ export function MobileMenu() {
   const displayCategories = categories.filter(
     c => c.slug !== 'top-men' && c.slug !== 'top-women'
   );
+
+  const productCountBySlug = useMemo(() => {
+    const counts: Record<string, number> = {};
+    products.forEach(p => {
+      if (p.categoryId) {
+        counts[p.categoryId] = (counts[p.categoryId] || 0) + 1;
+      }
+    });
+    return counts;
+  }, [products]);
 
   return (
     <Drawer
@@ -66,17 +79,21 @@ export function MobileMenu() {
               </button>
               {categoriesExpanded && (
                 <ul className="pl-10 py-1 space-y-1">
-                  {displayCategories.map(cat => (
-                    <li key={cat.id}>
-                      <NavLink
-                        to={`/categories/${cat.slug}`}
-                        className="mobile-nav-item text-sm py-2"
-                        onClick={closeMobileMenu}
-                      >
-                        {cat.name}
-                      </NavLink>
-                    </li>
-                  ))}
+                  {displayCategories.map(cat => {
+                    const count = productCountBySlug[cat.slug] || 0;
+                    return (
+                      <li key={cat.id}>
+                        <NavLink
+                          to={`/categories/${cat.slug}`}
+                          className="mobile-nav-item text-sm py-2"
+                          onClick={closeMobileMenu}
+                        >
+                          <span>{cat.name}</span>
+                          <span className="ml-auto text-xs text-secondary">{count}</span>
+                        </NavLink>
+                      </li>
+                    );
+                  })}
                 </ul>
               )}
             </li>
