@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { Loader2 } from 'lucide-react';
 import { Container } from '../../../components/layout/Container/Container';
 import { ProductCard } from '../../../components/commerce/ProductCard/ProductCard';
 import { useProductStore } from '../../../stores/productStore';
@@ -8,12 +9,13 @@ import { EmptyState } from '../../../components/ui/EmptyState/EmptyState';
 
 export function CategoryPage() {
   const { categoryId } = useParams();
-  const { products } = useProductStore();
+  const { products, isLoading, fetchProducts } = useProductStore();
   const { categories, fetchCategories } = useCategoryStore();
 
   useEffect(() => {
     fetchCategories();
-  }, [fetchCategories]);
+    fetchProducts();
+  }, [fetchCategories, fetchProducts]);
   
   // Find the category to get the proper name
   const category = categories.find(c => c.slug === categoryId);
@@ -21,6 +23,17 @@ export function CategoryPage() {
 
   // Strictly filter products by category
   const displayProducts = products.filter(p => p.categoryId === categoryId);
+
+  if (isLoading) {
+    return (
+      <Container style={{ paddingTop: '60px', paddingBottom: '100px', minHeight: '60vh' }}>
+        <div className="flex flex-col items-center justify-center py-20">
+          <Loader2 size={32} className="animate-spin text-secondary mb-4" />
+          <p className="text-secondary text-sm">Loading products...</p>
+        </div>
+      </Container>
+    );
+  }
 
   return (
     <Container style={{ paddingTop: '60px', paddingBottom: '100px', minHeight: '60vh' }}>
