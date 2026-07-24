@@ -75,16 +75,16 @@ export function ProductDetailsPage() {
   }, [productSlug, navigate]);
 
   const relatedProducts = useMemo(() => {
-    if (!product) return [];
-    return getProductsByCategory(product.categoryId)
+    if (!product || !product.categoryIds.length) return [];
+    return getProductsByCategory(product.categoryIds[0])
       .filter(p => p.id !== product.id)
       .slice(0, 5);
   }, [product, getProductsByCategory]);
 
   const categoryName = useMemo(() => {
-    if (!product) return '';
-    const cat = categories.find(c => c.slug === product.categoryId);
-    return cat ? cat.name : product.categoryId;
+    if (!product || !product.categoryIds.length) return '';
+    const cat = categories.find(c => c.slug === product.categoryIds[0]);
+    return cat ? cat.name : product.categoryIds[0];
   }, [product, categories]);
 
   if (!product) {

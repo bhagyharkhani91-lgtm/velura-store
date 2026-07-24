@@ -33,7 +33,7 @@ export interface Product {
   name: string;
   shortDescription: string;
   description: string;
-  categoryId: string;
+  categoryIds: string[];
   subcategoryId?: string;
   brandId?: string;
   price: number;

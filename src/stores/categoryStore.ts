@@ -128,11 +128,19 @@ export const useCategoryStore = create<CategoryState>()(
         if (error) throw error;
 
         if (category) {
-          const { error: unlinkErr } = await supabase
+          const { data: affectedProducts } = await supabase
             .from('products')
-            .update({ category_id: null })
-            .eq('category_id', category.slug);
-          if (unlinkErr) console.error('Error unlinking products from deleted category:', unlinkErr);
+            .select('id, category_ids')
+            .contains('category_ids', [category.slug]);
+
+          if (affectedProducts && affectedProducts.length > 0) {
+            await Promise.all(
+              affectedProducts.map((p: any) => {
+                const newIds = (p.category_ids || []).filter((s: string) => s !== category.slug);
+                return supabase.from('products').update({ category_ids: newIds }).eq('id', p.id);
+              })
+            );
+          }
         }
 
         await get().fetchCategories();

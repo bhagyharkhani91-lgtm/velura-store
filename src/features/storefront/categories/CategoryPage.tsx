@@ -23,7 +23,7 @@ export function CategoryPage() {
   const category = categories.find(c => c.slug === categoryId);
   const categoryName = category ? category.name : categoryId?.replace('-', ' ');
 
-  const displayProducts = products.filter(p => p.categoryId === categoryId);
+  const displayProducts = products.filter(p => p.categoryIds.includes(categoryId || ''));
 
   if (!initialFetchDone && products.length === 0) {
     return (

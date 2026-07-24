@@ -13,15 +13,13 @@ interface AssignProductsModalProps {
 export function AssignProductsModal({ isOpen, onClose, category }: AssignProductsModalProps) {
   const { products, updateProduct } = useProductStore();
   const [searchTerm, setSearchTerm] = useState('');
-  
-  // Track which products are selected for this category
+
   const [selectedProductIds, setSelectedProductIds] = useState<Set<string>>(new Set());
 
-  // Reset state when modal opens
   useEffect(() => {
     if (isOpen && category) {
       const initialSelected = new Set(
-        products.filter(p => p.categoryId === category.slug).map(p => p.id)
+        products.filter(p => p.categoryIds.includes(category.slug)).map(p => p.id)
       );
       setSelectedProductIds(initialSelected);
       setSearchTerm('');
@@ -30,7 +28,7 @@ export function AssignProductsModal({ isOpen, onClose, category }: AssignProduct
 
   if (!isOpen || !category) return null;
 
-  const filteredProducts = products.filter(p => 
+  const filteredProducts = products.filter(p =>
     p.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -45,27 +43,30 @@ export function AssignProductsModal({ isOpen, onClose, category }: AssignProduct
   };
 
   const handleSave = () => {
-    // For every product in the store:
-    // If it's in selectedProductIds, set categoryId to this category
-    // If it's NOT in selectedProductIds but its categoryId IS this category, set it to empty (or 'unassigned')
     products.forEach(product => {
       const isSelected = selectedProductIds.has(product.id);
-      const isCurrentlyInCategory = product.categoryId === category.slug;
-      
+      const isCurrentlyInCategory = product.categoryIds.includes(category.slug);
+
       if (isSelected && !isCurrentlyInCategory) {
-        updateProduct(product.id, { categoryId: category.slug });
+        const newCategoryIds = [...product.categoryIds, category.slug];
+        updateProduct(product.id, { categoryIds: newCategoryIds });
       } else if (!isSelected && isCurrentlyInCategory) {
-        updateProduct(product.id, { categoryId: '' }); // Unassign
+        const newCategoryIds = product.categoryIds.filter(s => s !== category.slug);
+        updateProduct(product.id, { categoryIds: newCategoryIds });
       }
     });
-    
+
     onClose();
+  };
+
+  const otherCategories = (productCategories: string[], currentSlug: string) => {
+    return productCategories.filter(s => s !== currentSlug);
   };
 
   return (
     <div className="fixed inset-0 bg-black-80 flex items-center justify-center z-100 p-4">
       <div className="bg-surface border border-border rounded-xl w-full max-w-2xl max-h-90vh flex flex-col">
-        
+
         {/* Header */}
         <div className="flex justify-between items-center p-6 border-b border-border">
           <div>
@@ -76,14 +77,14 @@ export function AssignProductsModal({ isOpen, onClose, category }: AssignProduct
             <X size={24} />
           </button>
         </div>
-        
+
         {/* Search */}
         <div className="p-4 border-b border-border">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-secondary" size={18} />
-            <input 
-              type="text" 
-              placeholder="Search products by name..." 
+            <input
+              type="text"
+              placeholder="Search products by name..."
               className="w-full bg-bg-secondary border border-border rounded-md pl-10 pr-4 py-2 text-primary focus:outline-none focus:border-accent"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -99,13 +100,14 @@ export function AssignProductsModal({ isOpen, onClose, category }: AssignProduct
             <div className="flex flex-col">
               {filteredProducts.map(product => {
                 const isSelected = selectedProductIds.has(product.id);
+                const otherCatSlugs = otherCategories(product.categoryIds, category.slug);
                 return (
-                  <label 
-                    key={product.id} 
+                  <label
+                    key={product.id}
                     className={`flex items-center gap-4 p-3 rounded-lg cursor-pointer transition-colors hover:bg-bg-hover ${isSelected ? 'bg-bg-hover' : ''}`}
                   >
-                    <input 
-                      type="checkbox" 
+                    <input
+                      type="checkbox"
                       className="w-5 h-5 accent-accent"
                       checked={isSelected}
                       onChange={() => toggleProduct(product.id)}
@@ -119,9 +121,9 @@ export function AssignProductsModal({ isOpen, onClose, category }: AssignProduct
                       <div className="font-medium text-primary">{product.name}</div>
                       <div className="text-xs text-secondary">{product.stockCount} in stock</div>
                     </div>
-                    {product.categoryId && product.categoryId !== category.slug && (
+                    {otherCatSlugs.length > 0 && (
                       <div className="text-xs text-secondary bg-bg-secondary px-2 py-1 rounded">
-                        Currently in: {product.categoryId}
+                        Also in: {otherCatSlugs.join(', ')}
                       </div>
                     )}
                   </label>
@@ -136,7 +138,7 @@ export function AssignProductsModal({ isOpen, onClose, category }: AssignProduct
           <Button variant="outline" onClick={onClose}>Cancel</Button>
           <Button onClick={handleSave}>Save Assignments ({selectedProductIds.size})</Button>
         </div>
-        
+
       </div>
     </div>
   );

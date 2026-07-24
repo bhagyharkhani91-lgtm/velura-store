@@ -12,10 +12,10 @@ export function HomePage() {
   const { products } = useProductStore();
 
   // Filter men's products strictly by category assignment
-  const allMenProducts = products.filter(p => p.categoryId === 'top-men');
+  const allMenProducts = products.filter(p => p.categoryIds.includes('top-men'));
 
   // Filter women's products strictly by category assignment
-  const allWomenProducts = products.filter(p => p.categoryId === 'top-women');
+  const allWomenProducts = products.filter(p => p.categoryIds.includes('top-women'));
 
   // Slice first 4 for display
   const displayMenProducts = allMenProducts.slice(0, 4);

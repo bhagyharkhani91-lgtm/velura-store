@@ -26,7 +26,7 @@ export function ProductFormModal({ isOpen, onClose, editingProduct, initialCateg
     price: '',
     compareAtPrice: '',
     isOnSale: false,
-    categoryId: initialCategoryId || '',
+    categoryIds: initialCategoryId ? [initialCategoryId] : ([] as string[]),
     shortDescription: '',
     description: '',
     stockCount: '10',
@@ -46,7 +46,7 @@ export function ProductFormModal({ isOpen, onClose, editingProduct, initialCateg
         price: editingProduct.price.toString(),
         compareAtPrice: editingProduct.compareAtPrice ? editingProduct.compareAtPrice.toString() : '',
         isOnSale: editingProduct.isOnSale ?? false,
-        categoryId: editingProduct.categoryId,
+        categoryIds: editingProduct.categoryIds || [],
         shortDescription: editingProduct.shortDescription,
         description: editingProduct.description || '',
         stockCount: editingProduct.stockCount.toString(),
@@ -64,7 +64,7 @@ export function ProductFormModal({ isOpen, onClose, editingProduct, initialCateg
         price: '',
         compareAtPrice: '',
         isOnSale: false,
-        categoryId: initialCategoryId || '',
+        categoryIds: initialCategoryId ? [initialCategoryId] : [],
         shortDescription: '',
         description: '',
         stockCount: '10',
@@ -119,7 +119,7 @@ export function ProductFormModal({ isOpen, onClose, editingProduct, initialCateg
         price: parseFloat(formData.price),
         compareAtPrice: formData.compareAtPrice ? parseFloat(formData.compareAtPrice) : undefined,
         isOnSale: formData.isOnSale,
-        categoryId: formData.categoryId,
+        categoryIds: formData.categoryIds,
         shortDescription: formData.shortDescription,
         description: formData.description,
         stockCount: parseInt(formData.stockCount, 10),
@@ -141,7 +141,7 @@ export function ProductFormModal({ isOpen, onClose, editingProduct, initialCateg
         name: formData.name,
         price: parseFloat(formData.price),
         compareAtPrice: formData.compareAtPrice ? parseFloat(formData.compareAtPrice) : undefined,
-        categoryId: formData.categoryId,
+        categoryIds: formData.categoryIds,
         shortDescription: formData.shortDescription,
         description: formData.description,
         images: formData.imageUrls.map((url, idx) => ({
@@ -315,18 +315,30 @@ export function ProductFormModal({ isOpen, onClose, editingProduct, initialCateg
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-secondary mb-1">Category</label>
-            <select 
-              required
-              className="w-full bg-bg-secondary border border-border rounded-md px-4 py-2 text-primary focus:outline-none focus:border-accent"
-              value={formData.categoryId}
-              onChange={e => setFormData({...formData, categoryId: e.target.value})}
-            >
-              <option value="" disabled>Select a category</option>
-              {categories.map(cat => (
-                <option key={cat.id} value={cat.slug}>{cat.name}</option>
-              ))}
-            </select>
+            <label className="block text-sm font-medium text-secondary mb-2">Categories</label>
+            <div className="max-h-40 overflow-y-auto bg-bg-secondary border border-border rounded-md p-3 space-y-2">
+              {categories.map(cat => {
+                const checked = formData.categoryIds.includes(cat.slug);
+                return (
+                  <label key={cat.id} className="flex items-center gap-2 cursor-pointer hover:text-primary text-secondary text-sm">
+                    <input
+                      type="checkbox"
+                      className="w-4 h-4 accent-accent"
+                      checked={checked}
+                      onChange={() => {
+                        setFormData(prev => ({
+                          ...prev,
+                          categoryIds: checked
+                            ? prev.categoryIds.filter(s => s !== cat.slug)
+                            : [...prev.categoryIds, cat.slug]
+                        }));
+                      }}
+                    />
+                    {cat.name}
+                  </label>
+                );
+              })}
+            </div>
           </div>
           
           <div>

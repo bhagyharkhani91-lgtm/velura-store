@@ -7,7 +7,7 @@ create table public.products (
   name text not null,
   short_description text,
   description text,
-  category_id text,
+  category_ids text[] default '{}'::text[] not null,
   subcategory_id text,
   brand_id text,
   price numeric not null,

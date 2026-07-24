@@ -36,9 +36,9 @@ export function MobileMenu() {
   const productCountBySlug = useMemo(() => {
     const counts: Record<string, number> = {};
     products.forEach(p => {
-      if (p.categoryId) {
-        counts[p.categoryId] = (counts[p.categoryId] || 0) + 1;
-      }
+      p.categoryIds.forEach(cid => {
+        counts[cid] = (counts[cid] || 0) + 1;
+      });
     });
     return counts;
   }, [products]);

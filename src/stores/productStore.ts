@@ -33,7 +33,7 @@ export const useProductStore = create<ProductState>()((set, get) => ({
         name: d.name,
         shortDescription: d.short_description || '',
         description: d.description || '',
-        categoryId: d.category_id,
+        categoryIds: Array.isArray(d.category_ids) ? d.category_ids : (d.category_id ? [d.category_id] : []),
         subcategoryId: d.subcategory_id,
         brandId: d.brand_id,
         price: Number(d.price),
@@ -81,7 +81,7 @@ export const useProductStore = create<ProductState>()((set, get) => ({
         name: productData.name,
         short_description: productData.shortDescription,
         description: productData.description,
-        category_id: productData.categoryId || null,
+        category_ids: productData.categoryIds || [],
         subcategory_id: productData.subcategoryId || null,
         brand_id: productData.brandId || null,
         price: productData.price,
@@ -127,7 +127,7 @@ export const useProductStore = create<ProductState>()((set, get) => ({
       if (updates.name) { dbUpdates.name = updates.name; dbUpdates.slug = slugify(updates.name); }
       if (updates.shortDescription !== undefined) dbUpdates.short_description = updates.shortDescription;
       if (updates.description !== undefined) dbUpdates.description = updates.description;
-      if (updates.categoryId !== undefined) dbUpdates.category_id = updates.categoryId === '' ? null : updates.categoryId;
+      if (updates.categoryIds !== undefined) dbUpdates.category_ids = updates.categoryIds;
       if (updates.subcategoryId !== undefined) dbUpdates.subcategory_id = updates.subcategoryId === '' ? null : updates.subcategoryId;
       if (updates.brandId !== undefined) dbUpdates.brand_id = updates.brandId === '' ? null : updates.brandId;
       if (updates.price !== undefined) dbUpdates.price = updates.price;
@@ -186,6 +186,6 @@ export const useProductStore = create<ProductState>()((set, get) => ({
   },
 
   getProductsByCategory: (categoryId) => {
-    return get().products.filter((p) => p.categoryId === categoryId);
+    return get().products.filter((p) => p.categoryIds.includes(categoryId));
   }
 }));

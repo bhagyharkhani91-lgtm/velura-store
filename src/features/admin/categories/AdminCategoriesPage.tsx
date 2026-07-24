@@ -153,7 +153,7 @@ export function AdminCategoriesPage() {
           <tbody>
             {filteredCategories.map(category => {
               const isExpanded = expandedCategories.has(category.id);
-              const categoryProducts = products.filter(p => p.categoryId === category.slug);
+              const categoryProducts = products.filter(p => p.categoryIds.includes(category.slug));
 
               return (
                 <React.Fragment key={category.id}>
@@ -246,7 +246,7 @@ export function AdminCategoriesPage() {
                                           onClick={async () => {
                                             if (window.confirm(`Are you sure you want to remove "${product.name}" from the category "${category.name}"?`)) {
                                               try {
-                                                await updateProduct(product.id, { categoryId: '' });
+                                                await updateProduct(product.id, { categoryIds: product.categoryIds.filter(s => s !== category.slug) });
                                               } catch (err: any) {
                                                 addToast({ type: 'error', title: 'Error', message: err.message || 'Failed to remove product.' });
                                               }

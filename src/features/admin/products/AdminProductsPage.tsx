@@ -98,7 +98,7 @@ export function AdminProductsPage() {
                     </div>
                   </div>
                 </td>
-                <td className="p-4 text-secondary capitalize">{product.categoryId}</td>
+                <td className="p-4 text-secondary capitalize">{product.categoryIds.join(', ')}</td>
                 <td className="p-4">
                   <div>
                     <span className="font-medium">{formatPrice(product.price)}</span>
