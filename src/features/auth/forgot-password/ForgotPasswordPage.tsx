@@ -4,6 +4,7 @@ import { Mail, ArrowRight, ShieldCheck } from 'lucide-react';
 import { Button } from '../../../components/ui/Button/Button';
 import { Input } from '../../../components/ui/Input/Input';
 import { supabase } from '../../../lib/supabase';
+import { isAllowedEmailDomain } from '../../../utils';
 import './ForgotPasswordPage.css';
 
 type Step = 'REQUEST_LINK' | 'SUCCESS';
@@ -20,6 +21,12 @@ export function ForgotPasswordPage() {
     setError('');
 
     try {
+      if (!isAllowedEmailDomain(email)) {
+        setError('Only @gmail.com and @outlook.com email addresses are supported for password recovery.');
+        setIsLoading(false);
+        return;
+      }
+
       // Directs the magic link back to our new /update-password route
       const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/update-password`,
