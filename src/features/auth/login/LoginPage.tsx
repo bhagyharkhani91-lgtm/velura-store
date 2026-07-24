@@ -5,6 +5,7 @@ import { Button } from '../../../components/ui/Button/Button';
 import { Input } from '../../../components/ui/Input/Input';
 import { supabase } from '../../../lib/supabase';
 import { useAuthStore } from '../../../stores/authStore';
+import { isAllowedEmailDomain } from '../../../utils';
 import './LoginPage.css';
 
 export function LoginPage() {
@@ -102,6 +103,12 @@ export function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
     setError('');
+
+    if (!isAllowedEmailDomain(email)) {
+      setError('Only @gmail.com and @outlook.com email addresses are allowed.');
+      setIsLoading(false);
+      return;
+    }
 
     try {
       if (email && password) {

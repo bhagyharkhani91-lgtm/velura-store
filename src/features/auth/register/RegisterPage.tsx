@@ -4,6 +4,7 @@ import { Mail, Lock, User as UserIcon, ShieldCheck } from 'lucide-react';
 import { Button } from '../../../components/ui/Button/Button';
 import { Input } from '../../../components/ui/Input/Input';
 import { supabase } from '../../../lib/supabase';
+import { isAllowedEmailDomain } from '../../../utils';
 import '../login/LoginPage.css';
 
 type Step = 'REGISTER' | 'SUCCESS';
@@ -62,6 +63,12 @@ export function RegisterPage() {
 
     if (password !== confirmPassword) {
       setError('Passwords do not match.');
+      setIsLoading(false);
+      return;
+    }
+
+    if (!isAllowedEmailDomain(email)) {
+      setError('Only @gmail.com and @outlook.com email addresses are allowed.');
       setIsLoading(false);
       return;
     }

@@ -91,8 +91,15 @@ export function getDiscountPercentage(price: number, compareAtPrice: number): nu
 
 // ---- Validators ----
 
+const ALLOWED_EMAIL_DOMAINS = ['gmail.com', 'outlook.com'];
+
 export function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+export function isAllowedEmailDomain(email: string): boolean {
+  const domain = email.split('@')[1]?.toLowerCase();
+  return domain ? ALLOWED_EMAIL_DOMAINS.includes(domain) : false;
 }
 
 export function isValidPhone(phone: string): boolean {
