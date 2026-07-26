@@ -1,12 +1,42 @@
 import type { Plugin } from 'vite';
+import { readFileSync, existsSync } from 'fs';
+import { join } from 'path';
+
+function parseEnvFile(filePath: string): Record<string, string> {
+  const result: Record<string, string> = {};
+  if (!existsSync(filePath)) return result;
+  const content = readFileSync(filePath, 'utf-8');
+  const lines = content.split('\n');
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+    const eqIdx = trimmed.indexOf('=');
+    if (eqIdx === -1) continue;
+    const key = trimmed.substring(0, eqIdx).trim();
+    const value = trimmed.substring(eqIdx + 1).trim();
+    result[key] = value;
+  }
+  return result;
+}
+
+function getEnv(key: string, processEnv: Record<string, string | undefined>): string {
+  if (processEnv[key]) return processEnv[key]!;
+  const envFiles = ['.env.local', '.env'];
+  for (const file of envFiles) {
+    const path = join(process.cwd(), file);
+    if (existsSync(path)) {
+      const parsed = parseEnvFile(path);
+      if (parsed[key]) return parsed[key];
+    }
+  }
+  return '';
+}
 
 export function signupWithVerifyDevMiddleware(): Plugin {
   return {
     name: 'signup-with-verify-dev-middleware',
     configureServer(server) {
-      const loadEnv = (key: string): string | undefined => {
-        return process.env[key] || undefined;
-      };
+      const processEnv = process.env as Record<string, string | undefined>;
 
       server.middlewares.use('/api/signup-with-verify', async (req, res) => {
         res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -27,9 +57,9 @@ export function signupWithVerifyDevMiddleware(): Plugin {
           return;
         }
 
-        const supabaseUrl = loadEnv('VITE_SUPABASE_URL');
-        const serviceRoleKey = loadEnv('SUPABASE_SERVICE_ROLE_KEY');
-        const resendApiKey = loadEnv('RESEND_API_KEY');
+        const supabaseUrl = getEnv('VITE_SUPABASE_URL', processEnv);
+        const serviceRoleKey = getEnv('SUPABASE_SERVICE_ROLE_KEY', processEnv);
+        const resendApiKey = getEnv('RESEND_API_KEY', processEnv);
 
         if (!supabaseUrl || !serviceRoleKey) {
           console.error('[signup-dev] Missing SUPABASE_SERVICE_ROLE_KEY or VITE_SUPABASE_URL');
