@@ -16,6 +16,7 @@ import { TermsPage } from '../features/storefront/legal/TermsPage';
 import { DisclaimerPage } from '../features/storefront/legal/DisclaimerPage';
 import { ShippingPage } from '../features/storefront/legal/ShippingPage';
 import { RegisterPage } from '../features/auth/register/RegisterPage';
+import { VerifyOtpPage } from '../features/auth/verify-otp/VerifyOtpPage';
 import { ConfirmEmailPage } from '../features/auth/confirm-email/ConfirmEmailPage';
 import { ForgotPasswordPage } from '../features/auth/forgot-password/ForgotPasswordPage';
 import { UpdatePasswordPage } from '../features/auth/forgot-password/UpdatePasswordPage';
@@ -83,6 +84,10 @@ export const router = createBrowserRouter([
       {
         path: 'register',
         element: <RegisterPage />,
+      },
+      {
+        path: 'verify-otp',
+        element: <VerifyOtpPage />,
       },
       {
         path: 'confirm-email',

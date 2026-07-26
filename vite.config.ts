@@ -1,6 +1,9 @@
 import { defineConfig, loadEnv, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
 import { shiprocketDevMiddleware } from './vite-plugins/shiprocket-dev.js'
+import { signupWithVerifyDevMiddleware } from './vite-plugins/signup-with-verify-dev.js'
+import { verifyOtpDevMiddleware } from './vite-plugins/verify-otp-dev.js'
+import { deleteUserDevMiddleware } from './vite-plugins/delete-user-dev.js'
 
 function emailDevMiddleware(): Plugin {
   return {
@@ -64,7 +67,7 @@ function emailDevMiddleware(): Plugin {
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), emailDevMiddleware(), shiprocketDevMiddleware()],
+  plugins: [react(), emailDevMiddleware(), shiprocketDevMiddleware(), signupWithVerifyDevMiddleware(), verifyOtpDevMiddleware(), deleteUserDevMiddleware()],
   server: {
     proxy: {
       '/api/create-razorpay-order': {

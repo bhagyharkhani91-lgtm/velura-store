@@ -100,14 +100,26 @@ export const useUsersStore = create<UsersStore>()((set, get) => ({
   },
 
   deleteUser: async (id) => {
-    const { error } = await supabase
-      .from('profiles')
-      .delete()
-      .eq('id', id);
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session?.access_token;
 
-    if (error) {
-      console.error('Error deleting user:', error);
-      return { error };
+    if (!token) {
+      return { error: new Error('Not authenticated') };
+    }
+
+    const res = await fetch('/api/delete-user', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ userId: id }),
+    });
+
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      console.error('Error deleting user:', data.error);
+      return { error: new Error(data.error || 'Failed to delete user') };
     }
 
     // Remove from local state
