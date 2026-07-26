@@ -11,7 +11,9 @@ export interface Review {
   status: 'pending' | 'approved' | 'rejected';
   createdAt: string;
   updatedAt: string;
-  userEmail?: string; // Used for admin panel
+  userEmail?: string;
+  productName?: string;
+  reviewerName?: string;
 }
 
 interface ReviewsState {
@@ -21,6 +23,7 @@ interface ReviewsState {
   fetchProductReviews: (productId: string) => Promise<void>;
   fetchAllReviews: () => Promise<void>; // For admin
   addReview: (productId: string, userId: string, rating: number, content: string, images: string[]) => Promise<void>;
+  addCustomReview: (productId: string, rating: number, content: string, images: string[], reviewerName: string) => Promise<void>;
   updateReviewStatus: (id: string, status: 'approved' | 'rejected') => Promise<void>;
   updateReviewContent: (id: string, content: string, rating: number) => Promise<void>;
   deleteReview: (id: string) => Promise<void>;
@@ -60,7 +63,8 @@ export const useReviewsStore = create<ReviewsState>()((set) => ({
         status: d.status,
         createdAt: d.created_at,
         updatedAt: d.updated_at,
-        userEmail: d.profiles?.name || d.profiles?.email || 'Customer'
+        reviewerName: d.reviewer_name || undefined,
+        userEmail: d.reviewer_name || d.profiles?.name || d.profiles?.email || 'Customer'
       }));
 
       set({ reviews: formattedReviews, isLoading: false });
@@ -95,9 +99,10 @@ export const useReviewsStore = create<ReviewsState>()((set) => ({
         status: d.status,
         createdAt: d.created_at,
         updatedAt: d.updated_at,
-        userEmail: d.profiles?.email || 'Unknown',
+        reviewerName: d.reviewer_name || undefined,
+        userEmail: d.reviewer_name || d.profiles?.email || 'Unknown',
         productName: d.products?.name || 'Unknown Product'
-      })) as any; // Allow productName dynamically
+      }));
 
       set({ reviews: formattedReviews, isLoading: false });
     } catch (err: any) {
@@ -122,6 +127,30 @@ export const useReviewsStore = create<ReviewsState>()((set) => ({
       
     } catch (err) {
       console.error("Error adding review:", err);
+      throw err;
+    }
+  },
+
+  addCustomReview: async (productId, rating, content, images, reviewerName) => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const userId = session?.user?.id;
+      if (!userId) throw new Error('Not authenticated');
+
+      const dbReview = {
+        product_id: productId,
+        user_id: userId,
+        rating,
+        content,
+        images,
+        reviewer_name: reviewerName,
+        status: 'approved' as const,
+      };
+
+      const { error } = await supabase.from('product_reviews').insert([dbReview]);
+      if (error) throw error;
+    } catch (err) {
+      console.error("Error adding custom review:", err);
       throw err;
     }
   },

@@ -35,6 +35,7 @@ import { AdminSettingsPage } from '../features/admin/settings/AdminSettingsPage'
 import { AdminPagesPage } from '../features/admin/pages/AdminPagesPage';
 import { AdminCategoriesPage } from '../features/admin/categories/AdminCategoriesPage';
 import { AdminReviewsPage } from '../features/admin/reviews/AdminReviewsPage';
+import { AdminRatingsPage } from '../features/admin/ratings/AdminRatingsPage';
 import { AdminMessagesPage } from '../features/admin/messages/AdminMessagesPage';
 import { AdminDeliveryPage } from '../features/admin/delivery/AdminDeliveryPage';
 import { DynamicPage } from '../features/storefront/cms/DynamicPage';
@@ -178,6 +179,10 @@ export const router = createBrowserRouter([
           {
             path: 'reviews',
             element: <AdminReviewsPage />,
+          },
+          {
+            path: 'ratings',
+            element: <AdminRatingsPage />,
           },
           {
             path: 'messages',
