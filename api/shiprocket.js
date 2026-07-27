@@ -158,6 +158,8 @@ export default async function handler(req, res) {
         },
       });
       const srData = await srRes.json();
+      const svcError = getSrError(srData);
+      if (svcError) { res.status(400).json({ error: svcError }); return; }
       console.log('[shiprocket] Serviceability response status:', srData.status, 'couriers:', srData.data?.available_courier_companies?.length);
       res.status(200).json(srData);
       return;
@@ -196,21 +198,27 @@ export default async function handler(req, res) {
           height: data.height || 10,
           weight: data.weight || 0.5,
         });
+        const createError = getSrError(result);
+        if (createError) { res.status(400).json({ error: createError }); break; }
         res.status(200).json(result);
         break;
       }
 
       case 'generate-awb': {
-        const result = await apiPost('/courier/assign/awb', { shipment_id: data.shipment_id });
+        const result = await apiPost('/courier/assign/awb', { shipment_id: Number(data.shipment_id) });
+        const awbError = getSrError(result);
+        if (awbError) { res.status(400).json({ error: awbError }); break; }
         res.status(200).json(result);
         break;
       }
 
       case 'request-pickup': {
         const result = await apiPost('/courier/generate/pickup', {
-          shipment_id: [data.shipment_id],
+          shipment_id: [Number(data.shipment_id)],
           pickup_location: process.env.SHIPROCKET_PICKUP_LOCATION || 'Primary',
         });
+        const pickupError = getSrError(result);
+        if (pickupError) { res.status(400).json({ error: pickupError }); break; }
         res.status(200).json(result);
         break;
       }
@@ -220,18 +228,25 @@ export default async function handler(req, res) {
         const srRes = await fetchWithTimeout(`${SHIPROCKET_BASE}/courier/track/awb/${data.awb_code}`, {
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         });
-        res.status(200).json(await srRes.json());
+        const trackResult = await srRes.json();
+        const trackError = getSrError(trackResult);
+        if (trackError) { res.status(400).json({ error: trackError }); break; }
+        res.status(200).json(trackResult);
         break;
       }
 
       case 'cancel': {
         const result = await apiPost('/orders/cancel', { ids: (data.ids || []).map(Number) });
+        const cancelError = getSrError(result);
+        if (cancelError) { res.status(400).json({ error: cancelError }); break; }
         res.status(200).json(result);
         break;
       }
 
       case 'generate-label': {
-        const result = await apiPost('/courier/generate/label', { shipment_id: [data.shipment_id] });
+        const result = await apiPost('/courier/generate/label', { shipment_id: [Number(data.shipment_id)] });
+        const labelError = getSrError(result);
+        if (labelError) { res.status(400).json({ error: labelError }); break; }
         res.status(200).json(result);
         break;
       }
@@ -247,6 +262,14 @@ export default async function handler(req, res) {
       res.status(500).json({ error: error.message });
     }
   }
+}
+
+function getSrError(result) {
+  const srStatusCode = result.status_code;
+  if (srStatusCode && srStatusCode !== 1 && srStatusCode !== 200) {
+    return result.message || result.errors || 'Shiprocket API error';
+  }
+  return null;
 }
 
 async function apiPost(path, body) {

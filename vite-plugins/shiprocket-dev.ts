@@ -68,6 +68,20 @@ async function getAuthToken(processEnv: Record<string, string | undefined>): Pro
   return data.token;
 }
 
+function sendShiprocketResponse(res: any, result: any) {
+  const srStatusCode = result.status_code;
+  if (srStatusCode && srStatusCode !== 1 && srStatusCode !== 200) {
+    res.statusCode = 400;
+    res.setHeader('Content-Type', 'application/json');
+    const msg = result.message || result.errors || result.error || 'Shiprocket API error';
+    res.end(JSON.stringify({ error: typeof msg === 'string' ? msg : JSON.stringify(msg) }));
+    return;
+  }
+  res.statusCode = 200;
+  res.setHeader('Content-Type', 'application/json');
+  res.end(JSON.stringify(result));
+}
+
 async function shiprocketFetch(path: string, options: RequestInit, processEnv: Record<string, string | undefined>) {
   const token = await getAuthToken(processEnv);
   return fetch(`${SHIPROCKET_BASE}${path}`, {
@@ -189,7 +203,7 @@ export function shiprocketDevMiddleware(): Plugin {
 
                 const srResponse = await shiprocketFetch('/courier/assign/awb', {
                   method: 'POST',
-                  body: JSON.stringify({ shipment_id }),
+                  body: JSON.stringify({ shipment_id: Number(shipment_id) }),
                 }, processEnv);
 
                 result = await srResponse.json();
@@ -210,7 +224,7 @@ export function shiprocketDevMiddleware(): Plugin {
                 const srResponse = await shiprocketFetch('/courier/generate/pickup', {
                   method: 'POST',
                   body: JSON.stringify({
-                    shipment_id: [shipment_id],
+                    shipment_id: [Number(shipment_id)],
                     pickup_location: pickupLocation || 'Primary',
                   }),
                 }, processEnv);
@@ -266,7 +280,7 @@ export function shiprocketDevMiddleware(): Plugin {
 
                 const srResponse = await shiprocketFetch('/courier/generate/label', {
                   method: 'POST',
-                  body: JSON.stringify({ shipment_id: [shipment_id] }),
+                  body: JSON.stringify({ shipment_id: [Number(shipment_id)] }),
                 }, processEnv);
 
                 result = await srResponse.json();
@@ -319,9 +333,7 @@ export function shiprocketDevMiddleware(): Plugin {
                 return;
             }
 
-            res.statusCode = 200;
-            res.setHeader('Content-Type', 'application/json');
-            res.end(JSON.stringify(result));
+                sendShiprocketResponse(res, result);
           } catch (err: any) {
             console.error('[shiprocket-dev] Error:', err.message);
             res.statusCode = 500;

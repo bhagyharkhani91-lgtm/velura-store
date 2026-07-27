@@ -42,6 +42,12 @@ async function fetchShiprocket(action: string, data: any) {
     if (!response.ok) {
       throw new Error(result.error || `Shiprocket API error: ${response.status}`);
     }
+
+    const srStatusCode = result.status_code;
+    if (srStatusCode && srStatusCode !== 1 && srStatusCode !== 200) {
+      throw new Error(result.message || result.error || 'Shiprocket API error');
+    }
+
     return result;
   } catch (err: any) {
     clearTimeout(timer);
