@@ -5,7 +5,6 @@ import { useProductStore } from '../../../stores/productStore';
 import { Button } from '../../../components/ui/Button/Button';
 import { Link } from 'react-router-dom';
 import { GenderSplitTeaser } from '../../../components/commerce/GenderSplitTeaser/GenderSplitTeaser';
-import { RecentPurchasePopup } from '../../../components/commerce/RecentPurchasePopup/RecentPurchasePopup';
 import './HomePage.css';
 
 export function HomePage() {
@@ -105,7 +104,6 @@ export function HomePage() {
         </Container>
       </section>
 
-      <RecentPurchasePopup />
     </div>
   );
 }

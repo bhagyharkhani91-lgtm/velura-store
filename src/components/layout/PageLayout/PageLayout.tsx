@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { Navbar } from '../Navbar/Navbar';
 import { Footer } from '../Footer/Footer';
 import { useCartStore } from '../../../stores/cartStore';
@@ -8,10 +8,12 @@ import { formatPrice } from '../../../utils';
 import { Minus, Plus, Trash2 } from 'lucide-react';
 import { ScrollToTop } from '../ScrollToTop/ScrollToTop';
 import { MobileMenu } from '../MobileMenu/MobileMenu';
+import { RecentPurchasePopup } from '../../commerce/RecentPurchasePopup/RecentPurchasePopup';
 import './PageLayout.css';
 
 export function PageLayout() {
   const { isOpen, closeCart, items, getSubtotal, updateQuantity, removeItem, clearCart } = useCartStore();
+  const location = useLocation();
 
   return (
     <div className="page-wrapper">
@@ -117,6 +119,8 @@ export function PageLayout() {
           </div>
         )}
       </Drawer>
+
+      {location.pathname !== '/checkout' && <RecentPurchasePopup />}
     </div>
   );
 }
