@@ -18,6 +18,7 @@ export function RecentPurchasePopup() {
   const reappearTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const rotateIntervalRef = useRef<ReturnType<typeof setInterval>>(undefined);
   const advanceTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const isRotatingRef = useRef(false);
 
   const activeItems = purchaseNotifications
     .filter((n) => n.isActive && n.message)
@@ -70,10 +71,13 @@ export function RecentPurchasePopup() {
 
     clearInterval(rotateIntervalRef.current);
     clearTimeout(advanceTimerRef.current);
+    isRotatingRef.current = false;
 
     rotateIntervalRef.current = setInterval(() => {
+      isRotatingRef.current = true;
       setVisible(false);
       advanceTimerRef.current = setTimeout(() => {
+        isRotatingRef.current = false;
         setCurrentIndex((prev) => (prev + 1) % activeItems.length);
         setVisible(true);
       }, FADE_DURATION_MS);
@@ -81,12 +85,15 @@ export function RecentPurchasePopup() {
 
     return () => {
       clearInterval(rotateIntervalRef.current);
-      clearTimeout(advanceTimerRef.current);
+      if (!isRotatingRef.current) {
+        clearTimeout(advanceTimerRef.current);
+      }
     };
   }, [visible, activeItems.length]);
 
   const handleClose = () => {
     setVisible(false);
+    isRotatingRef.current = false;
     clearInterval(rotateIntervalRef.current);
     clearTimeout(advanceTimerRef.current);
     clearTimeout(initialTimerRef.current);
