@@ -14,10 +14,10 @@ export function RecentPurchasePopup() {
   const { products } = useProductStore();
   const [visible, setVisible] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const initialTimerRef = useRef<ReturnType<typeof setTimeout>>();
-  const reappearTimerRef = useRef<ReturnType<typeof setTimeout>>();
-  const rotateIntervalRef = useRef<ReturnType<typeof setInterval>>();
-  const advanceTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const initialTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
+  const reappearTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
+  const rotateIntervalRef = useRef<ReturnType<typeof setInterval>>(null);
+  const advanceTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
 
   const activeItems = purchaseNotifications
     .filter((n) => n.isActive && n.message)
