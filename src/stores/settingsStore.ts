@@ -85,13 +85,13 @@ export const useSettingsStore = create<SettingsState>()((set) => ({
       if (data) {
         set({
           promoMessages: data.promo_messages || [],
-          contactTitle: data.contact_title || '',
-          contactDescription: data.contact_description || '',
-          contactEmail: data.contact_email || '',
-          contactPhone: data.contact_phone || '',
-          contactAddress: data.contact_address || '',
-          contactHours: data.contact_hours || '',
-          returnPolicy: data.return_policy || '',
+          contactTitle: data.contact_title || 'CONTACT US',
+          contactDescription: data.contact_description || 'Have a question about our products or need assistance? Our dedicated support team is available to assist you.',
+          contactEmail: data.contact_email || 'support@personalcare.in',
+          contactPhone: data.contact_phone || '+91 9914869069',
+          contactAddress: data.contact_address || 'Personal Care HQ, Suite 500, Mumbai, India',
+          contactHours: data.contact_hours || 'Mon - Sat: 10:00 AM - 8:00 PM (IST)',
+          returnPolicy: data.return_policy || 'At Personal Care, we strive to ensure your complete satisfaction. If you are not entirely satisfied with your purchase, we offer a hassle-free return and exchange process. You may return unworn, unwashed, and undamaged items within 30 days of delivery for a full refund or exchange. Please ensure that all original tags are attached and the items are returned in their original packaging. For health and hygiene reasons, certain personal care items are non-returnable. Please contact our support team at support@personalcare.in to initiate a return request.',
           genderSplitForHimBg: data.gender_split_for_him_bg || '',
           genderSplitForHerBg: data.gender_split_for_her_bg || ''
         });

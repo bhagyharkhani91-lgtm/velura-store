@@ -53,8 +53,10 @@
   letter-spacing: var(--tracking-widest);
   text-transform: uppercase;
   background: linear-gradient(135deg, #FFFFFF 0%, #E5E7EB 50%, #C58B6B 100%);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  color: transparent;
   margin-bottom: var(--space-4);
   text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
