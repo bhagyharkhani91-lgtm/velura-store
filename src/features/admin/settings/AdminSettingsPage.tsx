@@ -24,6 +24,8 @@ export function AdminSettingsPage() {
     setReturnPolicy,
     heroBanners,
     setHeroBanners,
+    heroBannersMobile,
+    setHeroBannersMobile,
     purchaseNotifications,
     setPurchaseNotifications
   } = useSettingsStore();
@@ -41,6 +43,7 @@ export function AdminSettingsPage() {
   const [hoursText, setHoursText] = useState(contactHours);
   const [returnPolicyText, setReturnPolicyText] = useState(returnPolicy);
   const [heroBannersText, setHeroBannersText] = useState<HeroBanner[]>(heroBanners || []);
+  const [heroBannersMobileText, setHeroBannersMobileText] = useState<HeroBanner[]>(heroBannersMobile || []);
   const [notifList, setNotifList] = useState<PurchaseNotification[]>(purchaseNotifications || []);
   const [forHimBgUrl, setForHimBgUrl] = useState(genderSplitForHimBg);
   const [forHerBgUrl, setForHerBgUrl] = useState(genderSplitForHerBg);
@@ -50,6 +53,12 @@ export function AdminSettingsPage() {
       setHeroBannersText(heroBanners);
     }
   }, [heroBanners]);
+
+  useEffect(() => {
+    if (heroBannersMobile) {
+      setHeroBannersMobileText(heroBannersMobile);
+    }
+  }, [heroBannersMobile]);
 
   useEffect(() => {
     setNotifList(purchaseNotifications || []);
@@ -104,6 +113,35 @@ export function AdminSettingsPage() {
       });
     });
     
+    if (hasError && e.target) {
+      e.target.value = '';
+    }
+  };
+
+  const handleBannerMobileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    let hasError = false;
+
+    files.forEach((file, index) => {
+      const { isValid, error } = validateImageUpload(file);
+
+      if (!isValid) {
+        alert(error);
+        hasError = true;
+        return;
+      }
+
+      uploadToCloudinary(file).then(result => {
+        setHeroBannersMobileText(prev => [...prev, {
+          id: `banner-mobile-${Date.now()}-${index}`,
+          url: result.url,
+          isActive: true
+        }]);
+      }).catch(err => {
+        alert('Image upload failed: ' + err.message);
+      });
+    });
+
     if (hasError && e.target) {
       e.target.value = '';
     }
@@ -164,6 +202,7 @@ export function AdminSettingsPage() {
     });
     setReturnPolicy(returnPolicyText);
     setHeroBanners(heroBannersText);
+    setHeroBannersMobile(heroBannersMobileText);
     setGenderSplitBgs(forHimBgUrl, forHerBgUrl);
 
     const cleanNotifs = notifList
@@ -486,6 +525,104 @@ export function AdminSettingsPage() {
             </div>
           </div>
           
+          <div className="bg-surface rounded-lg p-6 border border-border">
+            <h2 className="text-xl font-semibold mb-4 text-primary">Hero Banner — Mobile</h2>
+            <p className="text-sm text-secondary mb-4">Upload banner images for mobile viewport (≤ 768px). Recommended aspect ratio: 9:16 or 1:1. If left empty, the desktop banners (above) will be used on mobile.</p>
+            <div className="flex flex-col gap-4">
+              <div>
+                <label className="block text-sm font-medium text-secondary mb-2">Mobile Banner Images</label>
+                
+                {heroBannersMobileText && heroBannersMobileText.length > 0 && (
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    {heroBannersMobileText.map((banner, index) => (
+                      <div key={banner?.id || index} className={`relative aspect-[9/16] border ${banner?.isActive ? 'border-accent' : 'border-border opacity-60'} rounded-lg overflow-hidden bg-bg-secondary group`}>
+                        <img src={banner?.url} alt={`Mobile Banner ${index + 1}`} className="w-full h-full object-cover" />
+                        
+                        <div className="absolute inset-0 bg-black-80 bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-2">
+                          <div className="flex justify-between">
+                            <div className="flex gap-1">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (index === 0) return;
+                                  const newBanners = [...heroBannersMobileText];
+                                  [newBanners[index], newBanners[index - 1]] = [newBanners[index - 1], newBanners[index]];
+                                  setHeroBannersMobileText(newBanners);
+                                }}
+                                disabled={index === 0}
+                                className="bg-surface text-primary rounded-md p-1.5 shadow-md hover:bg-bg-hover disabled:opacity-30 transition-colors"
+                              >
+                                <ArrowUp size={16} />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (index === heroBannersMobileText.length - 1) return;
+                                  const newBanners = [...heroBannersMobileText];
+                                  [newBanners[index], newBanners[index + 1]] = [newBanners[index + 1], newBanners[index]];
+                                  setHeroBannersMobileText(newBanners);
+                                }}
+                                disabled={index === heroBannersMobileText.length - 1}
+                                className="bg-surface text-primary rounded-md p-1.5 shadow-md hover:bg-bg-hover disabled:opacity-30 transition-colors"
+                              >
+                                <ArrowDown size={16} />
+                              </button>
+                            </div>
+                            <button 
+                              type="button" 
+                              onClick={() => {
+                                setHeroBannersMobileText(prev => prev.filter((_, i) => i !== index));
+                              }}
+                              className="bg-error/90 text-white rounded-md p-1.5 shadow-md hover:bg-error transition-colors"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
+                          <div className="flex justify-center">
+                             <button
+                                type="button"
+                                onClick={() => {
+                                  const newBanners = [...heroBannersMobileText];
+                                  newBanners[index].isActive = !newBanners[index].isActive;
+                                  setHeroBannersMobileText(newBanners);
+                                }}
+                                className="bg-surface text-primary rounded-md px-3 py-1.5 shadow-md hover:bg-bg-hover transition-colors flex items-center gap-2 text-sm font-medium"
+                              >
+                                {banner.isActive ? (
+                                  <><Eye size={16} /> Active</>
+                                ) : (
+                                  <><EyeOff size={16} /> Inactive</>
+                                )}
+                              </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                
+                <label 
+                  className="relative border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center transition-colors min-h-[120px] cursor-pointer hover:bg-bg-hover"
+                  style={{ borderColor: '#60A5FA', backgroundColor: 'rgba(59, 130, 246, 0.05)' }}
+                >
+                  <div className="text-center">
+                    <CloudUpload size={28} className="mx-auto mb-2" style={{ color: '#3B82F6' }} />
+                    <p className="text-sm font-medium" style={{ color: '#9CA3AF' }}>
+                      Drag & Drop images or <span style={{ color: '#3B82F6', textDecoration: 'underline' }}>Browse</span>
+                    </p>
+                  </div>
+                  <input 
+                    type="file" 
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                    onChange={handleBannerMobileUpload}
+                  />
+                </label>
+              </div>
+            </div>
+          </div>
+
           <div className="bg-surface rounded-lg p-6 border border-border">
             <h2 className="text-xl font-semibold mb-4 text-primary">Return and Exchange Policy</h2>
             <p className="text-sm text-secondary mb-4">Update the return and exchange policy displayed to customers on the site.</p>

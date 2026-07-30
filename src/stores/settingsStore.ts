@@ -23,6 +23,7 @@ interface SettingsState {
   contactHours: string;
   returnPolicy: string;
   heroBanners: HeroBanner[];
+  heroBannersMobile: HeroBanner[];
   purchaseNotifications: PurchaseNotification[];
   genderSplitForHimBg: string;
   genderSplitForHerBg: string;
@@ -31,6 +32,7 @@ interface SettingsState {
   setPromoMessages: (messages: string[]) => Promise<void>;
   setReturnPolicy: (policy: string) => Promise<void>;
   setHeroBanners: (banners: HeroBanner[]) => Promise<void>;
+  setHeroBannersMobile: (banners: HeroBanner[]) => Promise<void>;
   setPurchaseNotifications: (notifications: PurchaseNotification[]) => Promise<void>;
   setGenderSplitBgs: (forHimBg: string, forHerBg: string) => Promise<void>;
   setContactInfo: (info: {
@@ -64,6 +66,7 @@ export const useSettingsStore = create<SettingsState>()((set) => ({
   contactHours: 'Mon - Sat: 10:00 AM - 8:00 PM (IST)',
   returnPolicy: 'At Personal Care, we strive to ensure your complete satisfaction. If you are not entirely satisfied with your purchase, we offer a hassle-free return and exchange process. You may return unworn, unwashed, and undamaged items within 30 days of delivery for a full refund or exchange. Please ensure that all original tags are attached and the items are returned in their original packaging. For health and hygiene reasons, certain personal care items are non-returnable. Please contact our support team at support@personalcare.in to initiate a return request.',
   heroBanners: [],
+  heroBannersMobile: [],
   purchaseNotifications: [],
   genderSplitForHimBg: '',
   genderSplitForHerBg: '',
@@ -127,6 +130,16 @@ export const useSettingsStore = create<SettingsState>()((set) => ({
         }
         
         set({ heroBanners: parsedBanners });
+        
+        let parsedBannersMobile = data.hero_banners_mobile || [];
+        if (typeof parsedBannersMobile[0] === 'string') {
+          parsedBannersMobile = parsedBannersMobile.map((url: string, idx: number) => ({
+            id: `banner-mobile-${Date.now()}-${idx}`,
+            url,
+            isActive: true
+          }));
+        }
+        set({ heroBannersMobile: parsedBannersMobile });
       }
     } catch (err) {
       console.error('Error fetching settings:', err);
@@ -162,6 +175,16 @@ export const useSettingsStore = create<SettingsState>()((set) => ({
       set({ heroBanners: banners });
     } catch (err) {
       console.error('Error updating hero banners:', err);
+    }
+  },
+
+  setHeroBannersMobile: async (banners) => {
+    try {
+      const { error } = await supabase.from('site_settings').update({ hero_banners_mobile: banners }).eq('id', 1);
+      if (error) throw error;
+      set({ heroBannersMobile: banners });
+    } catch (err) {
+      console.error('Error updating hero banners mobile:', err);
     }
   },
 

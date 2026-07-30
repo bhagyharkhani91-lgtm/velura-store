@@ -17,10 +17,27 @@ const defaultBackgrounds = [
   heroLuxuryDildo,
 ];
 
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 768);
+  useEffect(() => {
+    const mql = window.matchMedia('(max-width: 768px)');
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mql.addEventListener('change', handler);
+    setIsMobile(mql.matches);
+    return () => mql.removeEventListener('change', handler);
+  }, []);
+  return isMobile;
+}
+
 export function Hero() {
-  const { heroBanners } = useSettingsStore();
-  
-  const activeBanners = (heroBanners || [])
+  const { heroBanners, heroBannersMobile } = useSettingsStore();
+  const isMobile = useIsMobile();
+
+  const resolvedBanners = isMobile
+    ? ((heroBannersMobile || []).filter(b => b?.isActive).length > 0 ? heroBannersMobile : heroBanners)
+    : heroBanners;
+
+  const activeBanners = (resolvedBanners || [])
     .filter(banner => banner?.isActive)
     .map(banner => banner?.url);
 
